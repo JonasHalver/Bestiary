@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Bunker
+  m_EditorClassIdentifier: 
+  actionName: Bunker
+  description: If I am alone, I will grant myself armor.
+  actionType: 1
+  actionPriority: 4
+  debuff: {fileID: 0}
+  buff: {fileID: 11400000, guid: 5a4fc372eafb2e84a842c3be011feb95, type: 2}
+  position: 5
+  useBeingAttackedOverride: 1
+  nearTargetCount: 1
+  shape: 0
+  minimumHits: 1
+  target: 3
+  targetGroup: 1
+  targetConditions: 04000000
+  targetPriority: 0
+  canHitSelf: 0
+  canFriendlyFire: 0
+  value: 2
+  isCritical: 0
+  damageType: 0

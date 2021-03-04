@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Heal Area
+  m_EditorClassIdentifier: 
+  actionName: Heal Area
+  description: If I am near allies, I will heal all allies close to me.
+  actionType: 2
+  actionPriority: 1
+  debuff: {fileID: 0}
+  buff: {fileID: 0}
+  position: 2
+  useBeingAttackedOverride: 0
+  nearTargetCount: 1
+  shape: 4
+  minimumHits: 1
+  target: 0
+  targetGroup: 1
+  targetConditions: 04000000
+  targetPriority: 0
+  canHitSelf: 0
+  canFriendlyFire: 0
+  value: 1
+  isCritical: 0
+  damageType: 7

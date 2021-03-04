@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
+  m_Name: Stone Mage
+  m_EditorClassIdentifier: 
+  characterName: The Stone Mage
+  characterType: 1
+  hitPoints: 6
+  armored: 0
+  resistances: 04000000
+  weaknesses: 
+  speed: 2
+  movement: 1
+  actions:
+  - {fileID: 11400000, guid: cf7e84f54ffaca04a83c58d8594b1ed2, type: 2}
+  - {fileID: 11400000, guid: b5fc240bc5e2ca74f88bd03affa32ec4, type: 2}
+  - {fileID: 11400000, guid: aeb7cbbd64918844598d3549925529d2, type: 2}
+  - {fileID: 11400000, guid: 1a50cac2f83ab27458b0cc46423fe0e0, type: 2}

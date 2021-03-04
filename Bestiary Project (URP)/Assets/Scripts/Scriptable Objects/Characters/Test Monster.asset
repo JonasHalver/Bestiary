@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
+  m_Name: Test Monster
+  m_EditorClassIdentifier: 
+  characterName: Fire Elemental
+  characterType: 0
+  hitPoints: 15
+  armored: 0
+  resistances: 03000000
+  weaknesses: 
+  speed: 4
+  movement: 4
+  actions:
+  - {fileID: 11400000, guid: d6b50ba3b2cea98428155b6538b8f67b, type: 2}
+  - {fileID: 11400000, guid: 8187b3dff432fdb409393d88e09eb531, type: 2}
+  - {fileID: 11400000, guid: 3049ae24523c3284c8057b19782b6675, type: 2}
+  - {fileID: 11400000, guid: 3aea94864f752ce4dba57379ae8c0004, type: 2}
