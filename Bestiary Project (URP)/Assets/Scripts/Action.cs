@@ -8,7 +8,7 @@ public class Action : ScriptableObject
 {
     public string actionName;
     public string description;
-    public enum ActionType { Attack, Buff, Healing, Debuff }
+    public enum ActionType { Attack, Buff, Healing, Debuff, AttackDebuff, HealingBuff }
     public ActionType actionType = ActionType.Attack;
 
     [Tooltip("A number between 1-4, determining which actions are prioritized first if multiple are available")]

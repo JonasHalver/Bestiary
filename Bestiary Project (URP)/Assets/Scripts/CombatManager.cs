@@ -311,6 +311,15 @@ public class CombatAction
                         if (targetIsSelf && action.canHitSelf) newInteraction = new Interaction(origin, node, action, action.value, action.debuff);
                         else if (!targetIsAlly) newInteraction = new Interaction(origin, node, action, action.debuff);
                         break;
+                    case Action.ActionType.AttackDebuff:
+                        if (targetIsSelf && action.canHitSelf) newInteraction = new Interaction(origin, node, action, action.value, action.debuff);
+                        else if (!targetIsAlly) newInteraction = new Interaction(origin, node, action, action.debuff);
+
+                        break;
+                    case Action.ActionType.HealingBuff:
+                        if (targetIsSelf && action.canHitSelf) newInteraction = new Interaction(origin, node, action, action.buff);
+                        else if (targetIsAlly) newInteraction = new Interaction(origin, node, action, action.buff);
+                        break;
                 }
 
                 if (newInteraction != null) actionTarget.Interaction(newInteraction);
