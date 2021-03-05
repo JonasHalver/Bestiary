@@ -28,10 +28,24 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     private float t;
     private bool moving = false;
-    private bool canMove = false;
+    public bool canMove = false;
+    public static bool unitSelected = false;
 
     private void Awake()
     {
+
+    }
+
+    private void OnEnable()
+    {
+        CombatManager.EndRound += StartOfRound;
+        CombatManager.startCombat += StartOfRound;
+    }
+
+    private void OnDisable()
+    {
+        CombatManager.EndRound -= StartOfRound;
+        CombatManager.startCombat -= StartOfRound;
     }
 
     private void Start()
@@ -40,8 +54,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         currentNode = (currentNode == null) ? CurrentNode() : currentNode;
         character = GetComponent<Character>();
         //currentNode.occupant = character;
-        CombatManager.EndRound += StartOfRound;
-        CombatManager.instance.startCombat += StartOfRound;
+        moving = false;
     }
 
 
@@ -64,18 +77,32 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             Selected();
         }
 
-        canMove = !moving && 
-            character.alive && 
-            CombatManager.instance.currentStage == CombatManager.CombatStage.Setup && 
-            !GameManager.paused && 
+        canMove = !moving &&
+            character.alive &&
+            CombatManager.instance.currentStage == CombatManager.CombatStage.Setup &&
+            !GameManager.paused &&
+            unitSelected == false &&
             (GameManager.instance.debugMode ? true : character.stats.characterType != CharacterStats.CharacterTypes.NPC);
     }
 
-    IEnumerator MoveToNewLocation()
+    IEnumerator MoveToNewLocation(bool ai)
     {
         moving = true;
         if (targetNode != null)
         {
+            if (ai)
+            {
+                if (destinationNodes.Count > 0)
+                {
+                    foreach (Node n in destinationNodes)
+                    {
+                        n.MovementHightlight();
+                    }
+                }
+                else currentNode.ErrorHighlight();
+                yield return new WaitForSeconds(0.5f);
+                targetNode.NodeSelected();
+            }
             t = 0;
             while (t < 1)
             {
@@ -98,7 +125,18 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void StartOfRound()
     {
-        movementLeft = Mathf.Max(1, character.stats.movement - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0));
+        if (character.conditions.Contains(Debuff.ControlType.Slow))
+        {
+            movementLeft = Mathf.Max(1, character.stats.movement - 2);
+        }
+        else if (character.conditions.Contains(Debuff.ControlType.Root))
+        {
+            movementLeft = 0;
+        }
+        else
+        {
+            movementLeft = character.stats.movement;
+        }
         destinationNodes.Clear();
     }
 
@@ -169,18 +207,27 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void AIMovement()
     {
-        List<Node> destinations = GenerateDestinationList(movementLeft);
-        for (int i = 0; i < destinations.Count; i++)
+        List<Node> destinations = new List<Node>();
+        if (!character.conditions.Contains(Debuff.ControlType.Root))
+            destinations = GenerateDestinationList(movementLeft);
+        if (destinations.Count == 0) targetNode = currentNode;
+        
+        else 
         {
-            if(destinations[i].occupant != null)
+            for (int i = 0; i < destinations.Count; i++)
             {
-                destinations.RemoveAt(i);
-                i--;
+                if (destinations[i].occupant != null)
+                {
+                    destinations.RemoveAt(i);
+                    i--;
+                }
             }
         }
-        Node destination = destinations[UnityEngine.Random.Range(0, destinations.Count)];
+        Node destination = destinations.Count > 0 ? destinations[UnityEngine.Random.Range(0, destinations.Count)] : currentNode;
+        destinationNodes = destinations;
         targetNode = destination;
-        StartCoroutine(MoveToNewLocation());
+
+        StartCoroutine(MoveToNewLocation(true));
     }
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -221,25 +268,27 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         pickupOffset = transform.position - Input.mousePosition;
         selected = true;
+        unitSelected = true;
     }
 
     private void OnDeselect(bool canceled)
     {
         selected = false;
+        unitSelected = false;
         if (!canceled && targetNode != null && !illegalMove)
         {
-            StartCoroutine(MoveToNewLocation());
+            StartCoroutine(MoveToNewLocation(false));
             previousNode = currentNode;
         }
         else if (!canceled && illegalMove)
         {
             targetNode = currentNode;
-            StartCoroutine(MoveToNewLocation());
+            StartCoroutine(MoveToNewLocation(false));
         }
         else  if (canceled)
         {
             targetNode = currentNode;
-            StartCoroutine(MoveToNewLocation());
+            StartCoroutine(MoveToNewLocation(false));
         }
     }
 

@@ -39,10 +39,14 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public List<DamageTypes> temporaryResistances = new List<DamageTypes>();
     public bool temporaryArmor = false;
     public bool temporaryDodge = false;
+    public int initiative;
 
     private Animator anim;
     private float t;
     public AnimationCurve attackAnimation;
+
+    public event System.Action TookDamage;
+    public event System.Action Healed;
 
     // Start is called before the first frame update
     void Start()
@@ -54,7 +58,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         stats.actions.Sort((action1, action2) => action1.actionPriority.CompareTo(action2.actionPriority));
 
         currentHitpoints = stats.hitPoints;
-
+        initiative = stats.speed;
     }
 
     // Update is called once per frame
@@ -64,6 +68,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
         currentHitpoints = Mathf.Clamp(currentHitpoints, 0, stats.hitPoints);
+        initiative = conditions.Contains(Debuff.ControlType.Slow) ? stats.speed - 2 : stats.speed;
     }
 
     void UpdatePosition()
@@ -85,8 +90,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         conditions.Clear();
     }
 
-    public void UpdateBuffsAndDebuffs()
+    public void UpdateBuffsAndDebuffs(bool endOfRound)
     {
+        foreach (Buff b in buffs) b.CheckDuration(endOfRound);
+        foreach (Debuff d in debuffs) d.CheckDuration(endOfRound);
         for (int i = 0; i < expiredBuffs.Count; i++)
         {
             buffs.Remove(expiredBuffs[i]);
@@ -114,14 +121,14 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
                 Buff buff = ScriptableObject.CreateInstance<Buff>();
                 buff.SetValues(interaction.buff);
-                buff.durationRemaining += (int)interaction.value;
+                buff.durationRemaining += interaction.action.value;
                 buff.affectedCharacter = this;
                 bool flag = false;
                 foreach (Buff d in buffs)
                 {
                     if (d.buffType == buff.buffType)
                     {
-                        d.durationRemaining += buff.duration;
+                        d.durationRemaining += interaction.action.value;
                         flag = true;
                     }
                 }
@@ -143,13 +150,13 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     {
                         if (d.debuffType == Debuff.DebuffType.Control && d.controlType == debuff.controlType)
                         {
-                            d.durationRemaining += debuff.duration;
+                            d.durationRemaining += interaction.action.value;
                             flag1 = true;
                         }
                         else if (d.debuffType == Debuff.DebuffType.DamageOverTime && d.damageType == debuff.damageType)
                         {
-                            d.durationRemaining += debuff.duration;
-                            flag = true;
+                            d.durationRemaining += interaction.action.value;
+                            flag1 = true;
                         }
                     }                    
                 }
@@ -184,6 +191,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (action.isCritical || critical || stats.weaknesses.Contains(action.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
+        TookDamage.Invoke();
     }
 
     public void ReceiveHit(Debuff debuff)
@@ -194,6 +202,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (stats.weaknesses.Contains(debuff.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
+        TookDamage.Invoke();
     }
 
     public void ReceiveHealing(Action action)
@@ -201,6 +210,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         float healing = action.value;
 
         currentHitpoints += healing;
+        Healed.Invoke();
     }
     
     public void ReceiveHealing(Buff buff)
@@ -261,7 +271,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         if (eventData.pointerId == -2)
         {
-            CombatGrid.instance.HighlighAction(currentAction);
+            if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+            {
+                CharacterSheet.ShowSheet(this);
+                CombatGrid.instance.HighlighAction(currentAction);
+            }
         }
     }
 

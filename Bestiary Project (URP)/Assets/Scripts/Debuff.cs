@@ -8,7 +8,7 @@ public class Debuff : ScriptableObject
     public Character affectedCharacter;
 
     public enum DebuffType { DamageOverTime, Control }
-    public enum ControlType { Slow, Stun, Blind }
+    public enum ControlType { Slow, Root, Blind }
     public DebuffType debuffType;
     public ControlType controlType;
 
@@ -18,6 +18,8 @@ public class Debuff : ScriptableObject
     public int duration;
     public int durationRemaining;
     public Character.DamageTypes damageType;
+
+    public bool removeAtEndOfRound = false;
 
     public Debuff(DebuffType _type, Character.DamageTypes _damageType, int _duration)
     {
@@ -45,6 +47,7 @@ public class Debuff : ScriptableObject
         iconColor = _debuff.iconColor;
         duration = _duration;
         durationRemaining += _duration;
+        removeAtEndOfRound = _debuff.removeAtEndOfRound;
     }
 
     public void DebuffApplied()
@@ -68,24 +71,29 @@ public class Debuff : ScriptableObject
         switch (debuffType)
         {
             case DebuffType.Control:
-                if (durationRemaining <= 0)
-                {
-                    affectedCharacter.expiredDebuffs.Add(this);
-                }
-                else
-                {
-                    affectedCharacter.conditions.Add(controlType);
-                    durationRemaining--;
-                }
+                affectedCharacter.conditions.Add(controlType);
+                               
                 break;
             case DebuffType.DamageOverTime:
                 affectedCharacter.ReceiveHit(this);
-                durationRemaining--;
-                if (durationRemaining <= 0)
-                {
-                    affectedCharacter.expiredDebuffs.Add(this);
-                }
+
                 break;
+        }
+    }
+
+    public void CheckDuration(bool endOfRound)
+    {
+
+        if (endOfRound && removeAtEndOfRound)
+            durationRemaining--;
+        else if (!removeAtEndOfRound && !endOfRound) durationRemaining--;
+
+        if (durationRemaining <= 0)
+        {
+            if (removeAtEndOfRound && endOfRound)
+                affectedCharacter.expiredDebuffs.Add(this);
+            else if (!removeAtEndOfRound)
+                affectedCharacter.expiredDebuffs.Add(this);
         }
     }
 }

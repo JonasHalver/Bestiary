@@ -21,6 +21,7 @@ MonoBehaviour:
   speed: 6
   movement: 3
   actions:
-  - {fileID: 11400000, guid: 57b2bb5a386dad146940aec00cc7989f, type: 2}
+  - {fileID: 11400000, guid: 88796b5596b0844499f97c77ac243c7d, type: 2}
   - {fileID: 11400000, guid: 6546863f95759724bbaec66104807b8d, type: 2}
+  - {fileID: 11400000, guid: 57b2bb5a386dad146940aec00cc7989f, type: 2}
   - {fileID: 11400000, guid: 06981861d9c9c6244ac3d3d608af5408, type: 2}

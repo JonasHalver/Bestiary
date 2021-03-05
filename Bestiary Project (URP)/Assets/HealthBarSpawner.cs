@@ -9,12 +9,12 @@ public class HealthBarSpawner : MonoBehaviour
 
     private void Start()
     {
-        CombatManager.instance.startCombat += SpawnHealthBars;
+        CombatManager.startCombat += SpawnHealthBars;
     }
 
     private void OnDisable()
     {
-        CombatManager.instance.startCombat -= SpawnHealthBars;
+        CombatManager.startCombat -= SpawnHealthBars;
     }
 
     // Update is called once per frame

@@ -10,13 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d783d96f084428b4db6090996a6b0f5d, type: 3}
-  m_Name: Slow
+  m_Name: Root
   m_EditorClassIdentifier: 
   affectedCharacter: {fileID: 0}
   debuffType: 1
-  controlType: 0
-  icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
-  iconColor: {r: 1, g: 0.65787435, b: 0, a: 1}
+  controlType: 1
+  icon: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
+  iconColor: {r: 0.49012196, g: 0.735849, b: 0, a: 1}
   duration: 0
   durationRemaining: 0
   damageType: 0
+  removeAtEndOfRound: 1

@@ -16,16 +16,21 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public GameObject effectPrefab;
     public Transform effectsDisplay;
     public List<HealthBarEffects> effects = new List<HealthBarEffects>();
+    bool displayingDamageOrHeal = false;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        CombatGrid.HighlightNodeStatic(character.movement.currentNode);
-        CombatGrid.instance.HighlighAction(character.currentAction);
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+        {
+            CombatGrid.HighlightNodeStatic(character.movement.currentNode);
+            CombatGrid.instance.HighlighAction(character.currentAction);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        CombatGrid.StopHighlight();
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+            CombatGrid.StopHighlight();
     }
 
     private void Start()
@@ -36,6 +41,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         character.AcquiredBuff += DisplayEffect;
         character.LostDebuff += RemoveEffect;
         character.LostBuff += RemoveEffect;
+        character.Healed += Healed;
+        character.TookDamage += TookDamage;
     }
     private void OnDisable()
     {
@@ -54,8 +61,39 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         foreach(HealthBarEffects effect in effects)
         {
-            effect.durationText.text = effect.debuff != null ? effect.debuff.durationRemaining.ToString() : effect.buff.durationRemaining.ToString();
+            effect.durationText.text = effect.debuff != null ?
+                effect.debuff.durationRemaining.ToString()
+                : (effect.buff.durationRemaining).ToString();
         }
+    }
+
+    public void Healed()
+    {
+        if (!displayingDamageOrHeal)
+            StartCoroutine(DisplayHeal());
+    }
+
+    public void TookDamage()
+    {
+        if (!displayingDamageOrHeal) StartCoroutine(DisplayDamage());
+    }
+
+    IEnumerator DisplayHeal()
+    {
+        displayingDamageOrHeal = true;
+        background.color = Color.green;
+        yield return new WaitForSeconds(0.5f);
+        background.color = Color.white;
+        displayingDamageOrHeal = false;
+    }
+
+    IEnumerator DisplayDamage()
+    {
+        displayingDamageOrHeal = true;
+        background.color = Color.red;
+        yield return new WaitForSeconds(0.5f);
+        background.color = Color.white;
+        displayingDamageOrHeal = false;
     }
 
     public void DisplayEffect(Buff buff)
@@ -64,7 +102,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Image img = newEffect.GetComponent<Image>();
         img.sprite = buff.icon;
         img.color = buff.iconColor;
-        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = buff.durationRemaining.ToString();
+        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (buff.durationRemaining+1).ToString();
         effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), buff));
     }
 
@@ -74,7 +112,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Image img = newEffect.GetComponent<Image>();
         img.sprite = debuff.icon;
         img.color = debuff.iconColor;
-        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = debuff.durationRemaining.ToString();
+        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+            debuff.debuffType == Debuff.DebuffType.DamageOverTime ? debuff.durationRemaining.ToString() : (debuff.durationRemaining + 1).ToString();
         effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), debuff));
     }
 

@@ -15,6 +15,8 @@ public class Buff : ScriptableObject
     public Sprite icon;
     public Color iconColor;
 
+    public bool removeAtEndOfRound = false;
+
     public Buff (BuffType _buffType, int _duration)
     {
         duration = _duration;
@@ -29,6 +31,7 @@ public class Buff : ScriptableObject
         duration = buff.duration;
         icon = buff.icon;
         iconColor = buff.iconColor;
+        removeAtEndOfRound = buff.removeAtEndOfRound;
     }
 
     public void ApplyBuff()
@@ -54,14 +57,23 @@ public class Buff : ScriptableObject
 
     public void ResolveBuff()
     {
+        ApplyBuff();
+        
+    }
+
+    public void CheckDuration(bool endOfRound)
+    {
+        if (endOfRound && removeAtEndOfRound)
+            durationRemaining--;
+        else
+            durationRemaining--;
+
         if (durationRemaining <= 0)
         {
-            affectedCharacter.expiredBuffs.Add(this);
+            if (removeAtEndOfRound && endOfRound)
+                affectedCharacter.expiredBuffs.Add(this);
+            else if (!removeAtEndOfRound)
+                affectedCharacter.expiredBuffs.Add(this);
         }
-        else
-        {
-            ApplyBuff();
-        }
-        durationRemaining--;
     }
 }

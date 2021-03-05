@@ -54,10 +54,11 @@ public class CharacterSheet : MonoBehaviour
 
         for (int i = 0; i < instance.characterActions.Count; i++)
         {
-            if (instance.characterActions[i] != null)
+            Action a = instance.characterActions[i];
+            if (a != null)
             {
-                instance.actionTexts[i].text = instance.characterActions[i].description;
-                instance.titleTexts[i].text = instance.characterActions[i].actionName;
+                instance.actionTexts[i].text =  a.description;
+                instance.titleTexts[i].text = (i + 1).ToString() + ". " + a.actionName;
             }
         }
         instance.sheet.SetActive(true);

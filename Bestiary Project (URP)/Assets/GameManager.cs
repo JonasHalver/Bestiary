@@ -23,7 +23,26 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        instance = this;
+        FirstActions();
+        DontDestroyOnLoad(this);
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnNewSceneLoad;
+    }
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnNewSceneLoad;
+    }
+    private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
+    {
+        FirstActions();
+    }
+    private void FirstActions()
+    {
+        if (instance == null) instance = this;
+        else if (instance != this) Destroy(gameObject);
     }
 
     private void Update()
@@ -34,7 +53,7 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Pause();
+            //Pause();
         }
     }
 
@@ -88,6 +107,8 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        paused = false;
+        CombatManager.instance.StopAllCoroutines();
         SceneManager.LoadScene(0);
     }
 }
