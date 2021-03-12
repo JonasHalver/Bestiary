@@ -7,7 +7,7 @@ public class Entry : MonoBehaviour
     public Character origin;
     public Character guess;
 
-    public Action activeAction;
+    public ActionCheck activeAction;
 
     public enum StatEntries { HitPoints, Speed, Movement, Resistances, Weaknesses }
 
@@ -35,6 +35,11 @@ public class Entry : MonoBehaviour
     private void Update()
     {
         CheckStats();
+    }
+
+    public void SetActiveAction(int index)
+    {
+        activeAction = actionChecks[index];
     }
 
     public void CheckStats()
@@ -117,6 +122,114 @@ public class Entry : MonoBehaviour
             guess.stats.weaknesses.Add(damageType);
         }
     }
+
+    public void SetActionType(int index)
+    {
+        Action.ActionType at;
+        if (activeAction == null) return;
+        switch (index)
+        {
+            default:
+                at = Action.ActionType.Attack;
+                break;
+        }
+
+        activeAction.guessAction.actionType = at;
+        activeAction.CalculateValidity();
+    }
+
+    public void SetBuff(int index)
+    {
+        if (activeAction == null) return;
+        Buff b;
+        switch (index)
+        {
+            default:
+                b = null;
+                break;
+        }
+
+        activeAction.guessAction.buff = b;
+        activeAction.CalculateValidity();
+    }
+
+    public void SetDebuff(int index)
+    {
+        if (activeAction == null) return;
+        Debuff d;
+        switch (index)
+        {
+            default:
+                d = null;
+                break;
+        }
+
+        activeAction.guessAction.debuff = d;
+        activeAction.CalculateValidity();
+    }
+
+    public void SetPosition(int index)
+    {
+        if (activeAction == null) return;
+        Action.Position p;
+        switch (index)
+        {
+            default:
+                p = Action.Position.Irrelevant;
+                break;
+        }
+
+        activeAction.guessAction.position = p;
+        activeAction.CalculateValidity();
+    }
+
+    public void SetShape(int index)
+    {
+        if (activeAction == null) return;
+        Action.Shape s;
+        switch (index)
+        {
+            default:
+                s = Action.Shape.Single;
+                break;
+        }
+
+        activeAction.guessAction.shape = s;
+        activeAction.CalculateValidity();
+    }
+    public void SetTargetGroup(int index)
+    {
+        if (activeAction == null) return;
+        Action.TargetGroup tg;
+        switch (index)
+        {
+            default:
+                tg = Action.TargetGroup.All;
+                break;
+        }
+
+        activeAction.guessAction.targetGroup = tg;
+        activeAction.CalculateValidity();
+    }
+    public void SetTargetConditions()
+    {
+        // All of these should be set using custom scripts on the UI elements, which communicate their changes directly to the active action
+    }
+    public void SetTargetPriority(int index)
+    {
+        if (activeAction == null) return;
+        Action.TargetPriority tp;
+        switch (index)
+        {
+            default:
+                tp = Action.TargetPriority.None;
+                break;
+        }
+
+        activeAction.guessAction.targetPriority = tp;
+        activeAction.CalculateValidity();
+    }
+
 }
 
 public class ActionCheck
@@ -193,5 +306,7 @@ public class ActionCheck
         if (targetPriority == guessAction.targetPriority) validPercent += 0.1f;
         if (damageType == guessAction.damageType) validPercent += 0.1f;
         if (isCritical == guessAction.isCritical) validPercent += 0.1f;
+
+        Debug.Log("Validity is at " + (validPercent * 100).ToString() + "%");
     }
 }
