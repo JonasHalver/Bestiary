@@ -38,14 +38,16 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     private void OnEnable()
     {
-        CombatManager.EndRound += StartOfRound;
+        //CombatManager.EndRound += StartOfRound;
         CombatManager.startCombat += StartOfRound;
+        CombatManager.StartOfTurn += CharacterCheck;
     }
 
     private void OnDisable()
     {
-        CombatManager.EndRound -= StartOfRound;
+        //CombatManager.EndRound -= StartOfRound;
         CombatManager.startCombat -= StartOfRound;
+        CombatManager.StartOfTurn -= CharacterCheck;
     }
 
     private void Start()
@@ -55,11 +57,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         character = GetComponent<Character>();
         //currentNode.occupant = character;
         moving = false;
-    }
-
-
-
-    
+    }   
 
     private void Update()
     {
@@ -121,6 +119,14 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         ReportNewNode(currentNode);
 
         moving = false;
+    }
+
+    public void CharacterCheck(Character actor)
+    {
+        if (actor == character)
+        {
+            StartOfRound();
+        }
     }
 
     public void StartOfRound()
@@ -245,6 +251,11 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 if (eventData.pointerId == -1) OnSelect();
             }
         }
+        else if (selected)
+            if (eventData.pointerId == -1)
+                OnDeselect(false);
+            else
+                OnDeselect(true);
     }
 
     public void OnDrag(PointerEventData eventData)

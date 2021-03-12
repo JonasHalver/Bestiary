@@ -20,4 +20,5 @@ MonoBehaviour:
   duration: 0
   durationRemaining: 0
   damageType: 0
+  effectTiming: 2
   removeAtEndOfRound: 1

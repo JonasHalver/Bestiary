@@ -16,6 +16,7 @@ public class Buff : ScriptableObject
     public Color iconColor;
 
     public bool removeAtEndOfRound = false;
+    public Debuff.EffectTiming effectTiming = Debuff.EffectTiming.StartOfTurn;
 
     public Buff (BuffType _buffType, int _duration)
     {
@@ -32,6 +33,7 @@ public class Buff : ScriptableObject
         icon = buff.icon;
         iconColor = buff.iconColor;
         removeAtEndOfRound = buff.removeAtEndOfRound;
+        effectTiming = buff.effectTiming;
     }
 
     public void ApplyBuff()
@@ -57,23 +59,31 @@ public class Buff : ScriptableObject
 
     public void ResolveBuff()
     {
-        ApplyBuff();
-        
+        ApplyBuff();        
     }
 
-    public void CheckDuration(bool endOfRound)
+    public void CheckDuration(Debuff.EffectTiming timing)
     {
-        if (endOfRound && removeAtEndOfRound)
+        if (timing == effectTiming)
+        {
             durationRemaining--;
-        else
-            durationRemaining--;
-
+        }
         if (durationRemaining <= 0)
         {
-            if (removeAtEndOfRound && endOfRound)
-                affectedCharacter.expiredBuffs.Add(this);
-            else if (!removeAtEndOfRound)
-                affectedCharacter.expiredBuffs.Add(this);
+            affectedCharacter.expiredBuffs.Add(this);
         }
+
+        //if (endOfRound && removeAtEndOfRound)
+        //    durationRemaining--;
+        //else
+        //    durationRemaining--;
+        //
+        //if (durationRemaining <= 0)
+        //{
+        //    if (removeAtEndOfRound && endOfRound)
+        //        affectedCharacter.expiredBuffs.Add(this);
+        //    else if (!removeAtEndOfRound)
+        //        affectedCharacter.expiredBuffs.Add(this);
+        //}
     }
 }

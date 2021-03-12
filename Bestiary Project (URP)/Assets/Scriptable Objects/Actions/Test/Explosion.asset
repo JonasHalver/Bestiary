@@ -31,6 +31,6 @@ MonoBehaviour:
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
-  value: 1
+  value: 3
   isCritical: 0
   damageType: 3

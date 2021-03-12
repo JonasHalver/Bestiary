@@ -31,6 +31,8 @@ public class CombatManager : MonoBehaviour
 
     public int combatActionCount;
 
+    public static event System.Action<Character> StartOfTurn, EndOfTurn, EndOfMovement;
+
 
     private void Awake()
     {
@@ -160,12 +162,6 @@ public class CombatManager : MonoBehaviour
         //CombatGrid.instance.HighlighAction(combatActions);
     }
 
-    public void Commit()
-    {
-        UpdateCombat();
-        UIInteractable(false, false);
-        Delay("StartOfRound");
-    }
 
     public string LogConstructor()
     {
@@ -196,6 +192,17 @@ public class CombatManager : MonoBehaviour
 
         return log;
     }
+    public void Commit()
+    {
+        UpdateCombat();
+        UIInteractable(false, false);
+        Delay("StartOfRound");
+    }
+
+    public void StartOfRound()
+    {
+        StartCoroutine(CombatRound());
+    }
 
     IEnumerator CombatRound()
     {
@@ -206,6 +213,7 @@ public class CombatManager : MonoBehaviour
             CombatGrid.StopHighlight();
             if (!actors[i].alive) continue;
             ResolveBuffsAndDebuffs(actors[i]);
+            StartOfTurn.Invoke(actors[i]);
             yield return new WaitForSeconds(0.5f);
             CombatGrid.HighlightNodeStatic(actors[i].movement.currentNode);
             yield return new WaitForSecondsRealtime(0.5f);
@@ -225,31 +233,11 @@ public class CombatManager : MonoBehaviour
                 }
             }
             combatFlag = false;
-            actors[i].UpdateBuffsAndDebuffs(false);
-
+            EndOfTurn.Invoke(actors[i]);
             yield return new WaitForSecondsRealtime(1);
         }
         StartCoroutine(EnemyMovement());
-    }
-
-    public void StartOfRound()
-    {
-        //for(int i = 0; i < actors.Count; i++)
-        //{
-        //    actors[i].ResetStats();
-        //    for (int b = 0; b < actors[i].buffs.Count; b++)
-        //    {
-        //        actors[i].buffs[b].ResolveBuff();
-        //    }
-        //    for (int d = 0; d < actors[i].debuffs.Count; d++)
-        //    {              
-        //        actors[i].debuffs[d].ResolveDebuff();
-        //    }
-        //}
-        //StartRound.Invoke();
-
-        StartCoroutine(CombatRound());
-    }
+    }    
 
     public void ResolveBuffsAndDebuffs(Character actor)
     {
@@ -276,6 +264,7 @@ public class CombatManager : MonoBehaviour
             {
                 actors[i].movement.AIMovement();
             }
+            EndOfMovement.Invoke(actors[i]);
             yield return new WaitForSecondsRealtime(0.5f);
         }
         EndOfRound();
@@ -283,15 +272,20 @@ public class CombatManager : MonoBehaviour
 
     public void EndOfRound()
     {
-        EndRound.Invoke();
+        for (int i = 0; i < actors.Count; i++)
+        {
+            //ResolveBuffsAndDebuffs(actors[i]);
+            actors[i].lastCombatAction = null;
+        }
+        //EndRound.Invoke();
         Delay("UpdateCombat");
         UIInteractable(true, false);
         SortByInitiative();
         currentStage = CombatStage.Setup;
-        for (int i = 0; i < actors.Count; i++)
-        {
-            actors[i].UpdateBuffsAndDebuffs(true);
-        }
+        //for (int i = 0; i < actors.Count; i++)
+        //{
+        //    ResolveBuffsAndDebuffs(actors[i]);
+        //}
     }
 
     public void UIInteractable(bool check, bool fromPause)

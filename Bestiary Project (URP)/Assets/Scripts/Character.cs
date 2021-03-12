@@ -48,6 +48,20 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public event System.Action TookDamage;
     public event System.Action Healed;
 
+    public int debuffCount, buffCount;
+
+    private void Awake()
+    {
+        if (stats == null) CreateEmptyStats();
+    }
+    public void CreateEmptyStats()
+    {
+        CharacterStats newStats = ScriptableObject.CreateInstance<CharacterStats>();
+        stats = newStats;
+        Action newAction = ScriptableObject.CreateInstance<Action>();
+        stats.actions.Add(newAction); stats.actions.Add(newAction); stats.actions.Add(newAction); stats.actions.Add(newAction);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -61,6 +75,13 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         initiative = stats.speed;
     }
 
+    private void OnEnable()
+    {
+        CombatManager.StartOfTurn += StartOfTurn;
+        CombatManager.EndOfTurn += EndOfTurn;
+        CombatManager.EndOfMovement += EndOfMovement;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -69,6 +90,9 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         UpdatePosition();
         currentHitpoints = Mathf.Clamp(currentHitpoints, 0, stats.hitPoints);
         initiative = conditions.Contains(Debuff.ControlType.Slow) ? stats.speed - 2 : stats.speed;
+
+        buffCount = buffs.Count;
+        debuffCount = debuffs.Count;
     }
 
     void UpdatePosition()
@@ -90,10 +114,36 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         conditions.Clear();
     }
 
-    public void UpdateBuffsAndDebuffs(bool endOfRound)
+    public void StartOfTurn(Character actor)
     {
-        foreach (Buff b in buffs) b.CheckDuration(endOfRound);
-        foreach (Debuff d in debuffs) d.CheckDuration(endOfRound);
+        if (actor != this)
+            return;
+        StartCoroutine(UpdateDurations(Debuff.EffectTiming.StartOfTurn));
+    }
+    public void EndOfTurn(Character actor)
+    {
+        if (actor != this)
+            return;
+        StartCoroutine(UpdateDurations(Debuff.EffectTiming.EndOfTurn));
+
+    }
+    public void EndOfMovement(Character actor)
+    {
+        if (actor != this)
+            return;
+        StartCoroutine(UpdateDurations(Debuff.EffectTiming.Movement));
+    }
+
+    IEnumerator UpdateDurations(Debuff.EffectTiming timing)
+    {
+        foreach (Buff b in buffs) b.CheckDuration(timing);
+        foreach (Debuff d in debuffs) d.CheckDuration(timing);
+        yield return null;
+        RemoveExpired();
+    }
+
+    public void RemoveExpired()
+    {
         for (int i = 0; i < expiredBuffs.Count; i++)
         {
             buffs.Remove(expiredBuffs[i]);

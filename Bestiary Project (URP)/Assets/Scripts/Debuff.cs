@@ -18,6 +18,9 @@ public class Debuff : ScriptableObject
     public int duration;
     public int durationRemaining;
     public Character.DamageTypes damageType;
+    
+    public enum EffectTiming { StartOfTurn, EndOfTurn, Movement }
+    public EffectTiming effectTiming = EffectTiming.StartOfTurn;
 
     public bool removeAtEndOfRound = false;
 
@@ -48,6 +51,7 @@ public class Debuff : ScriptableObject
         duration = _duration;
         durationRemaining += _duration;
         removeAtEndOfRound = _debuff.removeAtEndOfRound;
+        effectTiming = _debuff.effectTiming;
     }
 
     public void DebuffApplied()
@@ -81,19 +85,27 @@ public class Debuff : ScriptableObject
         }
     }
 
-    public void CheckDuration(bool endOfRound)
+    public void CheckDuration(EffectTiming timing)
     {
-
-        if (endOfRound && removeAtEndOfRound)
+        if (timing == effectTiming)
+        {
             durationRemaining--;
-        else if (!removeAtEndOfRound && !endOfRound) durationRemaining--;
-
+        }
         if (durationRemaining <= 0)
         {
-            if (removeAtEndOfRound && endOfRound)
-                affectedCharacter.expiredDebuffs.Add(this);
-            else if (!removeAtEndOfRound)
-                affectedCharacter.expiredDebuffs.Add(this);
+            affectedCharacter.expiredDebuffs.Add(this);
         }
+
+        //if (endOfRound && removeAtEndOfRound)
+        //    durationRemaining--;
+        //else if (!removeAtEndOfRound && !endOfRound) durationRemaining--;
+        //
+        //if (durationRemaining <= 0)
+        //{
+        //    if (removeAtEndOfRound && endOfRound)
+        //        affectedCharacter.expiredDebuffs.Add(this);
+        //    else if (!removeAtEndOfRound)
+        //        affectedCharacter.expiredDebuffs.Add(this);
+        //}
     }
 }
