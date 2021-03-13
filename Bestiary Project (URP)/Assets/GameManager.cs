@@ -21,8 +21,23 @@ public class GameManager : MonoBehaviour
     public static event System.Action GamePaused;
     public bool debugMode = false;
 
+    public List<Character> enemies = new List<Character>();
+
     private void Awake()
     {
+        if (instance == null) instance = this;
+        else if (instance != this) Destroy(gameObject);
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            bool flag = false;
+            foreach(Entry entry in Book.monsterEntries)
+            {
+                if (entry.origin == enemies[i]) flag = true;
+            }
+            if (!flag) Book.monsterEntries.Add(new Entry(enemies[i]));
+        }
+
         FirstActions();
         DontDestroyOnLoad(this);
     }
@@ -41,14 +56,12 @@ public class GameManager : MonoBehaviour
     }
     private void FirstActions()
     {
-        if (instance == null) instance = this;
-        else if (instance != this) Destroy(gameObject);
     }
 
     private void Update()
     {
         // Game State Check
-        GameStateCheck();
+        if (!debugMode)GameStateCheck();
         if (enemiesWon || alliesWon) GameOver();
 
         if (Input.GetKeyDown(KeyCode.Escape))

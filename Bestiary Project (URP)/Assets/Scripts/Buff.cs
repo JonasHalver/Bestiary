@@ -5,6 +5,8 @@ using UnityEngine;
 [CreateAssetMenu(fileName ="New Buff", menuName ="Buff")]
 public class Buff : ScriptableObject
 {
+    public string buffName;
+
     public Character affectedCharacter;
     public enum BuffType { Armor, Resistance, Speed, Dodge }
     public BuffType buffType;
@@ -17,6 +19,8 @@ public class Buff : ScriptableObject
 
     public bool removeAtEndOfRound = false;
     public Debuff.EffectTiming effectTiming = Debuff.EffectTiming.StartOfTurn;
+
+    
 
     public Buff (BuffType _buffType, int _duration)
     {

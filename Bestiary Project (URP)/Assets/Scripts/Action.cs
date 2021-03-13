@@ -8,6 +8,10 @@ public class Action : ScriptableObject
 {
     public string actionName;
     public string description;
+
+    public string actionDescription;
+    public int descriptionIndex = -1;
+
     public enum ActionType { Attack, Buff, Healing, Debuff, AttackDebuff, HealingBuff }
     public ActionType actionType = ActionType.Attack;
 

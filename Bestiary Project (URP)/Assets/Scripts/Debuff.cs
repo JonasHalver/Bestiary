@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Debuff", menuName = "Debuff")]
 public class Debuff : ScriptableObject
 {
+    public string debuffName;
     public Character affectedCharacter;
 
     public enum DebuffType { DamageOverTime, Control }
