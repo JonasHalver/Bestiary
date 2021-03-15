@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d783d96f084428b4db6090996a6b0f5d, type: 3}
   m_Name: Poison
   m_EditorClassIdentifier: 
+  debuffName: Poison
+  bookDescription: 
+  tooltipDescription: 
   affectedCharacter: {fileID: 0}
   debuffType: 0
   controlType: 0
@@ -20,3 +23,5 @@ MonoBehaviour:
   duration: 0
   durationRemaining: 0
   damageType: 6
+  effectTiming: 0
+  removeAtEndOfRound: 0

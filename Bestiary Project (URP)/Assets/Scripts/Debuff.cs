@@ -6,6 +6,8 @@ using UnityEngine;
 public class Debuff : ScriptableObject
 {
     public string debuffName;
+    public string bookDescription;
+    public string tooltipDescription;
     public Character affectedCharacter;
 
     public enum DebuffType { DamageOverTime, Control }

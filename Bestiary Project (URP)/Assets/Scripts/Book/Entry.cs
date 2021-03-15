@@ -12,6 +12,7 @@ public class Entry : MonoBehaviour
     public enum StatEntries { HitPoints, Speed, Movement, Resistances, Weaknesses }
 
     public Dictionary<StatEntries, bool> statChecks = new Dictionary<StatEntries, bool>();
+    public List<int> activeDescriptionIndices = new List<int>();
 
     public List<ActionCheck> actionChecks = new List<ActionCheck>();
 
@@ -28,7 +29,7 @@ public class Entry : MonoBehaviour
         statChecks.Add(StatEntries.Resistances, false); statChecks.Add(StatEntries.Weaknesses, false);
         for (int i = 0; i < 4; i++)
         {
-            actionChecks.Add(new ActionCheck(origin.stats.actions[i], ScriptableObject.CreateInstance<Action>()));
+            actionChecks.Add(new ActionCheck(origin, ScriptableObject.CreateInstance<Action>()));
         }
     }
 
@@ -234,6 +235,7 @@ public class Entry : MonoBehaviour
 
 public class ActionCheck
 {
+    public Character origin;
     public Action originalAction, guessAction;
     public float validPercent;
 
@@ -254,11 +256,10 @@ public class ActionCheck
     Character.DamageTypes damageType;
     bool isCritical;
 
-    public ActionCheck(Action o, Action g)
+    public ActionCheck(Character o, Action g)
     {
-        originalAction = o;
+        origin = o;
         guessAction = g;
-        FetchInfo();
     }
 
     public void FetchInfo()
@@ -283,6 +284,14 @@ public class ActionCheck
 
     public void CalculateValidity()
     {
+        SetComparison();
+        if (originalAction == null)
+        {
+            Debug.LogError("Incorrect comparison, original action invalid");
+            return;
+        }
+        FetchInfo();
+
         validPercent = 0;
         if (priority == guessAction.actionPriority) validPercent += 0.1f;
         if (type == guessAction.actionType) validPercent += 0.1f;
@@ -291,22 +300,42 @@ public class ActionCheck
         if (position == guessAction.position) validPercent += 0.1f;
         if (shape == guessAction.shape) validPercent += 0.1f;
         if (targetGroup == guessAction.targetGroup) validPercent += 0.1f;
-        if (targetConditions.Count > 0 && targetConditions.Count == guessAction.targetConditions.Count)
+        if (targetConditions.Count > 0)
         {
-            int hitCount = 0;
-            for (int i = 0; i < targetConditions.Count; i++)
+            if (originalAction.targetConditions.Contains(targetConditions[0]))
             {
-                if (guessAction.targetConditions.Contains(targetConditions[i]))
-                {
-                    hitCount++;
-                }
+                validPercent += 0.1f;
             }
-            if (hitCount == targetConditions.Count) validPercent += 0.1f;
         }
+        // Use this instead of the previous once you figure out how to implement adding conditions to the list
+        //if (targetConditions.Count > 0 && targetConditions.Count == guessAction.targetConditions.Count)
+        //{
+        //    int hitCount = 0;
+        //    for (int i = 0; i < targetConditions.Count; i++)
+        //    {
+        //        if (guessAction.targetConditions.Contains(targetConditions[i]))
+        //        {
+        //            hitCount++;
+        //        }
+        //    }
+        //    if (hitCount == targetConditions.Count) validPercent += 0.1f;
+        //}
         if (targetPriority == guessAction.targetPriority) validPercent += 0.1f;
         if (damageType == guessAction.damageType) validPercent += 0.1f;
         if (isCritical == guessAction.isCritical) validPercent += 0.1f;
 
         Debug.Log("Validity is at " + (validPercent * 100).ToString() + "%");
+    }
+
+    public void SetComparison()
+    {
+        if (guessAction.descriptionIndex == -1) return;
+        for (int i = 0; i < 4; i++)
+        {
+            if (origin.stats.actions[i].descriptionIndex == guessAction.descriptionIndex)
+            {
+                originalAction = origin.stats.actions[i];
+            }
+        }
     }
 }

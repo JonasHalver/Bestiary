@@ -7,7 +7,7 @@ using TMPro;
 public class BookActionOutcome : MonoBehaviour
 {
     public TextMeshProUGUI title;
-    public TMP_Dropdown dealDamage, buffOrDebuff, buffType, debuffType, targetGroup, critical;
+    public TMP_Dropdown dealDamage, buffOrDebuff, buffType, debuffType, targetGroup, critical, damageType;
     // Possibly set the contents on these dropdowns based on lists filled out in the inspector, for futureproofing
     public List<Buff> buffs = new List<Buff>();
     public List<Debuff> debuffs = new List<Debuff>();
@@ -17,6 +17,38 @@ public class BookActionOutcome : MonoBehaviour
         string replacement = Book.currentEntry.guess.stats.characterName != "" ? Book.currentEntry.guess.stats.characterName : "the monster";
         titleText.Replace("*", replacement);
     }
+
+    private void Update()
+    {
+        switch (buffOrDebuff.value)
+        {
+            case 0:
+                buffType.interactable = false;
+                debuffType.interactable = false;
+                break;
+            case 1:
+                buffType.interactable = true;
+                debuffType.interactable = false;
+                break;
+            case 2:
+                buffType.interactable = false;
+                debuffType.interactable = true;
+                break;
+        }
+        switch (dealDamage.value)
+        {
+            case 0:
+                critical.interactable = true;
+                damageType.interactable = true;
+                break;
+            case 1:
+            case 2:
+                critical.interactable = false;
+                damageType.interactable = false;
+                break;
+        }
+    }
+
     public void Close()
     {
         gameObject.SetActive(false);
@@ -27,6 +59,7 @@ public class BookActionOutcome : MonoBehaviour
         SetActionType();
         SetBuffOrDebuff();
         SetTargetGroup();
+        SetDamageType();
         SetCritical();
         Book.currentEntry.activeAction.CalculateValidity();
     }
@@ -124,6 +157,12 @@ public class BookActionOutcome : MonoBehaviour
                 action.targetGroup = Action.TargetGroup.Enemies;
                 break;
         }
+    }
+
+    public void SetDamageType()
+    {
+        Action action = Book.currentEntry.activeAction.guessAction;
+        action.damageType = (Character.DamageTypes)damageType.value;
     }
     public void SetCritical()
     {
