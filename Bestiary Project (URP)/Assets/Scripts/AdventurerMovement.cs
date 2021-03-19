@@ -10,7 +10,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     public bool selected = false;
     private Vector3 pickupOffset;
     private Image img;
-    private Character character;
+    public Character character;
 
     private List<RaycastResult> hits = new List<RaycastResult>();
 
@@ -54,7 +54,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         img = GetComponent<Image>();
         currentNode = (currentNode == null) ? CurrentNode() : currentNode;
-        character = GetComponent<Character>();
+        //character = GetComponent<Character>();
         //currentNode.occupant = character;
         moving = false;
     }   
@@ -78,7 +78,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         canMove = !moving &&
             character.alive &&
             CombatManager.instance.currentStage == CombatManager.CombatStage.Setup &&
-            !GameManager.paused &&
+            GameManager.gameState == GameManager.GameState.Normal &&
             unitSelected == false &&
             (GameManager.instance.debugMode ? true : character.stats.characterType != CharacterStats.CharacterTypes.NPC);
     }
@@ -98,7 +98,11 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                     }
                 }
                 else currentNode.ErrorHighlight();
-                yield return new WaitForSeconds(0.5f);
+                for (int j = 0; j < 10; j++)
+                {
+                    while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
+                    yield return new WaitForSeconds(0.05f);
+                }
                 targetNode.NodeSelected();
             }
             t = 0;

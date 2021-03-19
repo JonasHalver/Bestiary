@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Stone Mage
   m_EditorClassIdentifier: 
   characterName: The Stone Mage
+  characterCode: stonemage
   characterType: 1
+  characterIcon: {fileID: 21300000, guid: bdc8afa0cb4a6d7449002350210436ae, type: 3}
+  characterIconColor: {r: 0.5471698, g: 0.38161415, b: 0.29681382, a: 1}
   hitPoints: 6
   armored: 0
   resistances: 04000000
@@ -25,3 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b5fc240bc5e2ca74f88bd03affa32ec4, type: 2}
   - {fileID: 11400000, guid: aeb7cbbd64918844598d3549925529d2, type: 2}
   - {fileID: 11400000, guid: 1a50cac2f83ab27458b0cc46423fe0e0, type: 2}
+  pageNumber: 0

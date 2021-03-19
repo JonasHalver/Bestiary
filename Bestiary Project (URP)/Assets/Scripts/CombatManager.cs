@@ -13,6 +13,12 @@ public class CombatManager : MonoBehaviour
     public static List<Character> actors = new List<Character>();
 
     public Transform combatUI;
+    public Transform actorsContainer;
+    public Transform initiativeCardContainer;
+
+    public GameObject characterPrefab;
+    public GameObject initiativeCardPrefab;
+    public List<GameObject> initiativeCards = new List<GameObject>();
 
     public static List<CombatAction> combatActions = new List<CombatAction>();
     public static Dictionary<Character, Vector2> characterPositions = new Dictionary<Character, Vector2>();
@@ -32,10 +38,13 @@ public class CombatManager : MonoBehaviour
     public int combatActionCount;
 
     public static event System.Action<Character> StartOfTurn, EndOfTurn, EndOfMovement;
-
+    private int counter = 0;
 
     private void Awake()
     {
+        if (instance == null) instance = this;
+        else if (instance != this) Destroy(gameObject);
+
         FirstActions();
         DontDestroyOnLoad(this);
     }
@@ -45,15 +54,12 @@ public class CombatManager : MonoBehaviour
         SceneManager.sceneLoaded += OnNewLoad;
         AdventurerMovement.newPosition += Delay;
         GameManager.GamePaused += Paused;
-
-
     }
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnNewLoad;
         AdventurerMovement.newPosition -= Delay;
         GameManager.GamePaused -= Paused;
-
     }
 
     public void OnNewLoad(Scene scene, LoadSceneMode mode)
@@ -63,8 +69,6 @@ public class CombatManager : MonoBehaviour
 
     public void FirstActions()
     {
-        if (instance == null) instance = this;
-        else if (instance != this) Destroy(gameObject);
         combatActions.Clear();
         actors.Clear();
         characterPositions.Clear();
@@ -79,23 +83,16 @@ public class CombatManager : MonoBehaviour
 
     private void Update()
     {
-        if (!combatStarted)
+        //Slow combat updater
+        counter++;
+        if (counter >= 10)
         {
-            bool flag = false;
-            for (int i = 0; i < actors.Count; i++)
-            {
-                if (actors[i].movement.currentNode == null) flag = true;
-            }
-            if (flag)
-            {
-                startCombat.Invoke();
-                SortByInitiative();
-                combatStarted = true;
-            }
+            counter = 0;
+            UpdateCombat();
         }
 
         combatActionCount = combatActions.Count;
-        if (combatActions.Count > 0) CombatUI.instance.combatLog.text = LogConstructor();
+        //if (combatActions.Count > 0) CombatUI.instance.combatLog.text = LogConstructor();
 
         switch (currentStage)
         {
@@ -113,6 +110,61 @@ public class CombatManager : MonoBehaviour
                 break;
         }
     }
+
+    public void StartCombat(int encounterIndex)
+    {
+        for (int i = 0; i < GameManager.instance.mercenaries.Count; i++)
+        {
+            GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
+            Character c = newMerc.GetComponent<Character>();
+            c.stats = GameManager.instance.mercenaries[i];
+            Node spawn = CombatGrid.CharacterSpawn(false);
+            newMerc.transform.position = spawn.tile.transform.position;
+            spawn.occupant = c;
+            c.movement.currentNode = spawn;
+            c.Created();
+        }
+        for (int i = 0; i < GameManager.instance.combatEncounters[encounterIndex].enemies.Count; i++)
+        {
+            GameObject newMonster = Instantiate(characterPrefab, actorsContainer);
+            Character c = newMonster.GetComponent<Character>();
+            c.stats = GameManager.instance.combatEncounters[encounterIndex].enemies[i];
+            Node spawn = CombatGrid.CharacterSpawn(true);
+            newMonster.transform.position = spawn.tile.transform.position;
+            spawn.occupant = c;
+            c.movement.currentNode = spawn;
+            c.Created();
+        }
+        for (int i = 0; i < actors.Count; i++)
+        {
+            GameObject newICard = Instantiate(initiativeCardPrefab, initiativeCardContainer);
+            InitiativeCard card = newICard.GetComponent<InitiativeCard>();
+            card.actor = actors[i];
+            initiativeCards.Add(newICard);
+        }
+        GameManager.actorsSpawned = true;
+        startCombat.Invoke();
+        SortByInitiative();
+        Delay("UpdateCombat");
+    }
+
+    //public void StartCombat()
+    //{
+    //    if (!combatStarted)
+    //    {
+    //        bool flag = false;
+    //        for (int i = 0; i < actors.Count; i++)
+    //        {
+    //            if (actors[i].movement.currentNode == null) flag = true;
+    //        }
+    //        if (flag)
+    //        {
+    //            startCombat.Invoke();
+    //            SortByInitiative();
+    //            combatStarted = true;
+    //        }
+    //    }
+    //}
 
     public void SortByInitiative()
     {
@@ -158,39 +210,46 @@ public class CombatManager : MonoBehaviour
                 //combatActions[i].origin.currentAction = combatActions[i];
             }
         }
-
+        LogConstructor();
         //CombatGrid.instance.HighlighAction(combatActions);
     }
 
 
-    public string LogConstructor()
+    public void LogConstructor()
     {
-        string log = "";
-        string line = "";
-        int order = 1;
-        for (int i = 0; i < actors.Count; i++)
+        initiativeCards.Sort((card2, card1) => card1.GetComponent<InitiativeCard>().initiative.CompareTo(card2.GetComponent<InitiativeCard>().initiative));
+        for (int i = 0; i < initiativeCards.Count; i++)
         {
-            line = "";
-            if (actors[i].alive)
-            {
-                CombatAction c = actors[i].currentAction;
-                if (c != null && combatActions.Contains(c))
-                {
-                    if (c.highlighted) line = "<color=#FFC70B>"; else line = "<color=#000000>";
-                    line += order.ToString() + ". " + c.origin.stats.characterName + " will use " + c.action.actionName + ".</color>" + Environment.NewLine;
-                    log += line;
-                }
-                else
-                {
-                    line += order.ToString() + ". " + actors[i].stats.characterName + " has no good targets, and will pass." + Environment.NewLine;
-                    log += line;
-                }
-                order++;
+            initiativeCards[i].transform.SetSiblingIndex(i);
+            initiativeCards[i].SendMessage("UpdateCard");
+        }
 
-            }
-        }        
-
-        return log;
+        //string log = "";
+        //string line = "";
+        //int order = 1;
+        //for (int i = 0; i < actors.Count; i++)
+        //{
+        //    line = "";
+        //    if (actors[i].alive)
+        //    {
+        //        CombatAction c = actors[i].currentAction;
+        //        if (c != null && combatActions.Contains(c))
+        //        {
+        //            if (c.highlighted) line = "<color=#FFC70B>"; else line = "<color=#000000>";
+        //            line += order.ToString() + ". " + c.origin.stats.characterName + " will use " + c.action.actionName + ".</color>" + Environment.NewLine;
+        //            log += line;
+        //        }
+        //        else
+        //        {
+        //            line += order.ToString() + ". " + actors[i].stats.characterName + " has no good targets, and will pass." + Environment.NewLine;
+        //            log += line;
+        //        }
+        //        order++;
+        //
+        //    }
+        //}        
+        //
+        //return log;
     }
     public void Commit()
     {
@@ -214,9 +273,17 @@ public class CombatManager : MonoBehaviour
             if (!actors[i].alive) continue;
             ResolveBuffsAndDebuffs(actors[i]);
             StartOfTurn.Invoke(actors[i]);
-            yield return new WaitForSeconds(0.5f);
+            for (int j = 0; j < 10; j++)
+            {
+                while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
+                yield return new WaitForSeconds(0.05f);
+            }
             CombatGrid.HighlightNodeStatic(actors[i].movement.currentNode);
-            yield return new WaitForSecondsRealtime(0.5f);
+            for (int j = 0; j < 10; j++)
+            {
+                while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
+                yield return new WaitForSeconds(0.05f);
+            }
             foreach (CombatAction a in combatActions) a.highlighted = false;
             foreach(CombatAction action in combatActions)
             {
@@ -234,7 +301,11 @@ public class CombatManager : MonoBehaviour
             }
             combatFlag = false;
             EndOfTurn.Invoke(actors[i]);
-            yield return new WaitForSecondsRealtime(1);
+            for (int j = 0; j < 20; j++)
+            {
+                while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
+                yield return new WaitForSeconds(0.05f);
+            }
         }
         StartCoroutine(EnemyMovement());
     }    
@@ -265,7 +336,11 @@ public class CombatManager : MonoBehaviour
                 actors[i].movement.AIMovement();
             }
             EndOfMovement.Invoke(actors[i]);
-            yield return new WaitForSecondsRealtime(0.5f);
+            for (int j = 0; j < 10; j++)
+            {
+                while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
+                yield return new WaitForSeconds(0.05f);
+            }
         }
         EndOfRound();
     }

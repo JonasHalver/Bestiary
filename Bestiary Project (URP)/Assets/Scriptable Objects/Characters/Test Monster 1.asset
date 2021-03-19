@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Test Monster 1
   m_EditorClassIdentifier: 
   characterName: Ice Elemental
+  characterCode: iceelemental
   characterType: 0
+  characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
+  characterIconColor: {r: 0, g: 0.71642184, b: 1, a: 1}
   hitPoints: 15
   armored: 0
   resistances: 05000000
@@ -21,7 +24,8 @@ MonoBehaviour:
   speed: 1
   movement: 1
   actions:
-  - {fileID: 11400000, guid: 07d523ae5fa61b44a84b07250074c3eb, type: 2}
   - {fileID: 11400000, guid: 19b48607a1e6c1241999523539a28cdf, type: 2}
+  - {fileID: 11400000, guid: 07d523ae5fa61b44a84b07250074c3eb, type: 2}
   - {fileID: 11400000, guid: 3049ae24523c3284c8057b19782b6675, type: 2}
   - {fileID: 11400000, guid: 3aea94864f752ce4dba57379ae8c0004, type: 2}
+  pageNumber: 1

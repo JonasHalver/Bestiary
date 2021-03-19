@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8fb4e6687e6894647bc6bd1a24132d90, type: 3}
+  m_Name: Alpha1Icons
+  m_EditorClassIdentifier: 
+  cutting: {fileID: 21300000, guid: 143fd7492fcc0f74fa149445a747bbda, type: 3}
+  crushing: {fileID: 21300000, guid: f64d81efd939e434ab4cf42f711c3ce1, type: 3}
+  piercing: {fileID: 21300000, guid: 21592b3de4cfe344a80849e28aa25cd5, type: 3}
+  fire: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
+  acid: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
+  cold: {fileID: 21300000, guid: d0ee5cb8f7048fa498dfc6fd12bf2d24, type: 3}
+  poison: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
+  healing: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
+  self: {fileID: 21300000, guid: 5783e03fd8559c54a92232c621c4d103, type: 3}
+  ranged: {fileID: 21300000, guid: 4d446ac1d2dc2504aaf6d5e4714a9be8, type: 3}
+  meleeDia: {fileID: 21300000, guid: 1c9f49c12f4957343bb2c8cbd6a85fe2, type: 3}
+  meleeVert: {fileID: 21300000, guid: dcefbc256f137464eb29e67aa6f10dce, type: 3}
+  arcDia: {fileID: 21300000, guid: 85e126c87f793964396752c9a8aa5320, type: 3}
+  arcVert: {fileID: 21300000, guid: 6a7cbf853464f2e4eba6084b762eb71e, type: 3}
+  coneDia: {fileID: 21300000, guid: aa9d3281b0407994c9b3dd61ce422d1d, type: 3}
+  coneVert: {fileID: 21300000, guid: 18734afbe0b9a55469c3ce96a8f45d23, type: 3}
+  lineDia: {fileID: 21300000, guid: 8372607f2998045499593661bdc38d42, type: 3}
+  lineVert: {fileID: 21300000, guid: a10663f5f8ed93540bc5910eeef35641, type: 3}
+  box: {fileID: 21300000, guid: eec07c9645b008a41b615aba512ede64, type: 3}
+  selfBox: {fileID: 21300000, guid: b9c893e68c38363499c07668c573ff4f, type: 3}
+  dodge: {fileID: 21300000, guid: b45ab7e73521dac4d92e2b939e84480f, type: 3}
+  regeneration: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
+  armor: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
+  burning: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
+  acidDebuff: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
+  poisonDebuff: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
+  root: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
+  slow: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
+  blind: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}

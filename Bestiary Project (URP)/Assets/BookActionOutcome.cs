@@ -14,39 +14,21 @@ public class BookActionOutcome : MonoBehaviour
     private void OnEnable()
     {
         string titleText = title.text;
-        string replacement = Book.currentEntry.guess.stats.characterName != "" ? Book.currentEntry.guess.stats.characterName : "the monster";
-        titleText.Replace("*", replacement);
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+        titleText =  titleText.Replace("*", replacement);
+        title.text = titleText;
+
+        SetActionType();
+        SetBuffOrDebuff();
+        SetTargetGroup();
+        SetDamageType();
+        SetCritical();
     }
 
     private void Update()
     {
-        switch (buffOrDebuff.value)
-        {
-            case 0:
-                buffType.interactable = false;
-                debuffType.interactable = false;
-                break;
-            case 1:
-                buffType.interactable = true;
-                debuffType.interactable = false;
-                break;
-            case 2:
-                buffType.interactable = false;
-                debuffType.interactable = true;
-                break;
-        }
-        switch (dealDamage.value)
-        {
-            case 0:
-                critical.interactable = true;
-                damageType.interactable = true;
-                break;
-            case 1:
-            case 2:
-                critical.interactable = false;
-                damageType.interactable = false;
-                break;
-        }
+        
+        
     }
 
     public void Close()
@@ -62,6 +44,8 @@ public class BookActionOutcome : MonoBehaviour
         SetDamageType();
         SetCritical();
         Book.currentEntry.activeAction.CalculateValidity();
+        Book.currentEntry.activeAction.guessAction.outcomeSet = true;
+        BookActionCard.CardUpdate();
     }
 
     public void SetActionType()
@@ -110,6 +94,57 @@ public class BookActionOutcome : MonoBehaviour
             if (buff) action.actionType = Action.ActionType.Buff;
             else if (debuff) action.actionType = Action.ActionType.Debuff;
         }
+        switch (dealDamage.value)
+        {
+            case 0:
+                critical.interactable = true;
+                damageType.interactable = true;
+                break;
+            case 1:
+                if (buffOrDebuff.value == 0)
+                {
+                    if (targetGroup.value == 1)
+                    {
+                        buffOrDebuff.value = 1;
+                    }
+                    else
+                    {
+                        buffOrDebuff.value = 2;
+                    }
+                }
+                critical.interactable = false;
+                critical.value = 0;
+                damageType.interactable = false;
+                damageType.value = damageType.options.Count - 1;
+                break;
+            case 2:
+                critical.interactable = false;
+                critical.value = 0;
+                damageType.interactable = false;
+                damageType.value = damageType.options.Count - 1;
+                break;
+        }
+        switch (buffOrDebuff.value)
+        {
+            case 0:
+                buffType.interactable = false;
+                buffType.value = buffType.options.Count - 1;
+                debuffType.interactable = false;
+                debuffType.value = debuffType.options.Count - 1;
+                break;
+            case 1:
+                buffType.interactable = true;
+                if (buffType.value == buffType.options.Count - 1) buffType.value = 0;
+                debuffType.interactable = false;
+                debuffType.value = debuffType.options.Count - 1;
+                break;
+            case 2:
+                buffType.interactable = false;
+                buffType.value = buffType.options.Count - 1;
+                debuffType.interactable = true;
+                if (debuffType.value == debuffType.options.Count - 1) debuffType.value = 0;
+                break;
+        }
     }
     public void SetBuffOrDebuff()
     {
@@ -120,27 +155,15 @@ public class BookActionOutcome : MonoBehaviour
             case 0:
                 return;
             case 1:
-                switch (buffType.value)
-                {
-                    case 0:
-                        break;
-                    case 1:
-
-                        break;
-                    case 2:
-                        Buff buff = null;
-                        foreach(Buff b in buffs)
-                        {
-                            if (b.buffName == "Dodge") buff = b;
-                        }
-                        action.buff = buff;
-                        break;
-                }
+                if (buffType.value != buffType.options.Count - 1)
+                    action.buff = buffs[buffType.value];
                 break;
             case 2:
-                action.debuff = debuffs[debuffType.value];
+                if (debuffType.value != debuffType.options.Count-1)
+                    action.debuff = debuffs[debuffType.value];
                 break;
         }
+        
     }
     public void SetTargetGroup()
     {
@@ -162,7 +185,8 @@ public class BookActionOutcome : MonoBehaviour
     public void SetDamageType()
     {
         Action action = Book.currentEntry.activeAction.guessAction;
-        action.damageType = (Character.DamageTypes)damageType.value;
+        if (damageType.value != damageType.options.Count-1)
+            action.damageType = (Character.DamageTypes)damageType.value;
     }
     public void SetCritical()
     {

@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Stone Throw
   m_EditorClassIdentifier: 
   actionName: Stone Throw
+  actionCode: teststonethrow
   description: If I can see an enemy, I will hit them with a stone.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 0
   actionPriority: 4
   debuff: {fileID: 0}
@@ -28,7 +31,11 @@ MonoBehaviour:
   targetConditions: 03000000
   targetPriority: 0
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 0
   damageType: 2
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

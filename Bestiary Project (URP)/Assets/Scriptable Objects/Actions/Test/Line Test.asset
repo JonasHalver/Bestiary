@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Line Test
   m_EditorClassIdentifier: 
   actionName: Frost Beam
+  actionCode: testmonsterlineattack
   description: If I can hit an enemy with a line attack, I will shoot through them.
+  actionDescription: opens its mouth wide
+  descriptionIndex: 4
   actionType: 0
   actionPriority: 1
   debuff: {fileID: 0}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 5
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

@@ -19,6 +19,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public List<Buff> buffs = new List<Buff>();
     public CombatAction currentAction;
 
+    public Image characterIcon;
+    public Color characterIconColor = Color.white;
     public Image deadImage;
 
     public event System.Action<Debuff> AcquiredDebuff;
@@ -65,14 +67,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     // Start is called before the first frame update
     void Start()
     {
-        anim = transform.GetChild(0).GetComponent<Animator>();
-        movement = GetComponent<AdventurerMovement>();
-
-        if (!CombatManager.actors.Contains(this)) CombatManager.actors.Add(this);
-        stats.actions.Sort((action1, action2) => action1.actionPriority.CompareTo(action2.actionPriority));
-
-        currentHitpoints = stats.hitPoints;
-        initiative = stats.speed;
+        
     }
 
     private void OnEnable()
@@ -93,6 +88,24 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         buffCount = buffs.Count;
         debuffCount = debuffs.Count;
+    }
+
+    public void Created()
+    {
+        anim = transform.GetChild(0).GetComponent<Animator>();
+        movement.character = this;
+
+        if (!CombatManager.actors.Contains(this)) CombatManager.actors.Add(this);
+        stats.actions.Sort((action1, action2) => action1.actionPriority.CompareTo(action2.actionPriority));
+
+        currentHitpoints = stats.hitPoints;
+        initiative = stats.speed;
+        for (int i = 0; i < stats.actions.Count; i++)
+        {
+            if (stats.actions[i].descriptionIndex > -1) stats.actions[i].actionDescription = Book.instance.descriptionsList.descriptions[i];
+        }
+        characterIcon.sprite = stats.characterIcon;
+        characterIcon.color = stats.characterIconColor;
     }
 
     void UpdatePosition()

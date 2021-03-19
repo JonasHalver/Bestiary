@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Multi Punch
   m_EditorClassIdentifier: 
   actionName: Multi Punch
+  actionCode: testflurryofblows
   description: If more than one enemy is close to me, I will hit each of them.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 0
   actionPriority: 2
   debuff: {fileID: 0}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 2
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

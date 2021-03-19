@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Test Monster
   m_EditorClassIdentifier: 
   characterName: Fire Elemental
+  characterCode: fireelemental
   characterType: 0
+  characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
+  characterIconColor: {r: 1, g: 0.33871916, b: 0, a: 1}
   hitPoints: 15
   armored: 0
   resistances: 03000000
@@ -25,3 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8187b3dff432fdb409393d88e09eb531, type: 2}
   - {fileID: 11400000, guid: 3049ae24523c3284c8057b19782b6675, type: 2}
   - {fileID: 11400000, guid: 3aea94864f752ce4dba57379ae8c0004, type: 2}
+  pageNumber: 0

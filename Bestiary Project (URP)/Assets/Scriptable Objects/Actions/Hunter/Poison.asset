@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Poison
   m_EditorClassIdentifier: 
   actionName: Poison Arrow
+  actionCode: testpoisonarrow
   description: If an enemy is not already poisoned, I will poison them, dealing damage
     over time.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 3
   actionPriority: 4
   debuff: {fileID: 11400000, guid: 20586cdd6064b8a4490642ad5c849c84, type: 2}
@@ -34,3 +37,6 @@ MonoBehaviour:
   value: 2
   isCritical: 0
   damageType: 6
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

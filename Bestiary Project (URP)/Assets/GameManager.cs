@@ -21,22 +21,24 @@ public class GameManager : MonoBehaviour
     public static event System.Action GamePaused;
     public bool debugMode = false;
 
-    public List<Character> enemies = new List<Character>();
+    public List<CharacterStats> enemies = new List<CharacterStats>();
+    public List<CharacterStats> mercenaries = new List<CharacterStats>();
+    public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
+    public Icons currentIconCollection;
+
+    public enum GameState { Normal, PauseMenu, Journal}
+    public static GameState gameState = GameState.Normal;
+    public GameObject journal;
+    private bool flag = false;
+    private bool combatStartSequence = false;
+    public static bool bookFilled, actorsSpawned;
 
     private void Awake()
     {
         if (instance == null) instance = this;
         else if (instance != this) Destroy(gameObject);
 
-        for (int i = 0; i < enemies.Count; i++)
-        {
-            bool flag = false;
-            foreach(Entry entry in Book.monsterEntries)
-            {
-                if (entry.origin == enemies[i]) flag = true;
-            }
-            if (!flag) Book.monsterEntries.Add(new Entry(enemies[i]));
-        }
+        
 
         FirstActions();
         DontDestroyOnLoad(this);
@@ -54,19 +56,115 @@ public class GameManager : MonoBehaviour
     {
         FirstActions();
     }
+    public void CombatStartSequence()
+    {
+        if (!bookFilled)
+        {
+            for (int i = 0; i < enemies.Count; i++)
+            {
+                bool flag = false;
+                foreach (Entry entry in Book.monsterEntries)
+                {
+                    if (entry.origin == enemies[i]) flag = true;
+                }
+                if (!flag) Book.monsterEntries.Add(new Entry(enemies[i]));
+            }
+            Book.instance.FillBook();   
+        }
+        else
+        {
+            if (!actorsSpawned)
+            {
+                CombatManager.instance.StartCombat(0);
+            }
+            else
+                combatStartSequence = true;
+        }
+    }
     private void FirstActions()
     {
     }
 
     private void Update()
     {
-        // Game State Check
-        if (!debugMode)GameStateCheck();
+        if (!combatStartSequence) CombatStartSequence();
+        else
+        {
+            if (!debugMode) GameStateCheck();
+        }
         if (enemiesWon || alliesWon) GameOver();
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        GameStateMachine();
+
+    }
+
+    public static void ChangeState(GameState newState)
+    {
+        instance.flag = false;
+        gameState = newState;
+    }
+
+    public void GameStateMachine()
+    {
+        switch (gameState)
         {
-            //Pause();
+            case GameState.Normal:
+                if (!flag)
+                {
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    pauseMenu.SetActive(false);
+                    flag = true;
+                }
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    flag = false;
+                    gameState = GameState.PauseMenu;
+                }
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    flag = false;
+                    gameState = GameState.Journal;
+                }
+                break;
+            case GameState.PauseMenu:
+                if (!flag)
+                {
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    pauseMenu.SetActive(true);
+                    flag = true;
+                }
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    flag = false;
+                    gameState = GameState.Normal;
+                }
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    flag = false;
+                    gameState = GameState.Journal;
+                }
+                break;
+            case GameState.Journal:
+                if (!flag)
+                {
+                    Book.instance.OpenPages(true, Book.instance.pageNumber);
+                    pauseMenu.SetActive(false);
+                    flag = true;
+                }
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    flag = false;
+                    gameState = GameState.Normal;
+                }
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    flag = false;
+                    gameState = GameState.Normal;
+                }
+                break;
         }
     }
 
@@ -100,7 +198,10 @@ public class GameManager : MonoBehaviour
         paused = pauseMenu.activeSelf;
         GamePaused.Invoke();
     }
-
+    public void Journal()
+    {
+        journal.SetActive(true);
+    }
     public void Exit()
     {
         Application.Quit();
@@ -123,5 +224,35 @@ public class GameManager : MonoBehaviour
         paused = false;
         CombatManager.instance.StopAllCoroutines();
         SceneManager.LoadScene(0);
+    }
+
+    public static Sprite Icon(Character.DamageTypes damageType)
+    {
+        Sprite icon = null;
+        switch (damageType)
+        {
+            case Character.DamageTypes.Cutting:
+                icon = instance.currentIconCollection.cutting;
+                break;
+            case Character.DamageTypes.Piercing:
+                icon = instance.currentIconCollection.piercing;
+                break;
+            case Character.DamageTypes.Crushing:
+                icon = instance.currentIconCollection.crushing;
+                break;
+            case Character.DamageTypes.Fire:
+                icon = instance.currentIconCollection.fire;
+                break;
+            case Character.DamageTypes.Cold:
+                icon = instance.currentIconCollection.cold;
+                break;
+            case Character.DamageTypes.Acid:
+                icon = instance.currentIconCollection.acid;
+                break;
+            case Character.DamageTypes.Poison:
+                icon = instance.currentIconCollection.cutting;
+                break;
+        }
+        return icon;
     }
 }

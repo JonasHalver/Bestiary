@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Punch
   m_EditorClassIdentifier: 
   actionName: Punch
+  actionCode: testonepunchman
   description: If I can only reach one enemy, I will punch them very hard.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 0
   actionPriority: 3
   debuff: {fileID: 0}
@@ -28,7 +31,11 @@ MonoBehaviour:
   targetConditions: 02000000
   targetPriority: 1
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 1
   damageType: 2
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

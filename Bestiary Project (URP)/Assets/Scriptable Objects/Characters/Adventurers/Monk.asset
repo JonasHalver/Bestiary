@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Monk
   m_EditorClassIdentifier: 
   characterName: The Monk
+  characterCode: monk
   characterType: 1
+  characterIcon: {fileID: 21300000, guid: 70a5518d879a61e41bf4cc24557bacab, type: 3}
+  characterIconColor: {r: 0.9811321, g: 0.7905206, b: 0, a: 1}
   hitPoints: 5
   armored: 0
   resistances: 
@@ -25,3 +28,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: db377747cfda081499870d8364673577, type: 2}
   - {fileID: 11400000, guid: 8974ee52a9ad8d142a6795aef38bd08e, type: 2}
   - {fileID: 11400000, guid: 1418e4e778e87db4ca0cc24ec5706a04, type: 2}
+  pageNumber: 0

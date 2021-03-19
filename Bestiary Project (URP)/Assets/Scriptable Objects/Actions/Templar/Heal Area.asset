@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Heal Area
   m_EditorClassIdentifier: 
   actionName: Heal Area
+  actionCode: testhealarea
   description: If I am near allies, I will heal all allies close to me.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 2
   actionPriority: 1
   debuff: {fileID: 0}
@@ -28,7 +31,11 @@ MonoBehaviour:
   targetConditions: 04000000
   targetPriority: 0
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 0
   damageType: 7
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

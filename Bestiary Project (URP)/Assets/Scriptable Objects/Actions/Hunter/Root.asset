@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Root
   m_EditorClassIdentifier: 
   actionName: Net Throw
+  actionCode: testnetthrow
   description: If I am in melee with an enemy, I will root them.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 3
   actionPriority: 1
   debuff: {fileID: 11400000, guid: c36a82e89343eea4298631be4a265c85, type: 2}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

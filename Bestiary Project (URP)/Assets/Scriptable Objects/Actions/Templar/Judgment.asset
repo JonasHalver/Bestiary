@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Judgment
   m_EditorClassIdentifier: 
   actionName: Judgment
+  actionCode: testjudgment
   description: If I can see an enemy, who isn't slowed, I will slow them.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 3
   actionPriority: 3
   debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
@@ -28,7 +31,11 @@ MonoBehaviour:
   targetConditions: 03000000
   targetPriority: 8
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

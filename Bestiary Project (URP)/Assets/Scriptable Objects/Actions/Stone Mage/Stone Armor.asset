@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Stone Armor
   m_EditorClassIdentifier: 
   actionName: Stone Armor
+  actionCode: teststonearmor
   description: If I am close to an ally, I will grant them and myself armor until
     the next round.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 1
   actionPriority: 1
   debuff: {fileID: 0}
@@ -34,3 +37,6 @@ MonoBehaviour:
   value: 2
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

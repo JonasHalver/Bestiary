@@ -7,6 +7,7 @@ using UnityEngine;
 public class Action : ScriptableObject
 {
     public string actionName;
+    public string actionCode;
     public string description;
 
     public string actionDescription;
@@ -70,6 +71,9 @@ public class Action : ScriptableObject
 
     [Header("Damage Type")]
     public Character.DamageTypes damageType = Character.DamageTypes.Cutting;
+
+    [HideInInspector]
+    public bool descriptionSet, targetingSet, outcomeSet;
 
     public Node ActionValid(BattlefieldPositionInfo bpi)
     {

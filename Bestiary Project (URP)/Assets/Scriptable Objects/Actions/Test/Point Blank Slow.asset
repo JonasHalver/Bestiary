@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Point Blank Slow
   m_EditorClassIdentifier: 
   actionName: Ice Nova
+  actionCode: testmonsterpbaoe
   description: If more than one enemy is  close to me, I will slow them down.
+  actionDescription: inhales deeply
+  descriptionIndex: 5
   actionType: 3
   actionPriority: 2
   debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

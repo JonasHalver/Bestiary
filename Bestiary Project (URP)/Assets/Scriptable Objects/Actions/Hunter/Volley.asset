@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Volley
   m_EditorClassIdentifier: 
   actionName: Volley
+  actionCode: testvolleyofarrows
   description: If I can hit more than one enemy with a cone attack, I will shoot
     an arrow at each of them.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 0
   actionPriority: 3
   debuff: {fileID: 0}
@@ -34,3 +37,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 1
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

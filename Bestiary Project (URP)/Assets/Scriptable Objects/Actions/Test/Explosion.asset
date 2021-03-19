@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Explosion
   m_EditorClassIdentifier: 
   actionName: Fireball
+  actionCode: testmonsterexplosion
   description: If multiple enemies are standing closely together, I will set them
     on fire.
+  actionDescription: inhales deeply
+  descriptionIndex: 3
   actionType: 3
   actionPriority: 2
   debuff: {fileID: 11400000, guid: e97e9d279ec06264fa108363ec31c692, type: 2}
@@ -34,3 +37,6 @@ MonoBehaviour:
   value: 3
   isCritical: 0
   damageType: 3
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

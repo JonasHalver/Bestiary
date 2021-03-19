@@ -4,33 +4,55 @@ using UnityEngine;
 
 public class Entry : MonoBehaviour
 {
-    public Character origin;
-    public Character guess;
+    public CharacterStats origin;
+    public CharacterStats guess;
+    public Page page;
 
     public ActionCheck activeAction;
 
-    public enum StatEntries { HitPoints, Speed, Movement, Resistances, Weaknesses }
+    public enum StatEntries { HitPoints, Movement, Speed, Resistances, Weaknesses }
 
     public Dictionary<StatEntries, bool> statChecks = new Dictionary<StatEntries, bool>();
     public List<int> activeDescriptionIndices = new List<int>();
 
     public List<ActionCheck> actionChecks = new List<ActionCheck>();
 
-    public Entry (Character _origin)
+    
+
+    public Entry (CharacterStats _origin)
     {
         origin = _origin;
-        Character character = new Character();
+        CharacterStats character = new CharacterStats();
         guess = character;
     }
 
     private void Awake()
     {
+        
+    }
+    public void CreateChecks()
+    {
+        string defaultDescription = "When the monster..." + System.Environment.NewLine + "if..." + System.Environment.NewLine + "then...";
         statChecks.Add(StatEntries.HitPoints, false); statChecks.Add(StatEntries.Speed, false); statChecks.Add(StatEntries.Movement, false);
         statChecks.Add(StatEntries.Resistances, false); statChecks.Add(StatEntries.Weaknesses, false);
+        guess.speed = 5;
+        guess.movement = 2;
+        guess.hitPoints = 1;
         for (int i = 0; i < 4; i++)
         {
-            actionChecks.Add(new ActionCheck(origin, ScriptableObject.CreateInstance<Action>()));
+            Action newAction = ScriptableObject.CreateInstance<Action>();
+            actionChecks.Add(new ActionCheck(origin, newAction));
+            guess.actions.Add(newAction);
         }
+        for (int i = 0; i < actionChecks.Count; i++)
+        {
+            actionChecks[i].guessAction.actionPriority = i;
+            actionChecks[i].guessAction.actionName = "Unknown Action";
+            actionChecks[i].guessAction.description = defaultDescription;
+        }
+        page.ConnectActions();
+        page.icon.sprite = origin.characterIcon;
+        page.icon.color = origin.characterIconColor;
     }
 
     private void Update()
@@ -46,198 +68,92 @@ public class Entry : MonoBehaviour
     public void CheckStats()
     {
         // Hit points
-        if (guess.stats.hitPoints == origin.stats.hitPoints) statChecks[StatEntries.HitPoints] = true;
+        if (guess.hitPoints == origin.hitPoints) statChecks[StatEntries.HitPoints] = true;
         else statChecks[StatEntries.HitPoints] = false;
 
         // Speed
-        if (guess.stats.speed == origin.stats.speed) statChecks[StatEntries.Speed] = true;
+        if (guess.speed == origin.speed) statChecks[StatEntries.Speed] = true;
         else statChecks[StatEntries.Speed] = false;
 
         // Movement
-        if (guess.stats.movement == origin.stats.movement) statChecks[StatEntries.Movement] = true;
+        if (guess.movement == origin.movement) statChecks[StatEntries.Movement] = true;
         else statChecks[StatEntries.Movement] = false;
 
         // Resistances
-        if (guess.stats.resistances.Count == origin.stats.resistances.Count && origin.stats.resistances.Count > 0)
+        if (guess.resistances.Count == origin.resistances.Count && origin.resistances.Count > 0)
         {
             int correctHits = 0;
-            foreach (Character.DamageTypes dt in guess.stats.resistances)
+            foreach (Character.DamageTypes dt in guess.resistances)
             {
-                if (origin.stats.resistances.Contains(dt))
+                if (origin.resistances.Contains(dt))
                 {
                     correctHits++;
                 }
             }
-            if (correctHits == origin.stats.resistances.Count) statChecks[StatEntries.Resistances] = true;
+            if (correctHits == origin.resistances.Count) statChecks[StatEntries.Resistances] = true;
             else statChecks[StatEntries.Resistances] = false;
         }
-        else if (guess.stats.resistances.Count != origin.stats.resistances.Count) statChecks[StatEntries.Resistances] = false;
-        else if (guess.stats.resistances.Count == origin.stats.resistances.Count && origin.stats.resistances.Count == 0) statChecks[StatEntries.Resistances] = true;
+        else if (guess.resistances.Count != origin.resistances.Count) statChecks[StatEntries.Resistances] = false;
+        else if (guess.resistances.Count == origin.resistances.Count && origin.resistances.Count == 0) statChecks[StatEntries.Resistances] = true;
 
         // Weaknesses
-        if (guess.stats.weaknesses.Count == origin.stats.weaknesses.Count && origin.stats.weaknesses.Count > 0)
+        if (guess.weaknesses.Count == origin.weaknesses.Count && origin.weaknesses.Count > 0)
         {
             int correctHits = 0;
-            foreach (Character.DamageTypes dt in guess.stats.weaknesses)
+            foreach (Character.DamageTypes dt in guess.weaknesses)
             {
-                if (origin.stats.weaknesses.Contains(dt))
+                if (origin.weaknesses.Contains(dt))
                 {
                     correctHits++;
                 }
             }
-            if (correctHits == origin.stats.weaknesses.Count) statChecks[StatEntries.Weaknesses] = true;
+            if (correctHits == origin.weaknesses.Count) statChecks[StatEntries.Weaknesses] = true;
             else statChecks[StatEntries.Weaknesses] = false;
         }
-        else if (guess.stats.weaknesses.Count != origin.stats.weaknesses.Count) statChecks[StatEntries.Weaknesses] = false;
-        else if (guess.stats.weaknesses.Count == origin.stats.weaknesses.Count && origin.stats.weaknesses.Count == 0) statChecks[StatEntries.Weaknesses] = true;
+        else if (guess.weaknesses.Count != origin.weaknesses.Count) statChecks[StatEntries.Weaknesses] = false;
+        else if (guess.weaknesses.Count == origin.weaknesses.Count && origin.weaknesses.Count == 0) statChecks[StatEntries.Weaknesses] = true;
 
     }
 
     public void SetHitPoints(int value)
     {
-        guess.stats.hitPoints = value;
+        guess.hitPoints = value;
     }
 
     public void SetSpeed(int value)
     {
-        guess.stats.speed = value;
+        guess.speed = value;
     }
 
     public void SetMovement(int value)
     {
-        guess.stats.movement = value;
+        guess.movement = value;
     }
 
     public void SetResistance(Character.DamageTypes damageType)
     {
-        if (!guess.stats.resistances.Contains(damageType))
+        if (!guess.resistances.Contains(damageType))
         {
-            guess.stats.resistances.Add(damageType);
+            guess.resistances.Add(damageType);
         }
         
     }
     public void SetWeakness(Character.DamageTypes damageType)
     {
-        if (!guess.stats.weaknesses.Contains(damageType))
+        if (!guess.weaknesses.Contains(damageType))
         {
-            guess.stats.weaknesses.Add(damageType);
+            guess.weaknesses.Add(damageType);
         }
-    }
-
-    public void SetActionType(int index)
-    {
-        Action.ActionType at;
-        if (activeAction == null) return;
-        switch (index)
-        {
-            default:
-                at = Action.ActionType.Attack;
-                break;
-        }
-
-        activeAction.guessAction.actionType = at;
-        activeAction.CalculateValidity();
-    }
-
-    public void SetBuff(int index)
-    {
-        if (activeAction == null) return;
-        Buff b;
-        switch (index)
-        {
-            default:
-                b = null;
-                break;
-        }
-
-        activeAction.guessAction.buff = b;
-        activeAction.CalculateValidity();
-    }
-
-    public void SetDebuff(int index)
-    {
-        if (activeAction == null) return;
-        Debuff d;
-        switch (index)
-        {
-            default:
-                d = null;
-                break;
-        }
-
-        activeAction.guessAction.debuff = d;
-        activeAction.CalculateValidity();
-    }
-
-    public void SetPosition(int index)
-    {
-        if (activeAction == null) return;
-        Action.Position p;
-        switch (index)
-        {
-            default:
-                p = Action.Position.Irrelevant;
-                break;
-        }
-
-        activeAction.guessAction.position = p;
-        activeAction.CalculateValidity();
-    }
-
-    public void SetShape(int index)
-    {
-        if (activeAction == null) return;
-        Action.Shape s;
-        switch (index)
-        {
-            default:
-                s = Action.Shape.Single;
-                break;
-        }
-
-        activeAction.guessAction.shape = s;
-        activeAction.CalculateValidity();
-    }
-    public void SetTargetGroup(int index)
-    {
-        if (activeAction == null) return;
-        Action.TargetGroup tg;
-        switch (index)
-        {
-            default:
-                tg = Action.TargetGroup.All;
-                break;
-        }
-
-        activeAction.guessAction.targetGroup = tg;
-        activeAction.CalculateValidity();
-    }
-    public void SetTargetConditions()
-    {
-        // All of these should be set using custom scripts on the UI elements, which communicate their changes directly to the active action
-    }
-    public void SetTargetPriority(int index)
-    {
-        if (activeAction == null) return;
-        Action.TargetPriority tp;
-        switch (index)
-        {
-            default:
-                tp = Action.TargetPriority.None;
-                break;
-        }
-
-        activeAction.guessAction.targetPriority = tp;
-        activeAction.CalculateValidity();
     }
 
 }
 
 public class ActionCheck
 {
-    public Character origin;
+    public CharacterStats origin;
     public Action originalAction, guessAction;
     public float validPercent;
+    public bool descriptionCorrect;
 
     int priority;
     Action.ActionType type;
@@ -256,7 +172,7 @@ public class ActionCheck
     Character.DamageTypes damageType;
     bool isCritical;
 
-    public ActionCheck(Character o, Action g)
+    public ActionCheck(CharacterStats o, Action g)
     {
         origin = o;
         guessAction = g;
@@ -291,21 +207,24 @@ public class ActionCheck
             return;
         }
         FetchInfo();
+        Dictionary<int, bool> flags = new Dictionary<int, bool>();
 
         validPercent = 0;
-        if (priority == guessAction.actionPriority) validPercent += 0.1f;
-        if (type == guessAction.actionType) validPercent += 0.1f;
-        if (buff != null && buff == guessAction.buff) validPercent += 0.1f;
+        if (priority == guessAction.actionPriority) validPercent += 0.1f; else flags.Add(0,true); 
+        if (type == guessAction.actionType) validPercent += 0.1f;else flags.Add(1,true);
+        if (buff != null && buff == guessAction.buff) validPercent += 0.1f; else flags.Add(2, true);
         if (debuff != null && debuff == guessAction.debuff) validPercent += 0.1f;
-        if (position == guessAction.position) validPercent += 0.1f;
-        if (shape == guessAction.shape) validPercent += 0.1f;
-        if (targetGroup == guessAction.targetGroup) validPercent += 0.1f;
+        if ((debuff == null && guessAction.debuff == null) && (buff == null && guessAction.buff == null)) validPercent += 0.1f; else flags.Add(3, true); 
+        if (position == guessAction.position) validPercent += 0.1f; else flags.Add(4, true); 
+        if (shape == guessAction.shape) validPercent += 0.1f; else flags.Add(5,true); 
+        if (targetGroup == guessAction.targetGroup) validPercent += 0.1f;else flags.Add(6,true); 
         if (targetConditions.Count > 0)
         {
             if (originalAction.targetConditions.Contains(targetConditions[0]))
             {
-                validPercent += 0.1f;
+                validPercent += 0.1f; 
             }
+            else flags.Add(7,true);
         }
         // Use this instead of the previous once you figure out how to implement adding conditions to the list
         //if (targetConditions.Count > 0 && targetConditions.Count == guessAction.targetConditions.Count)
@@ -320,21 +239,28 @@ public class ActionCheck
         //    }
         //    if (hitCount == targetConditions.Count) validPercent += 0.1f;
         //}
-        if (targetPriority == guessAction.targetPriority) validPercent += 0.1f;
-        if (damageType == guessAction.damageType) validPercent += 0.1f;
-        if (isCritical == guessAction.isCritical) validPercent += 0.1f;
+        if (targetPriority == guessAction.targetPriority) validPercent += 0.1f; else flags.Add(8,true); 
+        if (damageType == guessAction.damageType) validPercent += 0.1f; else flags.Add(9,true); 
+        if (isCritical == guessAction.isCritical) validPercent += 0.1f; else flags.Add(10,true); 
 
         Debug.Log("Validity is at " + (validPercent * 100).ToString() + "%");
+        Debug.Log(flags.Count);
+        foreach (KeyValuePair<int,bool> kvp in flags)
+        {
+            Debug.Log(kvp.Key + " is invalid");
+        }
     }
 
     public void SetComparison()
     {
+        descriptionCorrect = false;
         if (guessAction.descriptionIndex == -1) return;
         for (int i = 0; i < 4; i++)
         {
-            if (origin.stats.actions[i].descriptionIndex == guessAction.descriptionIndex)
+            if (origin.actions[i].descriptionIndex == guessAction.descriptionIndex)
             {
-                originalAction = origin.stats.actions[i];
+                originalAction = origin.actions[i];
+                descriptionCorrect = true;
             }
         }
     }

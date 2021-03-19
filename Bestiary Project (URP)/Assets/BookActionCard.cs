@@ -6,24 +6,65 @@ using TMPro;
 
 public class BookActionCard : MonoBehaviour
 {
+    public static BookActionCard instance;
+    public TMP_InputField actionNameInput;
+    [Header("Action blocks")]
     public GameObject description, targeting, outcome;
     public TextMeshProUGUI descriptionText, targetingText, outcomeText;
+    public string actionDescription, targetingDescription, outcomeDescription;
+    public string fullDescription;
     private Action guess;
+    public static event System.Action CardUpdated;
+    private void Awake()
+    {
+        instance = this;
+    }
+    public static void CardUpdate()
+    {
+        instance.SetDescriptionText();
+        instance.SetTargeting();
+        instance.SetOutcome();
+        instance.SetFullDescription();
 
+        CardUpdated.Invoke();
+    }
     private void Start()
     {
-        descriptionText = description.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        targetingText = targeting.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        outcomeText = outcome.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+
+    }
+    private void OnEnable()
+    {
+        guess = Book.currentEntry.activeAction.guessAction;
+
+        actionNameInput.text = guess.actionName;
+        CardUpdate();
     }
     private void Update()
     {
-        guess = Book.currentEntry.activeAction.guessAction;
-        SetDescriptionText();
+        
+    }
+    public void SetFullDescription()
+    {
+        fullDescription = "";
+        string defaultAD = "When *...";
+        string defaultTD = "if...";
+        string defaultOD = "then...";
+        if (guess.descriptionSet) fullDescription += "When * " + actionDescription;
+        else fullDescription += defaultAD;
+        if (Book.currentEntry.guess.characterName != null) fullDescription = fullDescription.Replace("*", Book.currentEntry.guess.characterName);
+        else fullDescription = fullDescription.Replace("*", "the monster");
+        fullDescription += System.Environment.NewLine;
+        if (guess.targetingSet) fullDescription += "if " + targetingDescription;
+        else fullDescription += defaultTD;
+        fullDescription += System.Environment.NewLine;
+        if (guess.outcomeSet) fullDescription += "then " + outcomeDescription;
+        else fullDescription += defaultOD;
+        guess.description = fullDescription;
     }
     public void OpenDescription()
     {
         description.SetActive(true);
+        guess.descriptionSet = true;
     }
     public void SetDescriptionText()
     {
@@ -31,71 +72,106 @@ public class BookActionCard : MonoBehaviour
         else
         {
             descriptionText.text = Book.instance.descriptionsList.descriptions[guess.descriptionIndex];
+            actionDescription = Book.instance.descriptionsList.descriptions[guess.descriptionIndex];
         }
+    }
+    public void SetName()
+    {
+        guess.actionName = actionNameInput.text;
+        CardUpdate();
     }
     public void OpenTargeting()
     {
         targeting.SetActive(true);
+        guess.targetingSet = true;
     }
     public void SetTargeting()
     {
-        string line = "* ";
+        if (!guess.targetingSet)
+        {
+            targetingText.text = "(what the monster sees)";
+            return;
+        }
+        string line = "it ";
         string target = "";
         switch (guess.targetGroup)
         {
             case Action.TargetGroup.All:
-                switch (guess.targetConditions[0])
+                if (guess.targetConditions.Count > 0)
                 {
-                    case Action.Status.Above50:
-                        target = guess.minimumHits == 1 ? "a healthy character" : "healthy characters";
-                        break;
-                    case Action.Status.Below50:
-                        target = guess.minimumHits == 1 ? "a hurt character" : "hurt characters";
-                        break;
-                    case Action.Status.InMelee:
-                        target = guess.minimumHits == 1 ? "a close character" : "close characters";
-                        break;
-                    case Action.Status.NotInMelee:
-                        target = guess.minimumHits == 1 ? "a distant character" : "distant characters";
-                        break;
+                    switch (guess.targetConditions[0])
+                    {
+                        case Action.Status.Above50:
+                            target = guess.minimumHits == 1 ? "a healthy character" : "healthy characters";
+                            break;
+                        case Action.Status.Below50:
+                            target = guess.minimumHits == 1 ? "a hurt character" : "hurt characters";
+                            break;
+                        case Action.Status.InMelee:
+                            target = guess.minimumHits == 1 ? "a close character" : "close characters";
+                            break;
+                        case Action.Status.NotInMelee:
+                            target = guess.minimumHits == 1 ? "a distant character" : "distant characters";
+                            break;
+                        case Action.Status.Irrelevant:
+                            target = guess.minimumHits == 1 ? "a character" : "other characters";
+                            break;
+                    }
                 }
+                else target = guess.minimumHits == 1 ? "a character" : "other characters";
+
                 break;
             case Action.TargetGroup.Allies:
-                switch (guess.targetConditions[0])
+                if (guess.targetConditions.Count > 0)
                 {
-                    case Action.Status.Above50:
-                        target = guess.minimumHits == 1 ? "a healthy ally" : "healthy allies";
-                        break;
-                    case Action.Status.Below50:
-                        target = guess.minimumHits == 1 ? "a hurt ally" : "hurt allies";
-                        break;
-                    case Action.Status.InMelee:
-                        target = guess.minimumHits == 1 ? "a close ally" : "close allies";
-                        break;
-                    case Action.Status.NotInMelee:
-                        target = guess.minimumHits == 1 ? "a distant ally" : "distant allies";
-                        break;
+                    switch (guess.targetConditions[0])
+                    {
+                        case Action.Status.Above50:
+                            target = guess.minimumHits == 1 ? "a healthy ally" : "healthy allies";
+                            break;
+                        case Action.Status.Below50:
+                            target = guess.minimumHits == 1 ? "a hurt ally" : "hurt allies";
+                            break;
+                        case Action.Status.InMelee:
+                            target = guess.minimumHits == 1 ? "a close ally" : "close allies";
+                            break;
+                        case Action.Status.NotInMelee:
+                            target = guess.minimumHits == 1 ? "a distant ally" : "distant allies";
+                            break;
+                        case Action.Status.Irrelevant:
+                            target = guess.minimumHits == 1 ? "an ally" : "other allies";
+                            break;
+                    }
                 }
+                else target = guess.minimumHits == 1 ? "an ally" : "other allies";
                 break;
             case Action.TargetGroup.Enemies:
-                switch (guess.targetConditions[0])
+                if (guess.targetConditions.Count > 0)
                 {
-                    case Action.Status.Above50:
-                        target = guess.minimumHits == 1 ? "a healthy enemy" : "healthy enemies";
-                        break;
-                    case Action.Status.Below50:
-                        target = guess.minimumHits == 1 ? "a hurt enemy" : "hurt enemies";
-                        break;
-                    case Action.Status.InMelee:
-                        target = guess.minimumHits == 1 ? "a close enemy" : "close enemies";
-                        break;
-                    case Action.Status.NotInMelee:
-                        target = guess.minimumHits == 1 ? "a distant enemy" : "distant enemies";
-                        break;
+                    switch (guess.targetConditions[0])
+                    {
+                        case Action.Status.Above50:
+                            target = guess.minimumHits == 1 ? "a healthy enemy" : "healthy enemies";
+                            break;
+                        case Action.Status.Below50:
+                            target = guess.minimumHits == 1 ? "a hurt enemy" : "hurt enemies";
+                            break;
+                        case Action.Status.InMelee:
+                            target = guess.minimumHits == 1 ? "a close enemy" : "close enemies";
+                            break;
+                        case Action.Status.NotInMelee:
+                            target = guess.minimumHits == 1 ? "a distant enemy" : "distant enemies";
+                            break;
+                        case Action.Status.Irrelevant:
+                            target = guess.minimumHits == 1 ? "an enemy" : "other enemies";
+                            break;
+                    }
                 }
+                else target = guess.minimumHits == 1 ? "an enemy" : "other enemies";
                 break;
         }
-        if (Book.currentEntry.guess.stats.characterName != "") line.Replace("*", Book.currentEntry.guess.stats.characterName);
+        //if (Book.currentEntry.guess.characterName != null) line = line.Replace("*", Book.currentEntry.guess.characterName);
+        //else line = line.Replace("*", "the monster");
         switch (guess.position)
         {
             case Action.Position.Alone:
@@ -104,12 +180,12 @@ public class BookActionCard : MonoBehaviour
             case Action.Position.NearAlly:
                 if (guess.nearTargetCount == 1) line += "is near an ally, and ";
                 else line += "is near at least * allies, and ";
-                line.Replace("*", guess.nearTargetCount.ToString());
+                line = line.Replace("*", guess.nearTargetCount.ToString());
                 break;
             case Action.Position.NearEnemy:
                 if (guess.nearTargetCount == 1) line += "is near an enemy, and ";
                 else line += "is near at least * enemies, and ";
-                line.Replace("*", guess.nearTargetCount.ToString());
+                line = line.Replace("*", guess.nearTargetCount.ToString());
                 break;
             case Action.Position.NotNearAlly:
                 line += "is not near any allies, and ";
@@ -127,16 +203,16 @@ public class BookActionCard : MonoBehaviour
                 else line += "can hit " + target;
                 break;
             case Action.Shape.Arc:
-                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + target + " with a sweep";
+                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + " " + target + " with a sweep";
                 break;
             case Action.Shape.Cone:
-                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + target + " with a wave";
+                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + " " + target + " with a wave";
                 break;
             case Action.Shape.Line:
-                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + target + " with a beam";
+                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + " " + target + " with a beam";
                 break;
             case Action.Shape.ThreeByThree:
-                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + target + " with a blast";
+                line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + " " + target + " with a blast";
                 if (guess.canHitSelf) line += "originating from itself";
                 break;
         }
@@ -173,14 +249,21 @@ public class BookActionCard : MonoBehaviour
             }
         }
         line += ",";
+        targetingDescription = line;
         targetingText.text = line;
     }
     public void OpenOutcome()
     {
         outcome.SetActive(true);
+        guess.outcomeSet = true;
     }
     public void SetOutcome()
     {
+        if (!guess.outcomeSet)
+        {
+            outcomeText.text = "(what the action does)";
+            return;
+        }
         string line = "it will ";
         string target = "";
         if (guess.shape == Action.Shape.Single && guess.canHitSelf) target = "itself";
@@ -269,15 +352,18 @@ public class BookActionCard : MonoBehaviour
             switch (guess.buff.buffName)
             {
                 case "Armor":
+                    line += "grant " + target + " armor";
                     break;
                 case "Dodge":
                     line += "cause " + target + " to avoid attacks";
                     break;
                 case "Regeneration":
+                    line += "grant " + target + " regeneration";
                     break;
             }
         }
         line += ".";
+        outcomeDescription = line;
         outcomeText.text = line;
     }
 }

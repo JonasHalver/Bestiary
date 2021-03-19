@@ -7,13 +7,21 @@ using UnityEngine.UI;
 public class BookActionTarget : MonoBehaviour
 {
     public TextMeshProUGUI title;
-    public Dropdown position, nearCount, shape, minimumHits, targetStatus, targetPriority;
+    public TMP_Dropdown position, nearCount, shape, minimumHits, targetStatus, targetPriority;
 
     private void OnEnable()
     {
         string titleText = title.text;
-        string replacement = Book.currentEntry.guess.stats.characterName != "" ? Book.currentEntry.guess.stats.characterName : "the monster";
-        titleText.Replace("*", replacement);
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+        titleText = titleText.Replace("*", replacement);
+        title.text = titleText;
+
+        SetPosition();
+        SetNearCount();
+        SetShape();
+        SetMinimumHits();
+        SetTargetStatus();
+        SetTargetPriority();
     }
     public void ValueChanged()
     {
@@ -24,6 +32,8 @@ public class BookActionTarget : MonoBehaviour
         SetTargetStatus();
         SetTargetPriority();
         Book.currentEntry.activeAction.CalculateValidity();
+        Book.currentEntry.activeAction.guessAction.targetingSet = true;
+        BookActionCard.CardUpdate();
     }
 
     public void SetPosition()
@@ -51,6 +61,12 @@ public class BookActionTarget : MonoBehaviour
                 action.position = Action.Position.NotNearEnemy;
                 break;
         }
+        if (action.position == Action.Position.Alone || action.position == Action.Position.NotNearAlly || action.position == Action.Position.NotNearEnemy || action.position == Action.Position.Irrelevant)
+        {
+            nearCount.interactable = false;
+            nearCount.value = 0;
+        }
+        else nearCount.interactable = true;
     }
     public void SetNearCount()
     {
@@ -90,6 +106,28 @@ public class BookActionTarget : MonoBehaviour
                 action.shape = Action.Shape.Line;
                 action.canHitSelf = false;
                 break;
+        }
+        if (action.shape == Action.Shape.Single)
+        {
+            minimumHits.interactable = false;
+            minimumHits.value = 0;
+            action.minimumHits = 1;
+            targetStatus.interactable = true;
+        }
+        else
+        {
+            minimumHits.interactable = true;
+            targetStatus.interactable = false;
+            targetStatus.value = 0;
+        }
+        if (action.canHitSelf || shape.value != 1)
+        {
+            targetPriority.interactable = false;
+            targetPriority.value = targetPriority.options.Count-1;
+        }
+        else
+        {
+            targetPriority.interactable = true;
         }
     }
     public void SetMinimumHits()
@@ -149,6 +187,9 @@ public class BookActionTarget : MonoBehaviour
                 break;
             case 7:
                 action.targetPriority = Action.TargetPriority.DoesntHaveSameDebuff;
+                break;
+            case 8:
+                action.targetPriority = Action.TargetPriority.None;
                 break;
         }
     }

@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Dodge
   m_EditorClassIdentifier: 
   actionName: Dodge
+  actionCode: testdodgeaction
   description: If I am by myself, I will dodge incoming attacks.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 1
   actionPriority: 4
   debuff: {fileID: 0}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 2
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

@@ -23,8 +23,10 @@ public class BookActionDescription : MonoBehaviour
     private void OnEnable()
     {
         string titleText = title.text;
-        string replacement = Book.currentEntry.guess.stats.characterName != "" ? Book.currentEntry.guess.stats.characterName : "the monster";
-        titleText.Replace("*", replacement);
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+
+        titleText = titleText.Replace("*", replacement);
+        title.text = titleText;
     }
 
     public void GenerateList()
@@ -64,7 +66,13 @@ public class BookActionDescription : MonoBehaviour
             currentEntry.activeDescriptionIndices.Remove(currentEntry.activeAction.guessAction.descriptionIndex);
             currentEntry.activeDescriptionIndices.Add(index);
         }
+        currentEntry.activeAction.guessAction.descriptionSet = true;
         currentEntry.activeAction.guessAction.descriptionIndex = index;
         currentEntry.activeAction.guessAction.actionDescription = Book.instance.descriptionsList.descriptions[index];
+        BookActionCard.CardUpdate();
+
+        gameObject.SetActive(false);
+        Book.currentEntry.activeAction.CalculateValidity();
+
     }
 }

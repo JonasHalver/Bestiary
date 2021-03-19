@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Cone
   m_EditorClassIdentifier: 
   actionName: Flamebreath
+  actionCode: testmonsterwave
   description: If I can hit more than one enemy with a cone, I will breathe fire
     on them.
+  actionDescription: opens its mouth wide
+  descriptionIndex: 2
   actionType: 0
   actionPriority: 1
   debuff: {fileID: 0}
@@ -34,3 +37,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 3
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

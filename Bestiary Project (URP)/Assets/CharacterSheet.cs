@@ -12,11 +12,14 @@ public class CharacterSheet : MonoBehaviour
     public TextMeshProUGUI characterName;
     public TextMeshProUGUI action1, action2, action3, action4;
     public TextMeshProUGUI title1, title2, title3, title4;
+    public Character currentCharacter;
 
     private List<Action> characterActions = new List<Action>();
     private List<TextMeshProUGUI> actionTexts = new List<TextMeshProUGUI>();
     private List<TextMeshProUGUI> titleTexts = new List<TextMeshProUGUI>();
 
+    public GameObject showEntryButton;
+    public Entry currentEntry;
 
     private void Awake()
     {
@@ -33,16 +36,26 @@ public class CharacterSheet : MonoBehaviour
 
     public static void ShowSheet(Character character)
     {
-        instance.characterName.text = character.stats.characterName;
-        instance.characterActions.Clear();
-        for (int i = 1; i <= character.stats.actions.Count; i++)
+        instance.currentCharacter = character;
+        for (int i = 0; i < Book.monsterEntries.Count; i++)
         {
-            foreach(Action a in character.stats.actions)
+            if (Book.monsterEntries[i].origin.characterCode.Equals(character.stats.characterCode))
+            {
+                instance.currentEntry = Book.monsterEntries[i];
+                break;
+            }
+        }
+        CharacterStats stats = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer ? character.stats : instance.currentEntry.guess;
+        instance.characterName.text = stats.characterName != null ? stats.characterName : "Unknown Monster";
+        instance.characterActions.Clear();
+
+        for (int i = 0; i <= stats.actions.Count; i++)
+        {
+            foreach(Action a in stats.actions)
             {
                 if (a.actionPriority == i) instance.characterActions.Add(a);
             }
         }
-
         foreach(TextMeshProUGUI text in instance.actionTexts)
         {
             text.text = "";
@@ -61,11 +74,20 @@ public class CharacterSheet : MonoBehaviour
                 instance.titleTexts[i].text = (i + 1).ToString() + ". " + a.actionName;
             }
         }
+        instance.showEntryButton.SetActive(character.stats.characterType == CharacterStats.CharacterTypes.NPC);
         instance.sheet.SetActive(true);
+    }
+
+    public void ShowEntry()
+    {
+        Book.instance.pageNumber = currentCharacter.stats.pageNumber;
+        GameManager.ChangeState(GameManager.GameState.Journal);
+        HideSheet();
     }
 
     public void HideSheet()
     {
+        currentCharacter = null;
         sheet.SetActive(false);
     }
 }

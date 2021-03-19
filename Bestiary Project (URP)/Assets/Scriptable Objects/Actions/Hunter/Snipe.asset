@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Snipe
   m_EditorClassIdentifier: 
   actionName: Snipe
+  actionCode: testlowhealthsnipe
   description: If an enemy has less than 50% of their maximum hit points, I will
     critically hit them.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 0
   actionPriority: 2
   debuff: {fileID: 0}
@@ -29,7 +32,11 @@ MonoBehaviour:
   targetConditions: 0300000000000000
   targetPriority: 1
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 1
   damageType: 1
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

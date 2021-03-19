@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: Blind
   m_EditorClassIdentifier: 
   actionName: Blind
+  actionCode: testpocketsand
   description: If I am close to any number of enemies, I will blind all of them,
     causing them to have trouble attacking.
+  actionDescription: 
+  descriptionIndex: -1
   actionType: 3
   actionPriority: 3
   debuff: {fileID: 11400000, guid: d3bf40d3bf0168541a1c08de90c22718, type: 2}
@@ -29,7 +32,11 @@ MonoBehaviour:
   targetConditions: 04000000
   targetPriority: 0
   canHitSelf: 0
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 0
   damageType: 0
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0

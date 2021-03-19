@@ -111,8 +111,25 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             {
                 node.ActionHighlight();
             }
+        }       
+    }
+
+    public static Node CharacterSpawn(bool isMonster)
+    {
+        List<Node> possibleSpawns = new List<Node>();
+        foreach(Node n in grid)
+        {
+            if (isMonster)
+            { 
+                if (n.coordinate.y >= 3 && n.occupant == null) possibleSpawns.Add(n); 
+            }
+            else
+            {
+                if (n.coordinate.y <= 1 && n.occupant == null) possibleSpawns.Add(n);
+            }
+
         }
-       
+        return possibleSpawns[Random.Range(0, possibleSpawns.Count)];
     }
 
     public static List<Node> NodesAffectedByAction(CombatAction ca)

@@ -13,7 +13,10 @@ MonoBehaviour:
   m_Name: Shot
   m_EditorClassIdentifier: 
   actionName: Bolt
+  actionCode: testmonsterrangedattack
   description: If I am not near enemies, I will shoot the weakest with a ranged attack.
+  actionDescription: ducks down low
+  descriptionIndex: 6
   actionType: 0
   actionPriority: 4
   debuff: {fileID: 0}
@@ -33,3 +36,6 @@ MonoBehaviour:
   value: 1
   isCritical: 0
   damageType: 1
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0
