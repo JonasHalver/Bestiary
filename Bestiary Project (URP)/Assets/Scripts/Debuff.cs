@@ -7,7 +7,7 @@ public class Debuff : ScriptableObject
 {
     public string debuffName;
     public string bookDescription;
-    public string tooltipDescription;
+    public string tooltipString;
     public Character affectedCharacter;
 
     public enum DebuffType { DamageOverTime, Control }
@@ -55,6 +55,7 @@ public class Debuff : ScriptableObject
         durationRemaining += _duration;
         removeAtEndOfRound = _debuff.removeAtEndOfRound;
         effectTiming = _debuff.effectTiming;
+        tooltipString = _debuff.tooltipString;
     }
 
     public void DebuffApplied()

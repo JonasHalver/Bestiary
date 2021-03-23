@@ -41,11 +41,13 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         //CombatManager.EndRound += StartOfRound;
         CombatManager.startCombat += StartOfRound;
         CombatManager.StartOfTurn += CharacterCheck;
+        CombatManager.StartRound += StartOfRound;
     }
 
     private void OnDisable()
     {
         //CombatManager.EndRound -= StartOfRound;
+        CombatManager.StartRound -= StartOfRound;
         CombatManager.startCombat -= StartOfRound;
         CombatManager.StartOfTurn -= CharacterCheck;
     }
@@ -122,6 +124,26 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         CombatGrid.StopHighlight();
         ReportNewNode(currentNode);
 
+        moving = false;
+    }
+    public void DisplayPastPosition(Node position)
+    {
+        StartCoroutine(MoveToPastLocation(position));
+    }
+    IEnumerator MoveToPastLocation(Node position)
+    {
+        moving = true;
+        if (position != null)
+        {
+
+            t = 0;
+            while (t < 1)
+            {
+                t += Time.deltaTime * 2;
+                transform.position = Vector3.Lerp(transform.position, position.tile.transform.position, t);
+                yield return null;
+            }
+        }
         moving = false;
     }
 

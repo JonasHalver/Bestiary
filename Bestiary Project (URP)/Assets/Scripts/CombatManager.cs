@@ -20,6 +20,10 @@ public class CombatManager : MonoBehaviour
     public GameObject initiativeCardPrefab;
     public List<GameObject> initiativeCards = new List<GameObject>();
 
+    public GameObject combatLogCardPrefab;
+    public GameObject combatLogInsertPrefab;
+    public Transform combatLogCardHolder;
+
     public static List<CombatAction> combatActions = new List<CombatAction>();
     public static Dictionary<Character, Vector2> characterPositions = new Dictionary<Character, Vector2>();
     public event System.Action updateCombat;
@@ -27,6 +31,7 @@ public class CombatManager : MonoBehaviour
     public TextMeshProUGUI log;
 
     public bool combatStarted;
+    public int roundCount = 1;
 
     public static event System.Action StartRound, EndRound;
     public static bool combatFlag = false;
@@ -94,15 +99,18 @@ public class CombatManager : MonoBehaviour
         combatActionCount = combatActions.Count;
         //if (combatActions.Count > 0) CombatUI.instance.combatLog.text = LogConstructor();
 
+        CombatUI.instance.roundDisplay.text = $"Round {roundCount}";
         switch (currentStage)
         {
             case CombatStage.Setup:
                 CombatUI.instance.stageDisplay.text = "Setup";
-                CombatUI.instance.stageInfo.text = "Set up your formation, then commit.";
+                CombatUI.instance.stageInfo.text = "Move your mercenaries by selecting them and placing them. " +
+                    "All characters' actions will update based on their positions. " +
+                    "Once you are happy with the setup, press Commit.";
                 break;
             case CombatStage.Combat:
                 CombatUI.instance.stageDisplay.text = "Combat";
-                CombatUI.instance.stageInfo.text = "Actions resolve in order of initiative.";
+                CombatUI.instance.stageInfo.text = "Actions resolve in the order determined by each character's speed.";
                 break;
             case CombatStage.EnemyMovement:
                 CombatUI.instance.stageDisplay.text = "Enemy Movement";
@@ -267,6 +275,8 @@ public class CombatManager : MonoBehaviour
     {
         yield return null;
         currentStage = CombatStage.Combat;
+        GameObject newInsert = Instantiate(combatLogInsertPrefab, combatLogCardHolder);
+        newInsert.GetComponent<TextMeshProUGUI>().text = $"- Round {roundCount.ToString()} -";
         for (int i = 0; i < actors.Count; i++)
         {
             CombatGrid.StopHighlight();
@@ -285,8 +295,9 @@ public class CombatManager : MonoBehaviour
                 yield return new WaitForSeconds(0.05f);
             }
             foreach (CombatAction a in combatActions) a.highlighted = false;
-            foreach(CombatAction action in combatActions)
+            for (int j = 0; j < combatActions.Count; j++)
             {
+                CombatAction action = combatActions[j];
                 if (action.origin == actors[i] && action.origin.alive)
                 {
                     action.highlighted = true;
@@ -297,6 +308,10 @@ public class CombatManager : MonoBehaviour
                         yield return null;
                     }
                     action.ResolveAction();
+
+                    GameObject newCard = Instantiate(combatLogCardPrefab, combatLogCardHolder);
+                    newCard.GetComponent<CombatLogCard>().ca = action;
+                    newCard.GetComponent<CombatLogCard>().CreateCard();
                 }
             }
             combatFlag = false;
@@ -353,10 +368,13 @@ public class CombatManager : MonoBehaviour
             actors[i].lastCombatAction = null;
         }
         //EndRound.Invoke();
+        StartRound.Invoke();
+        //EndRound.Invoke();
         Delay("UpdateCombat");
         UIInteractable(true, false);
         SortByInitiative();
         currentStage = CombatStage.Setup;
+        roundCount++;
         //for (int i = 0; i < actors.Count; i++)
         //{
         //    ResolveBuffsAndDebuffs(actors[i]);
@@ -383,7 +401,8 @@ public class CombatManager : MonoBehaviour
 
     public void Delay()
     {
-        StartCoroutine(OneFrameDelay("UpdateCombat"));
+        if (!CombatGrid.displayingThePast)
+            StartCoroutine(OneFrameDelay("UpdateCombat"));
     }
 
     public void Delay(string message)
@@ -408,6 +427,7 @@ public class CombatAction
     public bool highlighted = false;
 
     public List<Node> affectedNodes = new List<Node>();
+    public List<Character> affectedCharacters = new List<Character>();
 
     public BattlefieldPositionInfo bpi;
 
@@ -424,7 +444,8 @@ public class CombatAction
     { 
         foreach (Node node in affectedNodes)
         {
-            node.ActionHighlight();
+            if (origin.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                node.ActionHighlight();
             if (node.occupant != null)
             {
                 Character actionTarget = node.occupant;
@@ -462,7 +483,12 @@ public class CombatAction
                         break;
                 }
 
-                if (newInteraction != null) actionTarget.Interaction(newInteraction);
+                if (newInteraction != null)
+                {
+                    actionTarget.Interaction(newInteraction);
+                    affectedCharacters.Add(actionTarget);
+                    if (origin.stats.characterType == CharacterStats.CharacterTypes.NPC) node.ActionHighlight();
+                }
             }
         }
 
@@ -474,6 +500,7 @@ public class BattlefieldPositionInfo
 {
     public Character origin;
 
+    public Dictionary<Character, Vector2> characterPositions = new Dictionary<Character, Vector2>();
     public List<Character> alliesAlive = new List<Character>();
     public List<Character> alliesDead = new List<Character>();
 
@@ -508,7 +535,10 @@ public class BattlefieldPositionInfo
     {
         origin = actor;
         FillOutInfo(actor, kvp);
-
+        foreach(KeyValuePair<Character, Vector2> pos in kvp)
+        {
+            characterPositions.Add(pos.Key, pos.Value);
+        }
         foreach (KeyValuePair<Character, int> positions in allyDistances)
         {
             if (positions.Value == 1) alliesInMelee.Add(positions.Key);

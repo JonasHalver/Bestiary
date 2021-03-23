@@ -34,7 +34,7 @@ public class BookActionCard : MonoBehaviour
     }
     private void OnEnable()
     {
-        guess = Book.currentEntry.activeAction.guessAction;
+        guess = Book.currentEntry.isMerc ? Book.currentEntry.activeAction.originalAction : Book.currentEntry.activeAction.guessAction;
 
         actionNameInput.text = guess.actionName;
         CardUpdate();
@@ -51,8 +51,16 @@ public class BookActionCard : MonoBehaviour
         string defaultOD = "then...";
         if (guess.descriptionSet) fullDescription += "When * " + actionDescription;
         else fullDescription += defaultAD;
-        if (Book.currentEntry.guess.characterName != null) fullDescription = fullDescription.Replace("*", Book.currentEntry.guess.characterName);
-        else fullDescription = fullDescription.Replace("*", "the monster");
+        if (!Book.currentEntry.isMerc)
+        {
+            if (Book.currentEntry.guess.characterName != null) fullDescription = fullDescription.Replace("*", Book.currentEntry.guess.characterName);
+            else fullDescription = fullDescription.Replace("*","the monster");
+        }
+        else
+        {
+            if (Book.currentEntry.origin.characterName != null) fullDescription = fullDescription.Replace("*", Book.currentEntry.origin.characterName);
+            else fullDescription = fullDescription.Replace("*", "the mercenary");
+        }
         fullDescription += System.Environment.NewLine;
         if (guess.targetingSet) fullDescription += "if " + targetingDescription;
         else fullDescription += defaultTD;
@@ -64,6 +72,8 @@ public class BookActionCard : MonoBehaviour
     public void OpenDescription()
     {
         description.SetActive(true);
+        GameManager.openWindows.Add(description);
+        GameManager.focusedWindow = description;
         guess.descriptionSet = true;
     }
     public void SetDescriptionText()
@@ -83,6 +93,8 @@ public class BookActionCard : MonoBehaviour
     public void OpenTargeting()
     {
         targeting.SetActive(true);
+        GameManager.openWindows.Add(targeting);
+        GameManager.focusedWindow = targeting;
         guess.targetingSet = true;
     }
     public void SetTargeting()
@@ -255,6 +267,8 @@ public class BookActionCard : MonoBehaviour
     public void OpenOutcome()
     {
         outcome.SetActive(true);
+        GameManager.openWindows.Add(outcome);
+        GameManager.focusedWindow = outcome;
         guess.outcomeSet = true;
     }
     public void SetOutcome()

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debuffName: Root
   bookDescription: 
-  tooltipDescription: 
+  tooltipString: <b>Rooted:</b> The character's movement is set to 0.
   affectedCharacter: {fileID: 0}
   debuffType: 1
   controlType: 1

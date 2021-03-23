@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debuffName: Slow
   bookDescription: 
-  tooltipDescription: 
+  tooltipString: <b>Slowed:</b> The character's speed and movement are reduced by
+    2.
   affectedCharacter: {fileID: 0}
   debuffType: 1
   controlType: 0

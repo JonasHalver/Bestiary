@@ -5,10 +5,12 @@ using UnityEngine;
 public class HitPointDisplay : MonoBehaviour
 {
     [Range(0,50)]
-    public int value = 1;
-    public GameObject hitPointPrefab, hitPointHolder, compacterPrefab;
+    public float value = 1;
+    public bool displayHalf;
+    public GameObject hitPointPrefab, halfHitPrefab, hitPointHolder, compacterPrefab;
     public List<GameObject> hitPoints = new List<GameObject>();
     public List<GameObject> compactHitPoints = new List<GameObject>();
+    public float displayedValue;
 
     // Start is called before the first frame update
     void Start()
@@ -51,20 +53,56 @@ public class HitPointDisplay : MonoBehaviour
             }
             Destroy(compacter);
         }
-        if (hitPoints.Count + compactHitPoints.Count < value)
+
+        // Spawning hearts
+        if (displayedValue < value)
         {
-            GameObject newHP = Instantiate(hitPointPrefab, hitPointHolder.transform);
-            hitPoints.Add(newHP);
-        }
-        else if (hitPoints.Count + compactHitPoints.Count > value)
-        {
-            int count = hitPoints.Count;
-            for (int i = count - 1; i > -1; i--)
+            float difference = value - displayedValue;
+            if (difference > 0.5f)
             {
-                Destroy(hitPoints[i].gameObject);
-                hitPoints.RemoveAt(i);
-                if (hitPoints.Count <= value) break;
+                GameObject newHP = Instantiate(hitPointPrefab, hitPointHolder.transform);
+                hitPoints.Add(newHP);
+            }
+            else
+            {
+                GameObject newHalf = Instantiate(halfHitPrefab, hitPointHolder.transform);
+                hitPoints.Add(newHalf);
+                displayHalf = true;
             }
         }
+        else if (displayedValue > value)
+        {
+            float difference = displayedValue - value;
+            if (difference < 1f)
+            {
+                if (hitPoints.Count > 0)
+                {
+                    if (displayHalf)
+                    {
+                        Destroy(hitPoints[hitPoints.Count - 1].gameObject);
+                        hitPoints.RemoveAt(hitPoints.Count - 1);
+                        displayHalf = false;
+                    }
+                    else
+                    {
+                        Destroy(hitPoints[hitPoints.Count - 1].gameObject);
+                        hitPoints.RemoveAt(hitPoints.Count - 1);
+                        GameObject newHalf = Instantiate(halfHitPrefab, hitPointHolder.transform);
+                        hitPoints.Add(newHalf);
+                        displayHalf = true;
+                    }
+                }
+            }
+            else
+            {
+                if (hitPoints.Count > 0)
+                {
+                    Destroy(hitPoints[0].gameObject);
+                    hitPoints.RemoveAt(0);
+                }
+            }
+        }
+
+        displayedValue = hitPoints.Count + compactHitPoints.Count - (displayHalf ? 0.5f : 0);
     }
 }

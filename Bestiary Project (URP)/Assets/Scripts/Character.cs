@@ -11,6 +11,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public enum DamageTypes { Cutting, Piercing, Crushing, Fire, Acid, Cold, Poison, Healing }
     public CharacterStats stats;
+    public float damageTaken = 0;
     public float currentHitpoints;
     public bool alive = true;
     public AdventurerMovement movement;
@@ -52,6 +53,9 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public int debuffCount, buffCount;
 
+    [HideInInspector] public Entry entry;
+    [HideInInspector] public bool highlightMyNode = false;
+
     private void Awake()
     {
         if (stats == null) CreateEmptyStats();
@@ -88,6 +92,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         buffCount = buffs.Count;
         debuffCount = debuffs.Count;
+
+        damageTaken = Mathf.Clamp(damageTaken, 0, Mathf.Infinity);
+
+        if (stats.characterType == CharacterStats.CharacterTypes.NPC) entry = stats.entry;
+
+
     }
 
     public void Created()
@@ -171,22 +181,56 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void Interaction(Interaction interaction)
     {
+        Debuff debuff = null; 
+        Buff buff = null;
+        bool flag = false;
         switch (interaction.action.actionType)
         {
             case Action.ActionType.Attack:
                 if (!temporaryDodge)
-                    ReceiveHit(interaction.action, false);
+                    ReceiveHit(interaction.action, interaction.action.isCritical);
+                break;
+            case Action.ActionType.AttackDebuff:
+                if (temporaryDodge) return;
+
+                ReceiveHit(interaction.action, interaction.action.isCritical);
+                debuff = ScriptableObject.CreateInstance<Debuff>();
+                debuff.SetValues(interaction.debuff, interaction.action.value, this);
+                flag = false;
+                foreach (Debuff d in debuffs)
+                {
+                    if (d.debuffType == debuff.debuffType)
+                    {
+                        if (d.debuffType == Debuff.DebuffType.Control && d.controlType == debuff.controlType)
+                        {
+                            d.durationRemaining += interaction.action.value;
+                            flag = true;
+                        }
+                        else if (d.debuffType == Debuff.DebuffType.DamageOverTime && d.damageType == debuff.damageType)
+                        {
+                            d.durationRemaining += interaction.action.value;
+                            flag = true;
+                        }
+                    }
+                }
+                if (!flag)
+                {
+                    debuffs.Add(debuff);
+                    debuff.DebuffApplied();
+                    AcquiredDebuff.Invoke(debuff);
+                }
+                
                 break;
             case Action.ActionType.Healing:
                 ReceiveHealing(interaction.action);
                 break;
-            case Action.ActionType.Buff:
-
-                Buff buff = ScriptableObject.CreateInstance<Buff>();
+            case Action.ActionType.HealingBuff:
+                ReceiveHealing(interaction.action);
+                buff = ScriptableObject.CreateInstance<Buff>();
                 buff.SetValues(interaction.buff);
                 buff.durationRemaining += interaction.action.value;
                 buff.affectedCharacter = this;
-                bool flag = false;
+                flag = false;
                 foreach (Buff d in buffs)
                 {
                     if (d.buffType == buff.buffType)
@@ -198,13 +242,35 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 if (!flag)
                 {
                     buffs.Add(buff);
-                    buff.ApplyBuff();
+                    buff.ApplyBuff(true);
+                    AcquiredBuff.Invoke(buff);
+                }
+                break;
+            case Action.ActionType.Buff:
+
+                buff = ScriptableObject.CreateInstance<Buff>();
+                buff.SetValues(interaction.buff);
+                buff.durationRemaining += interaction.action.value;
+                buff.affectedCharacter = this;
+                flag = false;
+                foreach (Buff d in buffs)
+                {
+                    if (d.buffType == buff.buffType)
+                    {
+                        d.durationRemaining += interaction.action.value;
+                        flag = true;
+                    }
+                }
+                if (!flag)
+                {
+                    buffs.Add(buff);
+                    buff.ApplyBuff(true);
                     AcquiredBuff.Invoke(buff);
                 }
                 break;
             case Action.ActionType.Debuff:
                 
-                Debuff debuff = ScriptableObject.CreateInstance<Debuff>();
+                debuff = ScriptableObject.CreateInstance<Debuff>();
                 debuff.SetValues(interaction.debuff, interaction.action.value, this);
                 bool flag1 = false;
                 foreach (Debuff d in debuffs)
@@ -248,12 +314,13 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     
     public void ReceiveHit(Action action, bool critical)
     {
-        float damage = action.value;
+        float damage = 1;
         if (stats.armored || temporaryArmor) damage /= 2;
         if (stats.resistances.Contains(action.damageType)) damage /= 2;
         if (action.isCritical || critical || stats.weaknesses.Contains(action.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
+        damageTaken += damage;
         TookDamage.Invoke();
     }
 
@@ -265,6 +332,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (stats.weaknesses.Contains(debuff.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
+        damageTaken += damage;
         TookDamage.Invoke();
     }
 
@@ -273,6 +341,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         float healing = action.value;
 
         currentHitpoints += healing;
+        damageTaken -= healing;
         Healed.Invoke();
     }
     
@@ -281,6 +350,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         float healing = .5f;
 
         currentHitpoints += healing;
+        damageTaken -= healing;
     }
 
     public Action CurrentAction()
@@ -309,7 +379,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         for (int i = 0; i < stats.actions.Count; i++)
         {
-            Node check = stats.actions[i].ActionValid(bpi);
+            Node check = stats.actions[i].ActionValid(bpi, false);
             if (check != null)
             {
                 CombatAction newAction = new CombatAction(this, check, stats.actions[i]);
@@ -337,7 +407,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
             {
                 CharacterSheet.ShowSheet(this);
-                CombatGrid.instance.HighlighAction(currentAction);
+                HighlightAction();
             }
         }
     }
@@ -347,6 +417,37 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (eventData.pointerId == -2)
         {
             CombatGrid.StopHighlight();
+        }
+    }
+
+    public void HighlightAction()
+    {
+        CombatGrid.HighlightNodeStatic(movement.currentNode);
+
+        if (stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+        {
+            CombatGrid.instance.HighlighAction(currentAction);
+        }
+        else
+        {
+            Action a = currentAction.action;
+            Action ga = null;
+            for (int i = 0; i < entry.actionChecks.Count; i++)
+            {
+                if (entry.actionChecks[i].descriptionCorrect)
+                {
+                    if (entry.actionChecks[i].originalAction != null && entry.actionChecks[i].originalAction.actionCode.Equals(a.actionCode))
+                    {
+                        ga = entry.actionChecks[i].guessAction;
+                    }
+                }
+            }
+            if (ga != null)
+            {
+                CombatAction ca = new CombatAction(this, ga.ActionValid(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true), ga);
+                ca.affectedNodes = CombatGrid.NodesAffectedByAction(ca);
+                CombatGrid.instance.HighlighAction(ca);
+            }
         }
     }
 }

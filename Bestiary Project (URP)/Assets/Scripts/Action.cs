@@ -75,7 +75,7 @@ public class Action : ScriptableObject
     [HideInInspector]
     public bool descriptionSet, targetingSet, outcomeSet;
 
-    public Node ActionValid(BattlefieldPositionInfo bpi)
+    public Node ActionValid(BattlefieldPositionInfo bpi, bool basedOnGuess)
     {
         List<Node> possibleTargets = new List<Node>();
         Node bestTarget = null;
@@ -111,7 +111,7 @@ public class Action : ScriptableObject
         }
 
         // Check if the shape can hit the required number of targets. If it can, flag2 is true
-        if (flag1)
+        if (flag1 || basedOnGuess)
         {
             ShapeTest test = new ShapeTest(this, bpi.origin, minimumHits, targetGroup == TargetGroup.Enemies);
             ShapeTest result;
@@ -196,8 +196,9 @@ public class Action : ScriptableObject
         }
 
         // Find possible targets based on target status. If none are found, flag3 is false
-        if (flag2)
+        if (flag2  || basedOnGuess)
         {
+
             foreach (Status targetStatus in targetConditions)
             {
                 switch (targetStatus)
@@ -460,7 +461,7 @@ public class Action : ScriptableObject
         if (!flag3 && useBeingAttackedOverride) flag3 = true;
 
         if (flag3 && bestTarget == null && possibleTargets.Count > 0)
-        { 
+        {
             bool flag4 = false;
             for (int i = 0; i < possibleTargets.Count; i++)
             {
@@ -477,6 +478,7 @@ public class Action : ScriptableObject
             }
         }
         else if (flag3 && bestTarget == null && possibleTargets.Count == 0) flag3 = false;
+        else if ((!flag3 && bestTarget != null) && basedOnGuess) flag3 = true;
 
         if (flag3)
             return bestTarget;

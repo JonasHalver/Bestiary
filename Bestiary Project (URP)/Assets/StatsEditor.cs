@@ -62,12 +62,16 @@ public class StatsEditor : MonoBehaviour
 
     public void DisplayHitPoints()
     {
-        hitPointDisplay.value = (int)Book.currentEntry.guess.hitPoints;
+        if (!Book.currentEntry.isMerc)
+            hitPointDisplay.value = (int)Book.currentEntry.guess.hitPoints;
+        else
+            hitPointDisplay.value = (int)Book.currentEntry.origin.hitPoints;
     }
     public void DisplaySpeed()
     {
-        string line = Book.currentEntry.guess.speed.ToString();
-        switch (Book.currentEntry.guess.speed)
+        int speed = Book.currentEntry.isMerc ? Book.currentEntry.origin.speed : Book.currentEntry.guess.speed;
+        string line = speed.ToString();
+        switch (speed)
         {
             case 1:
             case 2:
@@ -92,7 +96,7 @@ public class StatsEditor : MonoBehaviour
     {
         for (int i = 0; i < tiles.Count; i++)
         {
-            if (i < Book.currentEntry.guess.movement)
+            if (i < (Book.currentEntry.isMerc ? Book.currentEntry.origin.movement : Book.currentEntry.guess.movement))
                 tiles[i].color = tileValid;
             else
                 tiles[i].color = tileInvalid;
@@ -105,9 +109,19 @@ public class StatsEditor : MonoBehaviour
             RemoveDamageTypeIcon(resistanceIcons[i], true);
             i--;
         }
-        for (int i = 0; i < Book.currentEntry.guess.resistances.Count; i++)
+        if (!Book.currentEntry.isMerc)
         {
-            AddDamageTypeIcon(Book.currentEntry.guess.resistances[i], true);
+            for (int i = 0; i < Book.currentEntry.guess.resistances.Count; i++)
+            {
+                AddDamageTypeIcon(Book.currentEntry.guess.resistances[i], true);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Book.currentEntry.origin.resistances.Count; i++)
+            {
+                AddDamageTypeIcon(Book.currentEntry.origin.resistances[i], true);
+            }
         }
         if (resistanceIcons.Count == 0)
         {
@@ -122,9 +136,19 @@ public class StatsEditor : MonoBehaviour
             RemoveDamageTypeIcon(weaknessIcons[i], false);
             i--;
         }
-        for (int i = 0; i < Book.currentEntry.guess.weaknesses.Count; i++)
+        if (!Book.currentEntry.isMerc)
         {
-            AddDamageTypeIcon(Book.currentEntry.guess.weaknesses[i], false);
+            for (int i = 0; i < Book.currentEntry.guess.weaknesses.Count; i++)
+            {
+                AddDamageTypeIcon(Book.currentEntry.guess.weaknesses[i], false);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Book.currentEntry.origin.weaknesses.Count; i++)
+            {
+                AddDamageTypeIcon(Book.currentEntry.origin.weaknesses[i], false);
+            }
         }
         if (weaknessIcons.Count == 0)
         {

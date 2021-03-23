@@ -17,13 +17,13 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public Transform effectsDisplay;
     public List<HealthBarEffects> effects = new List<HealthBarEffects>();
     bool displayingDamageOrHeal = false;
+    public HitPointDisplay hpd;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
         {
-            CombatGrid.HighlightNodeStatic(character.movement.currentNode);
-            CombatGrid.instance.HighlighAction(character.currentAction);
+            character.HighlightAction();
         }
     }
 
@@ -36,7 +36,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private void Start()
     {
         maxWidth = bar.GetComponent<RectTransform>().rect.width;
-        nameText.text = character.stats.characterName;
+        //nameText.text = character.stats.characterName;
         character.AcquiredDebuff += DisplayEffect;
         character.AcquiredBuff += DisplayEffect;
         character.LostDebuff += RemoveEffect;
@@ -59,12 +59,37 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         hitPoints.text = character.currentHitpoints + "/" + character.stats.hitPoints;
 
+        
+        nameText.text = character.stats.characterType== CharacterStats.CharacterTypes.Adventurer ? character.stats.characterName : (character.entry.guess.characterName != null ? character.entry.guess.characterName: "Unnamed Monster");
+        //hpd.value = character.currentHitpoints;
+        DisplayHitPoints();
         foreach(HealthBarEffects effect in effects)
         {
             effect.durationText.text = effect.debuff != null ?
                 effect.debuff.durationRemaining.ToString()
                 : (effect.buff.durationRemaining).ToString();
         }
+    }
+    
+    public void DisplayHitPoints()
+    {
+        if (character.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+        {
+            hpd.value = character.currentHitpoints;
+        }
+        else
+        {
+            CharacterStats guess = null;
+            for (int i = 0; i < Book.monsterEntries.Count; i++)
+            {
+                if (Book.monsterEntries[i].origin.characterCode.Equals(character.stats.characterCode))
+                {
+                    guess = Book.monsterEntries[i].guess;
+                }
+            }
+            hpd.value = guess.hitPoints - character.damageTaken;
+        }
+        
     }
 
     public void Healed()
@@ -102,6 +127,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Image img = newEffect.GetComponent<Image>();
         img.sprite = buff.icon;
         img.color = buff.iconColor;
+        newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = buff.tooltipString;
         newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (buff.durationRemaining+1).ToString();
         effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), buff));
     }
@@ -112,6 +138,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         Image img = newEffect.GetComponent<Image>();
         img.sprite = debuff.icon;
         img.color = debuff.iconColor;
+        newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = debuff.tooltipString;
+
         newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
             debuff.debuffType == Debuff.DebuffType.DamageOverTime ? debuff.durationRemaining.ToString() : (debuff.durationRemaining + 1).ToString();
         effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), debuff));

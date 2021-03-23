@@ -19,6 +19,12 @@ public class Page : MonoBehaviour
         //entry.CreateChecks();
     }
 
+    private void OnEnable()
+    {
+        if (Book.currentEntry.isMerc) nameInput.text = Book.currentEntry.origin.characterName;
+        else nameInput.text = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : null;
+    }
+
     public void ConnectActions()
     {
         if (actionCards.Count == 0)
@@ -47,5 +53,10 @@ public class Page : MonoBehaviour
             actionCards[i].actionCheck.guessAction.actionPriority = actionCards[i].transform.GetSiblingIndex() + 1;
             
         }
+    }
+
+    public void CloseBook()
+    {
+        GameManager.instance.OpenJournal();
     }
 }

@@ -22,5 +22,7 @@ public class CharacterStats : ScriptableObject
     public int movement = 2;
     public List<Action> actions = new List<Action>();
     public int pageNumber;
-    
+    [HideInInspector]
+    public Entry entry;
+
 }

@@ -8,6 +8,8 @@ public class Entry : MonoBehaviour
     public CharacterStats guess;
     public Page page;
 
+    public bool isMerc = false;
+
     public ActionCheck activeAction;
 
     public enum StatEntries { HitPoints, Movement, Speed, Resistances, Weaknesses }
@@ -35,6 +37,7 @@ public class Entry : MonoBehaviour
         string defaultDescription = "When the monster..." + System.Environment.NewLine + "if..." + System.Environment.NewLine + "then...";
         statChecks.Add(StatEntries.HitPoints, false); statChecks.Add(StatEntries.Speed, false); statChecks.Add(StatEntries.Movement, false);
         statChecks.Add(StatEntries.Resistances, false); statChecks.Add(StatEntries.Weaknesses, false);
+        guess.characterType = CharacterStats.CharacterTypes.NPC;
         guess.speed = 5;
         guess.movement = 2;
         guess.hitPoints = 1;
@@ -53,11 +56,22 @@ public class Entry : MonoBehaviour
         page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
         page.icon.color = origin.characterIconColor;
+        origin.entry = this;
+        guess.entry = this;
+    }
+
+    public void CreateChecksMerc()
+    {
+        isMerc = true;
+        //page.ConnectActions();
+        page.icon.sprite = origin.characterIcon;
+        page.icon.color = origin.characterIconColor;
     }
 
     private void Update()
     {
-        CheckStats();
+        if (!isMerc)
+            CheckStats();
     }
 
     public void SetActiveAction(int index)

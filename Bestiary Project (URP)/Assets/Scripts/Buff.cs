@@ -6,9 +6,10 @@ using UnityEngine;
 public class Buff : ScriptableObject
 {
     public string buffName;
+    public string tooltipString;
 
     public Character affectedCharacter;
-    public enum BuffType { Armor, Resistance, Speed, Dodge }
+    public enum BuffType { Armor, Resistance, Speed, Dodge, Regeneration }
     public BuffType buffType;
     public List<Character.DamageTypes> resistances = new List<Character.DamageTypes>();
     public int duration;
@@ -38,9 +39,10 @@ public class Buff : ScriptableObject
         iconColor = buff.iconColor;
         removeAtEndOfRound = buff.removeAtEndOfRound;
         effectTiming = buff.effectTiming;
+        tooltipString = buff.tooltipString;
     }
 
-    public void ApplyBuff()
+    public void ApplyBuff(bool onApplication)
     {
         switch (buffType)
         {
@@ -58,12 +60,16 @@ public class Buff : ScriptableObject
             case BuffType.Dodge:
                 affectedCharacter.temporaryDodge = true;
                 break;
+            case BuffType.Regeneration:
+                if (!onApplication)
+                affectedCharacter.ReceiveHealing(this);
+                break;
         }
     }
 
     public void ResolveBuff()
     {
-        ApplyBuff();        
+        ApplyBuff(false);        
     }
 
     public void CheckDuration(Debuff.EffectTiming timing)

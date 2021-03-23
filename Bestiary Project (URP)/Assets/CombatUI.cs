@@ -7,7 +7,7 @@ using TMPro;
 public class CombatUI : MonoBehaviour
 {
     public static CombatUI instance;
-    public TextMeshProUGUI stageDisplay, stageInfo, combatLog;
+    public TextMeshProUGUI stageDisplay, stageInfo, combatLog, roundDisplay;
 
     private void Awake()
     {

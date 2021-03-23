@@ -20,6 +20,8 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     public Color actionHighlight, characterHighlight, movementHighlight, errorHighlight;
 
     private Node selectedNode;
+    private Dictionary<Character, Vector2> savedPositions = new Dictionary<Character, Vector2>();
+    public static bool displayingThePast;
 
     private void Awake()
     {
@@ -679,6 +681,30 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         Vector2 dir = pos1 - pos2;
         int dist = Mathf.Max(Mathf.Abs(Mathf.RoundToInt(dir.x)), Mathf.Abs(Mathf.RoundToInt(dir.y)));
         return dist;
+    }
+
+    public static void ShowPreviousPositions(BattlefieldPositionInfo bpi, Character user, List<Character> victims)
+    {
+        StopHighlight();
+        instance.savedPositions = CombatManager.characterPositions;
+        foreach(KeyValuePair<Character,Vector2> kvp in bpi.characterPositions)
+        {
+            Node n = grid[(int)kvp.Value.x, (int)kvp.Value.y];
+            kvp.Key.movement.DisplayPastPosition(n);
+
+            if (kvp.Key == user) n.NodeSelected();
+            else if (victims.Contains(kvp.Key)) n.ActionHighlight();
+        }
+        displayingThePast = true;
+    }
+    public static void ShowCurrentPositions()
+    {
+        StopHighlight();
+        foreach (KeyValuePair<Character, Vector2> kvp in instance.savedPositions)
+        {
+            kvp.Key.movement.DisplayPastPosition(grid[(int)kvp.Value.x, (int)kvp.Value.y]);
+        }
+        displayingThePast = false;
     }
 }
 

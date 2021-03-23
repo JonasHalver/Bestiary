@@ -75,13 +75,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   value: 0
+  displayHalf: 0
   hitPointPrefab: {fileID: 9170759876029831411, guid: bda5781770534a94cb3b4c6fc7a40506,
+    type: 3}
+  halfHitPrefab: {fileID: 8181908191872473311, guid: 81feac8c69211414d840d747ccc3c5c1,
     type: 3}
   hitPointHolder: {fileID: 6485691037093253728}
   compacterPrefab: {fileID: 5329913625031363496, guid: 41bf9fce0dfae8049ad79703183e4e45,
     type: 3}
   hitPoints: []
   compactHitPoints: []
+  displayedValue: 0
 --- !u!1001 &581185647827877952
 PrefabInstance:
   m_ObjectHideFlags: 0

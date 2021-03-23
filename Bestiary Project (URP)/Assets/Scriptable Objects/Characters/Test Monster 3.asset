@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
+  m_Name: Test Monster 3
+  m_EditorClassIdentifier: 
+  characterName: Quillbeast
+  characterCode: quillbeasttest
+  characterType: 0
+  characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
+  characterIconColor: {r: 1, g: 0.7843818, b: 0.514151, a: 1}
+  hitPoints: 20
+  armored: 0
+  resistances: 
+  weaknesses: 
+  speed: 3
+  movement: 2
+  actions:
+  - {fileID: 11400000, guid: fc68234b88fcf334abbd67b5cf205be0, type: 2}
+  - {fileID: 11400000, guid: 35796de6d8d6c2243a480801a8aab467, type: 2}
+  - {fileID: 11400000, guid: 6293ff723c7d4ae48b830fb494068ca8, type: 2}
+  - {fileID: 11400000, guid: c0bf8022a2d02234db3499102bf3ad99, type: 2}
+  pageNumber: 0
+  entry: {fileID: 0}

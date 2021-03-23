@@ -8,14 +8,18 @@ using UnityEngine.SceneManagement;
 public class Book : MonoBehaviour
 {
     public Transform binding;
+    public GameObject mercBinding;
+    public Transform monsterBinding;
     public static Book instance;
     public static List<Entry> monsterEntries;
+    public static List<Entry> mercEntries;
     public static Entry currentEntry;
     public int pageNumber = 0;
     public ActionDescription descriptionsList;
     public static GraphicRaycaster GR;
     public GameObject pagePrefab;
-    public List<Page> pages = new List<Page>();
+    public List<Page> monsterPages = new List<Page>();
+    public List<Page> mercPages = new List<Page>();
     public GameObject actionCanvas;
     public GameObject statCanvas;
 
@@ -29,6 +33,7 @@ public class Book : MonoBehaviour
             GR = GetComponent<GraphicRaycaster>();
             // Replace this part when a save/load system works
             monsterEntries = new List<Entry>();
+            mercEntries = new List<Entry>();
 
             OnLoadActions(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
@@ -48,13 +53,27 @@ public class Book : MonoBehaviour
         {
             if (monsterEntries[i].page == null)
             {
-                GameObject newPage = Instantiate(pagePrefab, binding);
+                GameObject newPage = Instantiate(pagePrefab, monsterBinding);
                 Page p = newPage.GetComponent<Page>();
-                pages.Add(p);
+                monsterPages.Add(p);
                 p.entry = monsterEntries[i];
                 monsterEntries[i].page = p;
                 monsterEntries[i].origin.pageNumber = i;
                 p.entry.CreateChecks();
+            }
+        }
+        for (int i = 0; i < mercEntries.Count; i++)
+        {
+            if(mercEntries[i].page == null)
+            {
+                GameObject newPage = Instantiate(pagePrefab, mercBinding.transform);
+                Page p = newPage.GetComponent<Page>();
+                mercPages.Add(p);
+                p.entry = mercEntries[i];
+                mercEntries[i].page = p;
+                mercEntries[i].origin.pageNumber = i;
+                // update the stats here
+                p.entry.CreateChecksMerc();
             }
         }
         GameManager.bookFilled = true;
@@ -79,25 +98,44 @@ public class Book : MonoBehaviour
         StatsUpdated.Invoke();
     }
 
-    public void OpenPages(bool open, int page)
+    public void OpenPages(bool open, bool monsters, int page)
     {
         binding.gameObject.SetActive(open);
+        mercBinding.SetActive(!monsters);
         pageNumber = page;
     }
 
     private void Update()
     {
+        if (!GameManager.bookFilled) return;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) pageNumber--;
         if (Input.GetKeyDown(KeyCode.RightArrow)) pageNumber++;
-        if (pageNumber < 0) pageNumber = pages.Count - 1;
-        else if (pageNumber >= pages.Count) pageNumber = 0;
-        if (monsterEntries.Count > 0)
+        
+        if (pageNumber < 0) pageNumber = (mercBinding.activeSelf ? mercPages.Count : monsterPages.Count) - 1;
+        else if (pageNumber >= (mercBinding.activeSelf ? mercPages.Count : monsterPages.Count)) pageNumber = 0;
+
+        if (!mercBinding.activeSelf)
         {
-            currentEntry = monsterEntries[pageNumber];
-            for (int i = 0; i < pages.Count; i++)
+            if (monsterEntries.Count > 0)
             {
-                if (i != pageNumber) pages[i].gameObject.SetActive(false);
-                else pages[i].gameObject.SetActive(true);
+                currentEntry = monsterEntries[pageNumber];
+                for (int i = 0; i < monsterPages.Count; i++)
+                {
+                    if (i != pageNumber) monsterPages[i].gameObject.SetActive(false);
+                    else monsterPages[i].gameObject.SetActive(true);
+                }
+            }
+        }
+        else
+        {
+            if (mercEntries.Count > 0)
+            {
+                currentEntry = mercEntries[pageNumber];
+                for (int i = 0; i < mercPages.Count; i++)
+                {
+                    if (i != pageNumber) mercPages[i].gameObject.SetActive(false);
+                    else mercPages[i].gameObject.SetActive(true);
+                }
             }
         }
     }
@@ -111,6 +149,8 @@ public class Book : MonoBehaviour
         instance.actionCanvas.SetActive(true);
         instance.actionCanvas.transform.GetChild(0).gameObject.SetActive(true);
         instance.actionCanvas.transform.GetChild(1).gameObject.SetActive(true);
+        GameManager.openWindows.Add(instance.actionCanvas);
+        GameManager.focusedWindow = instance.actionCanvas;
     }
     public static void OpenStatEditing(Entry.StatEntries stat)
     {
@@ -122,5 +162,8 @@ public class Book : MonoBehaviour
         }
         s.SetActive(true);
         canvas.SetActive(true);
+        GameManager.openWindows.Add(canvas);
+        GameManager.openWindows.Add(s);
+        GameManager.focusedWindow = s;
     }
 }

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: Bleeding
   m_EditorClassIdentifier: 
   debuffName: Bleeding
+  bookDescription: 
+  tooltipString: <b>Bleeding:</b> Deals cutting damage at the start of the characters
+    turn.
   affectedCharacter: {fileID: 0}
   debuffType: 0
   controlType: 0
