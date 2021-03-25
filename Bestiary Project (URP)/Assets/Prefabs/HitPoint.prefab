@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4213073591434836935}
   - component: {fileID: 4204856617653468511}
   - component: {fileID: 2735349951401630724}
+  - component: {fileID: 8493294101766957542}
   m_Layer: 5
   m_Name: HitPoint
   m_TagString: Untagged
@@ -74,3 +75,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8493294101766957542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9170759876029831411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfd8d42680d109e498cb0424f4748ead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  image: {fileID: 2735349951401630724}
+  full: {fileID: 21300000, guid: b0a823cdfabe4cf4e83b061fdfe903f1, type: 3}
+  half: {fileID: 21300000, guid: 208a4234daefc3141942700466ac0bbc, type: 3}
+  empty: {fileID: 21300000, guid: ebf2bd35a14783f43950b25b982ca35e, type: 3}
+  current: {fileID: 21300000, guid: b0a823cdfabe4cf4e83b061fdfe903f1, type: 3}
+  healthyColor: {r: 0.9960785, g: 0, b: 0, a: 1}
+  poisonedColor: {r: 0.2153039, g: 1, b: 0, a: 1}
+  armoredColor: {r: 1, g: 0.5835624, b: 0, a: 1}

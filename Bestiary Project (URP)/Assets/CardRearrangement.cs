@@ -29,6 +29,9 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     public TextMeshProUGUI description;
     public TextMeshProUGUI actionName;
+    private bool editable = true;
+
+    int frameCount = 0;
 
     private void Start()
     {
@@ -40,7 +43,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private void OnEnable()
     {
         BookActionCard.CardUpdated += UpdateIcons;
-        UpdateIcons();
+        UpdateIcons(false);
     }
     private void OnDisable()
     {
@@ -49,14 +52,28 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     private void Update()
     {
+        if (Book.currentEntry.isMerc)
+        {
+            editable = false;
+        }
+        else editable = true;
+
+        if (frameCount >= 10)
+        {
+            UpdateIcons(Book.currentEntry.isMerc);
+            frameCount = 0;
+        }
+        frameCount++;
+
         priorityIndex = dragging ? e.transform.GetSiblingIndex() +1 : transform.GetSiblingIndex() + 1;
         priorityIndex = Mathf.Clamp(priorityIndex, 1,4);
         priorityNumber.text = priorityIndex.ToString();
     }
 
-    public void UpdateIcons()
+    public void UpdateIcons(bool merc)
     {
-        if (Book.currentEntry.activeAction != actionCheck) return;
+        if(!merc)
+            if (Book.currentEntry.activeAction != actionCheck) return;
         description.text = actionCheck.guessAction.description;
         actionName.text = actionCheck.guessAction.actionName != null ? actionCheck.guessAction.actionName : "Unnamed Action";
         for (int i = 0; i < icons.Count; i++)
@@ -199,6 +216,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        if (!editable) return;
         clickOffset = eventData.position - (Vector2)transform.position;
         e = Instantiate(empty);
         e.transform.parent = cardHolder;
@@ -209,6 +227,8 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     public void OnDrag(PointerEventData eventData)
     {
+        if (!editable) return;
+
         transform.position = eventData.position - clickOffset;
         hits.Clear();
         Book.GR.Raycast(eventData, hits);
@@ -245,6 +265,8 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!editable) return;
+
         int index = e.transform.GetSiblingIndex();
         Destroy(e);
         transform.parent = cardHolder;
@@ -255,6 +277,8 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (!editable) return;
+
         StartCoroutine(ClickDelay());
     }
     IEnumerator ClickDelay()

@@ -14,7 +14,8 @@ public class BookActionCard : MonoBehaviour
     public string actionDescription, targetingDescription, outcomeDescription;
     public string fullDescription;
     private Action guess;
-    public static event System.Action CardUpdated;
+    public static event System.Action<bool> CardUpdated;
+    private bool editable = true;
     private void Awake()
     {
         instance = this;
@@ -26,7 +27,7 @@ public class BookActionCard : MonoBehaviour
         instance.SetOutcome();
         instance.SetFullDescription();
 
-        CardUpdated.Invoke();
+        CardUpdated.Invoke(false);
     }
     private void Start()
     {
@@ -34,14 +35,24 @@ public class BookActionCard : MonoBehaviour
     }
     private void OnEnable()
     {
-        guess = Book.currentEntry.isMerc ? Book.currentEntry.activeAction.originalAction : Book.currentEntry.activeAction.guessAction;
+        guess = Book.currentEntry.activeAction.guessAction;
 
         actionNameInput.text = guess.actionName;
         CardUpdate();
     }
     private void Update()
     {
-        
+        if (Book.currentEntry.isMerc)
+        {
+            editable = false;
+            guess.targetingSet = true;
+            guess.outcomeSet = true;
+            guess.descriptionSet = true;
+        }
+        else
+        {
+            editable = true;
+        }
     }
     public void SetFullDescription()
     {
@@ -49,7 +60,7 @@ public class BookActionCard : MonoBehaviour
         string defaultAD = "When *...";
         string defaultTD = "if...";
         string defaultOD = "then...";
-        if (guess.descriptionSet) fullDescription += "When * " + actionDescription;
+        if (guess.descriptionSet) fullDescription += "When * " + (Book.currentEntry.isMerc ? "is placed in a new position" : actionDescription);
         else fullDescription += defaultAD;
         if (!Book.currentEntry.isMerc)
         {
@@ -71,6 +82,8 @@ public class BookActionCard : MonoBehaviour
     }
     public void OpenDescription()
     {
+        if (!editable) return;
+
         description.SetActive(true);
         GameManager.openWindows.Add(description);
         GameManager.focusedWindow = description;
@@ -87,11 +100,15 @@ public class BookActionCard : MonoBehaviour
     }
     public void SetName()
     {
+        if (!editable) return;
+
         guess.actionName = actionNameInput.text;
         CardUpdate();
     }
     public void OpenTargeting()
     {
+        if (!editable) return;
+
         targeting.SetActive(true);
         GameManager.openWindows.Add(targeting);
         GameManager.focusedWindow = targeting;
@@ -203,7 +220,7 @@ public class BookActionCard : MonoBehaviour
                 line += "is not near any allies, and ";
                 break;
             case Action.Position.NotNearEnemy:
-                line += "is not near any enemiies, and ";
+                line += "is not near any enemies, and ";
                 break;
             case Action.Position.Irrelevant:
                 break;
@@ -225,7 +242,7 @@ public class BookActionCard : MonoBehaviour
                 break;
             case Action.Shape.ThreeByThree:
                 line += "can hit " + (guess.minimumHits == 1 ? "" : "at least " + guess.minimumHits.ToString()) + " " + target + " with a blast";
-                if (guess.canHitSelf) line += "originating from itself";
+                if (guess.canHitSelf) line += " originating from itself";
                 break;
         }
         if ((guess.shape == Action.Shape.Single && !guess.canHitSelf) || (guess.shape != Action.Shape.Single))
@@ -266,6 +283,8 @@ public class BookActionCard : MonoBehaviour
     }
     public void OpenOutcome()
     {
+        if (!editable) return;
+
         outcome.SetActive(true);
         GameManager.openWindows.Add(outcome);
         GameManager.focusedWindow = outcome;

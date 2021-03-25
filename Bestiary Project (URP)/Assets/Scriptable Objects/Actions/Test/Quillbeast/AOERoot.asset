@@ -19,7 +19,7 @@ MonoBehaviour:
   descriptionIndex: 4
   actionType: 4
   actionPriority: 2
-  debuff: {fileID: 11400000, guid: c36a82e89343eea4298631be4a265c85, type: 2}
+  debuff: {fileID: 11400000, guid: eaf2fa37ea704f045a0cee7a43cd6670, type: 2}
   buff: {fileID: 0}
   position: 0
   useBeingAttackedOverride: 0

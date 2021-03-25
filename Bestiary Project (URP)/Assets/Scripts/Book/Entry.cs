@@ -39,7 +39,7 @@ public class Entry : MonoBehaviour
         statChecks.Add(StatEntries.Resistances, false); statChecks.Add(StatEntries.Weaknesses, false);
         guess.characterType = CharacterStats.CharacterTypes.NPC;
         guess.speed = 5;
-        guess.movement = 2;
+        guess.movement = 1;
         guess.hitPoints = 1;
         for (int i = 0; i < 4; i++)
         {
@@ -66,6 +66,13 @@ public class Entry : MonoBehaviour
         //page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
         page.icon.color = origin.characterIconColor;
+
+        for (int i = 0; i < 4; i++)
+        {
+            ActionCheck ac = new ActionCheck(origin, origin.actions[i]);
+            actionChecks.Add(ac);
+        }
+        page.ConnectActions();
     }
 
     private void Update()
@@ -160,6 +167,15 @@ public class Entry : MonoBehaviour
         }
     }
 
+    public ActionCheck CheckByGuess(Action guessAction)
+    {
+        ActionCheck output = null;
+        for (int i = 0; i < actionChecks.Count; i++)
+        {
+            if (actionChecks[i].guessAction == guessAction) output = actionChecks[i];
+        }
+        return output;
+    }
 }
 
 public class ActionCheck

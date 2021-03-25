@@ -24,6 +24,7 @@ public class Book : MonoBehaviour
     public GameObject statCanvas;
 
     public static event System.Action StatsUpdated;
+    public static bool openOnMerc = false;
 
     private void Awake()
     {
@@ -34,7 +35,6 @@ public class Book : MonoBehaviour
             // Replace this part when a save/load system works
             monsterEntries = new List<Entry>();
             mercEntries = new List<Entry>();
-
             OnLoadActions(SceneManager.GetActiveScene(), LoadSceneMode.Single);
         }
         else if (instance != null && instance != this)
@@ -90,7 +90,6 @@ public class Book : MonoBehaviour
 
     public void OnLoadActions(Scene scene, LoadSceneMode mode)
     {
-
     }
 
     public static void UpdateStats()
@@ -98,46 +97,20 @@ public class Book : MonoBehaviour
         StatsUpdated.Invoke();
     }
 
-    public void OpenPages(bool open, bool monsters, int page)
+    public void OpenPages(bool open, int page)
     {
         binding.gameObject.SetActive(open);
-        mercBinding.SetActive(!monsters);
+        mercBinding.SetActive(openOnMerc);
+        monsterBinding.gameObject.SetActive(!openOnMerc);
         pageNumber = page;
+        PageChange();
     }
 
     private void Update()
     {
         if (!GameManager.bookFilled) return;
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) pageNumber--;
-        if (Input.GetKeyDown(KeyCode.RightArrow)) pageNumber++;
-        
-        if (pageNumber < 0) pageNumber = (mercBinding.activeSelf ? mercPages.Count : monsterPages.Count) - 1;
-        else if (pageNumber >= (mercBinding.activeSelf ? mercPages.Count : monsterPages.Count)) pageNumber = 0;
-
-        if (!mercBinding.activeSelf)
-        {
-            if (monsterEntries.Count > 0)
-            {
-                currentEntry = monsterEntries[pageNumber];
-                for (int i = 0; i < monsterPages.Count; i++)
-                {
-                    if (i != pageNumber) monsterPages[i].gameObject.SetActive(false);
-                    else monsterPages[i].gameObject.SetActive(true);
-                }
-            }
-        }
-        else
-        {
-            if (mercEntries.Count > 0)
-            {
-                currentEntry = mercEntries[pageNumber];
-                for (int i = 0; i < mercPages.Count; i++)
-                {
-                    if (i != pageNumber) mercPages[i].gameObject.SetActive(false);
-                    else mercPages[i].gameObject.SetActive(true);
-                }
-            }
-        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) { pageNumber--; PageChange(); }
+        if (Input.GetKeyDown(KeyCode.RightArrow)) { pageNumber++; PageChange(); }
     }
 
     public static void OpenActionEditing()
@@ -165,5 +138,47 @@ public class Book : MonoBehaviour
         GameManager.openWindows.Add(canvas);
         GameManager.openWindows.Add(s);
         GameManager.focusedWindow = s;
+    }
+    public void EditingText(bool editing)
+    {
+        GameManager.textInput = editing;
+    }
+    public void PageChange()
+    {
+        Page openPage = null;
+        if (pageNumber < 0) pageNumber = (openOnMerc ? mercPages.Count : monsterPages.Count) - 1;
+        else if (pageNumber >= (openOnMerc ? mercPages.Count : monsterPages.Count)) pageNumber = 0;
+        if (!openOnMerc)
+        {
+            if (monsterEntries.Count > 0)
+            {
+                currentEntry = monsterEntries[pageNumber];
+                for (int i = 0; i < monsterPages.Count; i++)
+                {
+                    if (i != pageNumber) monsterPages[i].gameObject.SetActive(false);
+                    else { monsterPages[i].gameObject.SetActive(true); openPage = monsterPages[i]; }
+                }
+            }
+        }
+        else
+        {
+            if (mercEntries.Count > 0)
+            {
+                currentEntry = mercEntries[pageNumber];
+                for (int i = 0; i < mercPages.Count; i++)
+                {
+                    if (i != pageNumber) mercPages[i].gameObject.SetActive(false);
+                    else { mercPages[i].gameObject.SetActive(true); openPage = mercPages[i]; }
+                }
+            }
+        }
+        if (openPage != null) openPage.UpdateName();
+    }
+    public void OpenMercs(bool check)
+    {
+        openOnMerc = check;
+        mercBinding.SetActive(openOnMerc);
+        monsterBinding.gameObject.SetActive(!openOnMerc);
+        PageChange();
     }
 }

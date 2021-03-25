@@ -11,6 +11,7 @@ public class SimpleTooltip : MonoBehaviour
     public Vector2 extraOffset, offset, modifier;
     public TextMeshProUGUI tooltipText;
     public Vector2 mousepos;
+    public SimpleTooltipSpawner spawn;
 
     private void Start()
     {
@@ -34,5 +35,7 @@ public class SimpleTooltip : MonoBehaviour
         offset = ((tooltip.GetComponent<RectTransform>().sizeDelta / 2) + extraOffset)*modifier;
         tooltip.transform.position = Input.mousePosition + (Vector3)offset;
         tooltipText.text = tooltipString;
+
+        if (spawn.gameObject == null) Destroy(gameObject);
     }
 }

@@ -78,9 +78,11 @@ public class CharacterSheet : MonoBehaviour
         instance.sheet.SetActive(true);
     }
 
-    public void ShowEntry()
+    public void ShowEntry(Character character)
     {
-        Book.instance.pageNumber = currentCharacter.stats.pageNumber;
+        Book.openOnMerc = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer;
+
+        Book.instance.pageNumber = character == null ? currentCharacter.stats.pageNumber : character.stats.pageNumber;
         GameManager.ChangeState(GameManager.GameState.Journal);
         HideSheet();
     }

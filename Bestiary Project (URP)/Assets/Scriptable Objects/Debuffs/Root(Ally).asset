@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d783d96f084428b4db6090996a6b0f5d, type: 3}
-  m_Name: Root
+  m_Name: Root(Ally)
   m_EditorClassIdentifier: 
   debuffName: Root
   bookDescription: 

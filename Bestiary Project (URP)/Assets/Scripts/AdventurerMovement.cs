@@ -65,12 +65,18 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     {
         if (currentNode == null)
         {
-            currentNode = CurrentNode();
-            
+            currentNode = CurrentNode();            
         }
         else
         {
             if (currentNode.occupant == null) currentNode.occupant = character;
+            if(GameManager.gameState == GameManager.GameState.Normal && 
+                CombatManager.instance.currentStage == CombatManager.CombatStage.Setup && 
+                !CombatLogCard.displayingPast &&
+                !selected && !moving)
+            {
+                if (transform.position != currentNode.tile.transform.position) transform.position = currentNode.tile.transform.position;
+            }
         }
         if (selected)
         {
@@ -239,6 +245,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void AIMovement()
     {
+        int currentMovement = character.stats.entry.guess.movement - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0);
         List<Node> destinations = new List<Node>();
         if (!character.conditions.Contains(Debuff.ControlType.Root))
             destinations = GenerateDestinationList(movementLeft);
@@ -258,7 +265,9 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         Node destination = destinations.Count > 0 ? destinations[UnityEngine.Random.Range(0, destinations.Count)] : currentNode;
         destinationNodes = destinations;
         targetNode = destination;
-
+        destinations.Clear();
+        if (!character.conditions.Contains(Debuff.ControlType.Root)) destinations = GenerateDestinationList(currentMovement);
+        destinationNodes = destinations;
         StartCoroutine(MoveToNewLocation(true));
     }
     public void OnPointerDown(PointerEventData eventData)

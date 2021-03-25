@@ -11,6 +11,7 @@ public class Page : MonoBehaviour
     public TMP_InputField nameInput;
     public List<CardRearrangement> actionCards = new List<CardRearrangement>();
     public Image icon;
+    public StatsEditor editor;
 
 
     private void Start()
@@ -19,7 +20,7 @@ public class Page : MonoBehaviour
         //entry.CreateChecks();
     }
 
-    private void OnEnable()
+    public void UpdateName()
     {
         if (Book.currentEntry.isMerc) nameInput.text = Book.currentEntry.origin.characterName;
         else nameInput.text = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : null;
@@ -58,5 +59,16 @@ public class Page : MonoBehaviour
     public void CloseBook()
     {
         GameManager.instance.OpenJournal();
+    }
+
+    public void EditingText(bool editing)
+    {
+        GameManager.textInput = editing;
+    }
+
+    public void ChangePage(bool forward)
+    {
+        Book.instance.pageNumber += forward ? 1 : -1;
+        Book.instance.PageChange();
     }
 }

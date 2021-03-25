@@ -13,22 +13,23 @@ public class BookActionOutcome : MonoBehaviour
     public List<Debuff> debuffs = new List<Debuff>();
     private void OnEnable()
     {
-        string titleText = title.text;
-        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
-        titleText =  titleText.Replace("*", replacement);
-        title.text = titleText;
 
         SetActionType();
         SetBuffOrDebuff();
         SetTargetGroup();
         SetDamageType();
         SetCritical();
+        Book.currentEntry.activeAction.guessAction.outcomeSet = true;
     }
 
     private void Update()
     {
-        
-        
+        string titleText = title.text;
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+        titleText = titleText.Replace("*", replacement);
+        title.text = titleText;
+
+
     }
 
     public void Close()

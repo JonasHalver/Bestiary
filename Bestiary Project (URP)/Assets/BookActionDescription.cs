@@ -22,11 +22,6 @@ public class BookActionDescription : MonoBehaviour
     }
     private void OnEnable()
     {
-        string titleText = title.text;
-        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
-
-        titleText = titleText.Replace("*", replacement);
-        title.text = titleText;
     }
 
     public void GenerateList()
@@ -47,6 +42,12 @@ public class BookActionDescription : MonoBehaviour
             int index = Book.currentEntry.activeDescriptionIndices[i];
             if (index > -1) buttons[index].GetComponent<Button>().interactable = false;
         }
+        string titleText = title.text;
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+
+        titleText = titleText.Replace("*", replacement);
+        title.text = titleText;
+
     }
 
     public void NewSelection(int index)

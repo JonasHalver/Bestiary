@@ -11,10 +11,6 @@ public class BookActionTarget : MonoBehaviour
 
     private void OnEnable()
     {
-        string titleText = title.text;
-        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
-        titleText = titleText.Replace("*", replacement);
-        title.text = titleText;
 
         SetPosition();
         SetNearCount();
@@ -22,6 +18,15 @@ public class BookActionTarget : MonoBehaviour
         SetMinimumHits();
         SetTargetStatus();
         SetTargetPriority();
+        Book.currentEntry.activeAction.guessAction.targetingSet = true;
+    }
+    private void Update()
+    {
+        string titleText = title.text;
+        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+        titleText = titleText.Replace("*", replacement);
+        title.text = titleText;
+
     }
     public void ValueChanged()
     {

@@ -21,6 +21,10 @@ public class InputManager : MonoBehaviour
     void Update()
     {
         //if (Input.GetButtonDown("OpenPauseMenu")) OpenPauseMenu.Invoke();
+        if (GameManager.textInput)
+        {
+            return;
+        }
         if (Input.GetButtonDown("OpenJournal")) OpenJournal.Invoke();
         if (Input.GetButtonDown("OpenGlossary")) OpenGlossary.Invoke();
         if (Input.GetButtonDown("Pause")) Pause.Invoke();

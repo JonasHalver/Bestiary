@@ -16,6 +16,12 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
         tooltip = Instantiate(tooltipPrefab);
         SimpleTooltip stt = tooltip.GetComponent<SimpleTooltip>();
         stt.tooltipString = tooltipString;
+        stt.spawn = this;
+    }
+
+    private void OnDisable()
+    {
+        Destroy(tooltip);
     }
 
     public void OnPointerExit(PointerEventData eventData)

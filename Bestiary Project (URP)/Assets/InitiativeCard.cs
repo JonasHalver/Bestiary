@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class InitiativeCard : MonoBehaviour
+public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler
 {
     public Character actor;
     public Image background;
@@ -13,6 +14,25 @@ public class InitiativeCard : MonoBehaviour
     public Color bgMonster, bgMerc, bgHighlight;
     public bool isMerc;
     public int initiative = 0;
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        CharacterSheet.instance.ShowEntry(actor);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+        {
+            actor.HighlightAction();
+        }
+        CharacterSheet.ShowSheet(actor);
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+            CombatGrid.StopHighlight();
+    }
 
     private void UpdateCard()
     {

@@ -18,6 +18,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public List<HealthBarEffects> effects = new List<HealthBarEffects>();
     bool displayingDamageOrHeal = false;
     public HitPointDisplay hpd;
+    private Color bgColor;
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -25,6 +26,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             character.HighlightAction();
         }
+        CharacterSheet.ShowSheet(character);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -35,6 +37,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
     private void Start()
     {
+        bgColor = background.color;
         maxWidth = bar.GetComponent<RectTransform>().rect.width;
         //nameText.text = character.stats.characterName;
         character.AcquiredDebuff += DisplayEffect;
@@ -59,8 +62,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 
         hitPoints.text = character.currentHitpoints + "/" + character.stats.hitPoints;
 
-        
-        nameText.text = character.stats.characterType== CharacterStats.CharacterTypes.Adventurer ? character.stats.characterName : (character.entry.guess.characterName != null ? character.entry.guess.characterName: "Unnamed Monster");
+        string namestring = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer ? character.stats.characterName : (character.entry.guess.characterName ?? "Unnamed Monster");
+        nameText.text = namestring != "" ? namestring : "Unnamed Monster";
         //hpd.value = character.currentHitpoints;
         DisplayHitPoints();
         foreach(HealthBarEffects effect in effects)
@@ -75,7 +78,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (character.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
         {
-            hpd.value = character.currentHitpoints;
+            hpd.value = character.stats.hitPoints;
+            hpd.damageTaken = character.damageTaken;
         }
         else
         {
@@ -87,7 +91,8 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
                     guess = Book.monsterEntries[i].guess;
                 }
             }
-            hpd.value = guess.hitPoints - character.damageTaken;
+            hpd.value = guess.hitPoints;
+            hpd.damageTaken = character.damageTaken;
         }
         
     }
@@ -108,7 +113,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         displayingDamageOrHeal = true;
         background.color = Color.green;
         yield return new WaitForSeconds(0.5f);
-        background.color = Color.white;
+        background.color = bgColor;
         displayingDamageOrHeal = false;
     }
 
@@ -117,7 +122,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         displayingDamageOrHeal = true;
         background.color = Color.red;
         yield return new WaitForSeconds(0.5f);
-        background.color = Color.white;
+        background.color = bgColor;
         displayingDamageOrHeal = false;
     }
 
@@ -175,7 +180,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         if (eventData.pointerId == -1)
         {
-            CharacterSheet.ShowSheet(character);
+            CharacterSheet.instance.ShowEntry(character);
         }
     }
 }

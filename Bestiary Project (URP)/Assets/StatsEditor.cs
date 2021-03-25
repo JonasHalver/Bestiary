@@ -10,7 +10,8 @@ public class StatsEditor : MonoBehaviour
 
     [Header("Hit Points")]
     public HitPointDisplay hitPointDisplay;
-
+    public float hitPointValue = 0;
+    public float displayedValue = 0;
     [Header("Speed")]
     public TextMeshProUGUI speedText;
 
@@ -26,11 +27,12 @@ public class StatsEditor : MonoBehaviour
     [Header("Weaknesses")]
     public Transform weaknessesGrid;
     public List<GameObject> weaknessIcons = new List<GameObject>();
+
+    private bool editable;
+     
     // Start is called before the first frame update
     void Start()
-    {
-
-        
+    {        
         for (int i = 1; i < movementGrid.childCount; i++)
         {
             tiles.Add(movementGrid.GetChild(i).GetComponent<Image>());
@@ -39,6 +41,8 @@ public class StatsEditor : MonoBehaviour
     }
     private void Update()
     {
+        editable = !Book.currentEntry.isMerc;
+        hitPointValue = Book.currentEntry.guess.hitPoints;
     }
 
     private void OnEnable()
@@ -59,13 +63,17 @@ public class StatsEditor : MonoBehaviour
         DisplayResistances();
         DisplayWeaknesses();
     }
-
+    
     public void DisplayHitPoints()
     {
+        hitPointDisplay.value = 1;
+        hitPointDisplay.ClearHearts();
+
         if (!Book.currentEntry.isMerc)
             hitPointDisplay.value = (int)Book.currentEntry.guess.hitPoints;
         else
             hitPointDisplay.value = (int)Book.currentEntry.origin.hitPoints;
+        displayedValue = hitPointDisplay.value;
     }
     public void DisplaySpeed()
     {
@@ -218,6 +226,8 @@ public class StatsEditor : MonoBehaviour
 
     public void OpenStatEditor(int stat)
     {
+        if (!editable) return;
+
         Book.OpenStatEditing((Entry.StatEntries)stat);
     }
 }

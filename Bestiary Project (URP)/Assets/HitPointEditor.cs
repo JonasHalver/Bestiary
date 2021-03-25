@@ -13,13 +13,15 @@ public class HitPointEditor : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
     private void OnEnable()
     {
         value = (int)Book.currentEntry.guess.hitPoints;
         slider.value = value;
         input.text = value.ToString();
+        display.ClearHearts();
+        display.value = value;
     }
 
     // Update is called once per frame

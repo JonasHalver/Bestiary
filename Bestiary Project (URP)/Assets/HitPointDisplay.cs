@@ -6,11 +6,21 @@ public class HitPointDisplay : MonoBehaviour
 {
     [Range(0,50)]
     public float value = 1;
+    [Range(0, 50)]
+    public float damageTaken = 0;
     public bool displayHalf;
-    public GameObject hitPointPrefab, halfHitPrefab, hitPointHolder, compacterPrefab;
-    public List<GameObject> hitPoints = new List<GameObject>();
-    public List<GameObject> compactHitPoints = new List<GameObject>();
-    public float displayedValue;
+    [Header ("Prefabs")]
+    public GameObject hitPointPrefab, halfHitPrefab, emptyHitPointPrefab, hitPointHolder, compacterPrefab;
+    [Header("Spawned Objects")]
+    public List<HitPoint> hearts = new List<HitPoint>();
+    public List<GameObject> emptyHearts = new List<GameObject>();
+    private GameObject newHeart, newCompact;
+    public List<GameObject> fullHearts = new List<GameObject>();
+    public List<GameObject> displayedHearts = new List<GameObject>();
+    public List<GameObject> compactFull = new List<GameObject>();
+    public List<GameObject> compactEmpty = new List<GameObject>();
+    public float displayedValue =0;
+    public bool shouldBeUpdatingHearts = false;
 
     // Start is called before the first frame update
     void Start()
@@ -21,88 +31,203 @@ public class HitPointDisplay : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (hitPoints.Count >= 6)
-        {
-            int count = 0;
-            for (int i = 0; i < 5; i++)
-            {
-                Destroy(hitPoints[i].gameObject);
-                hitPoints.RemoveAt(i);
-                i--;
-                count++;
-                if (count == 5) break;
-            }
-            GameObject newCompact = Instantiate(compacterPrefab, transform);
-            newCompact.transform.SetAsFirstSibling();
-            for (int i = 0; i < 5; i++)
-            {
-                GameObject newHP = Instantiate(hitPointPrefab, newCompact.transform);
-                compactHitPoints.Add(newHP);
-            }
-        }
-        if (hitPoints.Count == 0 && compactHitPoints.Count > 0)
-        {
-            GameObject compacter = compactHitPoints[0].transform.parent.gameObject;
-            int count = 0;
-            for (int i = 0; i < compactHitPoints.Count; i++)
-            {
-                compactHitPoints.RemoveAt(i);
-                i--;
-                count++;
-                if (count == 5) break;
-            }
-            Destroy(compacter);
-        }
-
+        displayedValue = Mathf.Clamp(displayedValue, 0, 50);
         // Spawning hearts
-        if (displayedValue < value)
+        if(hearts.Count < value)
         {
-            float difference = value - displayedValue;
-            if (difference > 0.5f)
-            {
-                GameObject newHP = Instantiate(hitPointPrefab, hitPointHolder.transform);
-                hitPoints.Add(newHP);
-            }
-            else
-            {
-                GameObject newHalf = Instantiate(halfHitPrefab, hitPointHolder.transform);
-                hitPoints.Add(newHalf);
-                displayHalf = true;
-            }
+            newHeart = Instantiate(hitPointPrefab, hitPointHolder.transform);
+            hearts.Add(newHeart.GetComponent<HitPoint>());
+            displayedHearts.Add(newHeart);
+            displayedValue++;
         }
-        else if (displayedValue > value)
+        if (hearts.Count > value)
         {
-            float difference = displayedValue - value;
-            if (difference < 1f)
+            ClearHearts();
+            return;
+        }
+        for (int i = 0; i < hearts.Count; i++)
+        {
+            if (hearts[i].isFull) fullHearts.Add(hearts[i].gameObject);
+        }
+        if (displayedValue != value - damageTaken && (value - damageTaken) > -1)
+        {
+            shouldBeUpdatingHearts = true;
+            emptyHearts.Clear();
+            for (int i = 0; i < hearts.Count; i++)
             {
-                if (hitPoints.Count > 0)
+                hearts[i].current = hearts[i].full;
+                hearts[i].isFull = true; hearts[i].isHalf = false; hearts[i].isEmpty = false;
+                if (!fullHearts.Contains(hearts[i].gameObject)) fullHearts.Add(hearts[i].gameObject);
+            }
+            int doubleDamageTaken = Mathf.RoundToInt(damageTaken * 2);
+            int count = hearts.Count - 1;
+            for (int i = 0; i < doubleDamageTaken; i++)
+            {
+                if (count > -1)
                 {
-                    if (displayHalf)
+                    if (i % 2 == 0)
                     {
-                        Destroy(hitPoints[hitPoints.Count - 1].gameObject);
-                        hitPoints.RemoveAt(hitPoints.Count - 1);
-                        displayHalf = false;
+                        hearts[count].current = hearts[count].half;
+                        hearts[count].isFull = false; hearts[count].isHalf = true; hearts[count].isEmpty = false;
+                        if (fullHearts.Contains(hearts[count].gameObject)) fullHearts.Remove(hearts[count].gameObject);
                     }
                     else
                     {
-                        Destroy(hitPoints[hitPoints.Count - 1].gameObject);
-                        hitPoints.RemoveAt(hitPoints.Count - 1);
-                        GameObject newHalf = Instantiate(halfHitPrefab, hitPointHolder.transform);
-                        hitPoints.Add(newHalf);
-                        displayHalf = true;
+                        hearts[count].current = hearts[count].empty;
+                        hearts[count].isFull = false; hearts[count].isHalf = false; hearts[count].isEmpty = true;
+                        if (fullHearts.Contains(hearts[count].gameObject)) fullHearts.Remove(hearts[count].gameObject);
+                        emptyHearts.Add(hearts[count].gameObject);
+                        count--;
                     }
-                }
-            }
-            else
-            {
-                if (hitPoints.Count > 0)
-                {
-                    Destroy(hitPoints[0].gameObject);
-                    hitPoints.RemoveAt(0);
+                    displayedValue -= 0.5f;
                 }
             }
         }
+        else shouldBeUpdatingHearts = false;
 
-        displayedValue = hitPoints.Count + compactHitPoints.Count - (displayHalf ? 0.5f : 0);
+        // Compacting
+        if (displayedHearts.Count > 5)
+        {
+            int emptyCount = 0, fullcount = 0;
+            for (int i = 0; i < displayedHearts.Count; i++)
+            {
+                if (displayedHearts[i].GetComponent<HitPoint>().isFull) fullcount++;
+                else if (displayedHearts[i].GetComponent<HitPoint>().isEmpty) emptyCount++;
+            }
+            if (fullcount > 5)
+            {
+                
+                int orderIndex = displayedHearts[0].transform.GetSiblingIndex();
+                newCompact = Instantiate(compacterPrefab, hitPointHolder.transform);
+                compactFull.Add(newCompact);
+                newCompact.transform.SetSiblingIndex(orderIndex);
+                int fcount = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    displayedHearts[i].transform.parent = newCompact.transform;
+                    displayedHearts.RemoveAt(i);
+                    i--;
+                    fcount++;
+                    if (fcount == 5) break;
+                }
+            }
+            if (emptyCount > 5)
+            {
+                int orderindex = displayedHearts[displayedHearts.Count - 1].transform.GetSiblingIndex();
+                newCompact = Instantiate(compacterPrefab, hitPointHolder.transform);
+                compactEmpty.Add(newCompact);
+                int ecount = 0;
+                for (int i = displayedHearts.Count-1; i > 0; i--)
+                {
+                    displayedHearts[i].transform.parent = newCompact.transform;
+                    displayedHearts.RemoveAt(i);
+                    ecount++;
+                    if (ecount == 5) break;
+                }
+                newCompact.transform.SetSiblingIndex(orderindex + 1);
+
+            }
+        }
+        int displayedFull = 0, displayedEmpty = 0;
+        if (displayedHearts.Count > 0)
+        {
+            for (int i = 0; i < displayedHearts.Count; i++)
+            {
+                if (displayedHearts[i].GetComponent<HitPoint>().isFull) displayedFull++;
+                else if (displayedHearts[i].GetComponent<HitPoint>().isEmpty) displayedEmpty++;
+            }
+        }
+        if (displayedFull == 0)
+        {
+            if (compactFull.Count > 0)
+            {
+                List<GameObject> temp = new List<GameObject>();
+                int index = compactFull[compactFull.Count - 1].transform.GetSiblingIndex();
+                for (int i = 0; i < compactFull[compactFull.Count-1].transform.childCount; i++)
+                {
+                    temp.Add(compactFull[compactFull.Count - 1].transform.GetChild(i).gameObject);
+                }
+                for (int i = compactFull[compactFull.Count - 1].transform.childCount-1; i > -1 ; i--)
+                {
+                    Transform h = compactFull[compactFull.Count - 1].transform.GetChild(i);
+                    h.parent = hitPointHolder.transform;
+                    h.SetSiblingIndex(index);
+                    //displayedHearts.Add(h.gameObject);
+                    //temp.Add(h.gameObject);
+                }
+                for (int i = 0; i < displayedHearts.Count; i++)
+                {
+                    temp.Add(displayedHearts[i]);
+                }
+                displayedHearts.Clear();
+                for (int i = 0; i < temp.Count; i++)
+                {
+                    displayedHearts.Add(temp[i]);
+                }
+                Destroy(compactFull[compactFull.Count - 1]);
+                compactFull.RemoveAt(compactFull.Count - 1);
+            }            
+        }
+        if (displayedEmpty == 0)
+        {
+            if (compactEmpty.Count > 0)
+            {
+                List<GameObject> temp = new List<GameObject>();
+
+                int index = compactEmpty[compactEmpty.Count - 1].transform.GetSiblingIndex();
+
+                for (int i = 0; i < compactEmpty[compactEmpty.Count - 1].transform.childCount; i++)
+                {
+                    displayedHearts.Add(compactEmpty[compactEmpty.Count - 1].transform.GetChild(i).gameObject);
+                }
+                for (int i = compactEmpty[compactEmpty.Count - 1].transform.childCount - 1; i > -1; i--)
+                {
+                    Transform h = compactEmpty[compactEmpty.Count - 1].transform.GetChild(i);
+                    h.parent = hitPointHolder.transform;
+                    h.SetSiblingIndex(index);
+                    //displayedHearts.Add(h.gameObject);
+                }
+                //for (int i = 0; i < displayedHearts.Count; i++)
+                //{
+                //    temp.Add(displayedHearts[i]);
+                //}
+                //displayedHearts.Clear();
+                //for (int i = 0; i < temp.Count; i++)
+                //{
+                //    displayedHearts.Add(temp[i]);
+                //}
+                Destroy(compactEmpty[compactEmpty.Count - 1]);
+                compactEmpty.RemoveAt(compactEmpty.Count - 1);
+            }
+        }
+        if (value == 1 && transform.childCount > 1) ClearHearts();
+    }
+
+    public void ClearHearts()
+    {
+        displayedValue = 0;
+        for (int i = 0; i < hearts.Count; i++)
+        {
+            Destroy(hearts[i].gameObject);
+            hearts.RemoveAt(i);
+            i--;
+        }
+        emptyHearts.Clear();
+        fullHearts.Clear();
+        displayedHearts.Clear();
+
+        for (int i = 0; i < compactEmpty.Count; i++)
+        {
+            Destroy(compactEmpty[i]);
+            compactEmpty.RemoveAt(i);
+            i--;
+        }
+
+        for (int i = 0; i < compactFull.Count; i++)
+        {
+            Destroy(compactFull[i]);
+            compactFull.RemoveAt(i);
+            i--;
+        }
     }
 }

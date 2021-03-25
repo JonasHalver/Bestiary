@@ -119,7 +119,7 @@ public class Action : ScriptableObject
             {
                 case Shape.Single:
                     flag2 = true;
-                    if (target == Target.Self) bestTarget = bpi.origin.movement.currentNode;
+                    if (target == Target.Self) possibleTargets.Add(bpi.origin.movement.currentNode);
                     else
                     {
                         foreach (Character actor in CombatManager.actors)
@@ -294,7 +294,7 @@ public class Action : ScriptableObject
         }
 
         // Check priority for tiebreaking
-        if (possibleTargets.Count > 1)
+        if (possibleTargets.Count > 0)
         {
             float dist = 0f, distMin = 10000, distMax = 0f;
             float hp = 0, hpMin = 10000, hpMax = 0;
@@ -409,15 +409,64 @@ public class Action : ScriptableObject
                     break;
                 case TargetPriority.DoesntHaveSameDebuff:
                     List<Node> sameDebuffTargets = new List<Node>();
-                    for (int i = 0; i < possibleTargets.Count; i++)
+                    if (possibleTargets.Count > 0)
                     {
-                        Character pt = possibleTargets[i].occupant;
-                        if (pt != null)
+                        for (int i = 0; i < possibleTargets.Count; i++)
                         {
-                            if (pt.debuffs.Count > 0)
+                            Character pt = possibleTargets[i].occupant;
+                            if (pt != null)
                             {
-                                bool flag = false;
-                                foreach (Debuff d in pt.debuffs)
+                                if (debuff != null)
+                                {
+                                    if (pt.debuffs.Count > 0)
+                                    {
+                                        bool flag = false;
+                                        foreach (Debuff d in pt.debuffs)
+                                        {
+                                            if ((d.debuffType == debuff.debuffType && d.debuffType == Debuff.DebuffType.DamageOverTime) && d.damageType == debuff.damageType)
+                                            {
+                                                flag = true;
+                                            }
+                                            else if ((d.debuffType == debuff.debuffType && d.debuffType == Debuff.DebuffType.Control) && d.controlType == debuff.controlType)
+                                            {
+                                                flag = true;
+                                            }
+                                        }
+                                        if (flag)
+                                        {
+                                            sameDebuffTargets.Add(possibleTargets[i]);
+                                            //possibleTargets.RemoveAt(i);
+                                            //i--;
+                                        }
+                                    }
+                                }
+                                else if (buff != null)
+                                {
+                                    if (pt.buffs.Count > 0)
+                                    {
+                                        bool flag = false;
+                                        foreach (Buff b in pt.buffs)
+                                        {
+                                            if (b.buffType == buff.buffType)
+                                            {
+                                                flag = true;
+                                            }
+                                        }
+                                        if (flag) sameDebuffTargets.Add(possibleTargets[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (bestTarget != null)
+                    {
+                        bool flag = false;
+
+                        if (debuff != null)
+                        {
+                            if (bestTarget.occupant.debuffs.Count > 0)
+                            {
+                                foreach (Debuff d in bestTarget.occupant.debuffs)
                                 {
                                     if ((d.debuffType == debuff.debuffType && d.debuffType == Debuff.DebuffType.DamageOverTime) && d.damageType == debuff.damageType)
                                     {
@@ -428,15 +477,22 @@ public class Action : ScriptableObject
                                         flag = true;
                                     }
                                 }
-                                if (flag)
+                            }
+                        }
+                        else if (buff != null)
+                        {
+                            if (bestTarget.occupant.buffs.Count > 0)
+                            {
+                                foreach (Buff b in bestTarget.occupant.buffs)
                                 {
-                                    sameDebuffTargets.Add(possibleTargets[i]);
-                                    //possibleTargets.RemoveAt(i);
-                                    //i--;
+                                    if (b.buffType == buff.buffType)
+                                    {
+                                        flag = true;
+                                    }
                                 }
                             }
-
                         }
+                        if (flag) flag3 = false;
                     }
                     if (sameDebuffTargets.Count == possibleTargets.Count && possibleTargets.Count > 0) bestTarget = possibleTargets[0];
                     else if (sameDebuffTargets.Count < possibleTargets.Count && sameDebuffTargets.Count != 0)

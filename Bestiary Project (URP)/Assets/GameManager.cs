@@ -11,9 +11,9 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject menuCanvas;
 
-    public GameObject gameOverPanel;
-    public GameObject pauseMenu;
-    public GameObject glossary;
+    //public GameObject gameOverPanel;
+    //public GameObject pauseMenu;
+    //public GameObject glossary;
 
     public bool enemiesWon, alliesWon;
     public static bool paused;
@@ -30,11 +30,13 @@ public class GameManager : MonoBehaviour
     public static GameState gameState = GameState.Normal;
     public GameObject journal;
     private bool flag = false;
-    private bool combatStartSequence = false;
+    public bool combatStartSequence = false;
     public static bool bookFilled, actorsSpawned;
 
     public static GameObject focusedWindow;
     public static List<GameObject> openWindows = new List<GameObject>();
+
+    public static bool textInput;
 
     private void Awake()
     {
@@ -63,10 +65,14 @@ public class GameManager : MonoBehaviour
     }
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
     {
+        gameState = GameState.Normal;
+        combatStartSequence = false;
+        actorsSpawned = false;
         FirstActions();
     }
     public void CombatStartSequence()
     {
+
         if (!bookFilled)
         {
             for (int i = 0; i < enemies.Count; i++)
@@ -164,36 +170,36 @@ public class GameManager : MonoBehaviour
             case GameState.Normal:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, true, Book.instance.pageNumber);
-                    pauseMenu.SetActive(false);
-                    glossary.SetActive(false);
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    MenuUI.PauseMenu.SetActive(false);
+                    MenuUI.Glossary.SetActive(false);
                     flag = true;
                 }
                 break;
             case GameState.PauseMenu:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, true, Book.instance.pageNumber);
-                    pauseMenu.SetActive(true);
-                    glossary.SetActive(false);
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    MenuUI.PauseMenu.SetActive(true);
+                    MenuUI.Glossary.SetActive(false);
                     flag = true;
                 }
                 break;
             case GameState.Journal:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(true, true, Book.instance.pageNumber);
-                    pauseMenu.SetActive(false);
-                    glossary.SetActive(false);
+                    Book.instance.OpenPages(true, Book.instance.pageNumber);
+                    MenuUI.PauseMenu.SetActive(false);
+                    MenuUI.Glossary.SetActive(false);
                     flag = true;
                 }
                 break;
             case GameState.Glossary:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, true, Book.instance.pageNumber);
-                    pauseMenu.SetActive(false);
-                    glossary.SetActive(true);
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    MenuUI.PauseMenu.SetActive(false);
+                    MenuUI.Glossary.SetActive(true);
                     flag = true;
                 }
                 break;
@@ -300,30 +306,21 @@ public class GameManager : MonoBehaviour
             ChangeState(GameState.PauseMenu);
         else ChangeState(GameState.Normal);
     }
-    public void Journal()
-    {
-        journal.SetActive(true);
-    }
+
     public void Exit()
     {
         Application.Quit();
     }
 
-    public void Glossary()
-    {
-        glossary.SetActive(!glossary.activeSelf);
-    }
-
     public void GameOver()
     {
-        TextMeshProUGUI winText = gameOverPanel.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI winText = MenuUI.GameOver.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         winText.text = alliesWon ? "You Win!" : "You Lose!";
-        gameOverPanel.SetActive(true);
+        MenuUI.GameOver.SetActive(true);
     }
 
     public void Restart()
     {
-        paused = false;
         CombatManager.instance.StopAllCoroutines();
         SceneManager.LoadScene(0);
     }

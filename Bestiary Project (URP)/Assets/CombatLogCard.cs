@@ -5,10 +5,10 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
     public GameObject topLine, botLine;
-    public TextMeshProUGUI userName, affected, victimNameText, xCharacters, effectText, andText, buffText;
+    public TextMeshProUGUI userName, actionName, affected, victimNameText, xCharacters, effectText, andText, buffText;
     public Image userIcon, victimIcon, effectIcon, buffIcon;
 
     public CombatAction ca;
@@ -41,22 +41,36 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 }
             }
             username = entry.guess.characterName;
-            userName.text = username;
+            userName.text = username + "'s";
             userIcon.sprite = user.stats.characterIcon;
             userIcon.color = user.stats.characterIconColor;
+            Action guessAction = null;
+            for (int i = 0; i < entry.actionChecks.Count; i++)
+            {
+                if (entry.actionChecks[i].originalAction != null)
+                {
+                    if (entry.actionChecks[i].originalAction.actionCode.Equals(ca.action.actionCode))
+                    {
+                        guessAction = entry.actionChecks[i].guessAction;
+                    }
+                }
+            }
+            if (guessAction != null) actionName.text = guessAction.actionName;
+            else actionName.text = "unknown action";
         }
         else
         {
             GetComponent<Image>().color = ally;
             username = user.stats.characterName;
-            userName.text = username;
+            userName.text = username + "'s";
             userIcon.sprite = user.stats.characterIcon;
             userIcon.color = user.stats.characterIconColor;
+            actionName.text = ca.action.actionName;
         }
         switch (ca.action.actionType)
         {
             case Action.ActionType.Attack:
-                affected.text = "hit";
+                affected.text = (ca.action.isCritical ? "<b>critically</b> " : "")+"hit";
                 andText.gameObject.SetActive(false);
                 buffIcon.gameObject.SetActive(false);
                 buffText.gameObject.SetActive(false);
@@ -65,7 +79,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 effectText.text = ca.action.damageType.ToString() + " damage";
                 break;
             case Action.ActionType.AttackDebuff:
-                affected.text = "hit";
+                affected.text = (ca.action.isCritical ? "critically " : "") + "hit";
                 buffIcon.sprite = ca.action.debuff.icon;
                 buffIcon.color = ca.action.debuff.iconColor;
                 buffText.text = ca.action.debuff.debuffName;
@@ -190,5 +204,10 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             CombatGrid.ShowCurrentPositions();
 
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        CharacterSheet.instance.ShowEntry(ca.origin);
     }
 }

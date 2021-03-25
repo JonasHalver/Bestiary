@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using UnityEngine.EventSystems;
 
-public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public enum DamageTypes { Cutting, Piercing, Crushing, Fire, Acid, Cold, Poison, Healing }
     public CharacterStats stats;
@@ -191,35 +191,36 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     ReceiveHit(interaction.action, interaction.action.isCritical);
                 break;
             case Action.ActionType.AttackDebuff:
-                if (temporaryDodge) return;
-
-                ReceiveHit(interaction.action, interaction.action.isCritical);
-                debuff = ScriptableObject.CreateInstance<Debuff>();
-                debuff.SetValues(interaction.debuff, interaction.action.value, this);
-                flag = false;
-                foreach (Debuff d in debuffs)
+                if (!temporaryDodge)
                 {
-                    if (d.debuffType == debuff.debuffType)
+
+                    ReceiveHit(interaction.action, interaction.action.isCritical);
+                    debuff = ScriptableObject.CreateInstance<Debuff>();
+                    debuff.SetValues(interaction.debuff, interaction.action.value, this);
+                    flag = false;
+                    foreach (Debuff d in debuffs)
                     {
-                        if (d.debuffType == Debuff.DebuffType.Control && d.controlType == debuff.controlType)
+                        if (d.debuffType == debuff.debuffType)
                         {
-                            d.durationRemaining += interaction.action.value;
-                            flag = true;
-                        }
-                        else if (d.debuffType == Debuff.DebuffType.DamageOverTime && d.damageType == debuff.damageType)
-                        {
-                            d.durationRemaining += interaction.action.value;
-                            flag = true;
+                            if (d.debuffType == Debuff.DebuffType.Control && d.controlType == debuff.controlType)
+                            {
+                                d.durationRemaining += interaction.action.value;
+                                flag = true;
+                            }
+                            else if (d.debuffType == Debuff.DebuffType.DamageOverTime && d.damageType == debuff.damageType)
+                            {
+                                d.durationRemaining += interaction.action.value;
+                                flag = true;
+                            }
                         }
                     }
+                    if (!flag)
+                    {
+                        debuffs.Add(debuff);
+                        debuff.DebuffApplied();
+                        AcquiredDebuff.Invoke(debuff);
+                    }
                 }
-                if (!flag)
-                {
-                    debuffs.Add(debuff);
-                    debuff.DebuffApplied();
-                    AcquiredDebuff.Invoke(debuff);
-                }
-                
                 break;
             case Action.ActionType.Healing:
                 ReceiveHealing(interaction.action);
@@ -269,7 +270,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 }
                 break;
             case Action.ActionType.Debuff:
-                
+                if (temporaryDodge) return;
                 debuff = ScriptableObject.CreateInstance<Debuff>();
                 debuff.SetValues(interaction.debuff, interaction.action.value, this);
                 bool flag1 = false;
@@ -444,10 +445,27 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             }
             if (ga != null)
             {
-                CombatAction ca = new CombatAction(this, ga.ActionValid(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true), ga);
-                ca.affectedNodes = CombatGrid.NodesAffectedByAction(ca);
-                CombatGrid.instance.HighlighAction(ca);
+                if (ga.targetingSet)
+                {
+                    CombatAction ca = new CombatAction(this, ga.ActionValid(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true), ga);
+                    ca.affectedNodes = CombatGrid.NodesAffectedByAction(ca);
+                    CombatGrid.instance.HighlighAction(ca);
+                }
             }
         }
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+        {
+            HighlightAction();
+        }
+        CharacterSheet.ShowSheet(this);
+    }
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
+            CombatGrid.StopHighlight();
     }
 }

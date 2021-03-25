@@ -17,7 +17,7 @@ MonoBehaviour:
   characterType: 0
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
   characterIconColor: {r: 1, g: 0.7843818, b: 0.514151, a: 1}
-  hitPoints: 20
+  hitPoints: 10
   armored: 0
   resistances: 
   weaknesses: 

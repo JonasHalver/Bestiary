@@ -31,7 +31,7 @@ MonoBehaviour:
   targetConditions: 04000000
   targetPriority: 0
   canHitSelf: 1
-  alwaysHitsSelf: 1
+  alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0

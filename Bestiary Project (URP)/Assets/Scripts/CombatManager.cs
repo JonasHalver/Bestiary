@@ -47,11 +47,12 @@ public class CombatManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance == null) instance = this;
-        else if (instance != this) Destroy(gameObject);
+        instance = this;
+        //if (instance == null) instance = this;
+        //else if (instance != this) Destroy(gameObject);
 
         FirstActions();
-        DontDestroyOnLoad(this);
+        //DontDestroyOnLoad(this);
     }
 
     private void OnEnable()
@@ -121,6 +122,7 @@ public class CombatManager : MonoBehaviour
 
     public void StartCombat(int encounterIndex)
     {
+
         for (int i = 0; i < GameManager.instance.mercenaries.Count; i++)
         {
             GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
