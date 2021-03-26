@@ -19,7 +19,7 @@ MonoBehaviour:
   characterIconColor: {r: 0.5896226, g: 0.90724754, b: 1, a: 1}
   hitPoints: 7
   armored: 0
-  resistances: 000000000100000002000000
+  resistances: 
   weaknesses: 
   speed: 3
   movement: 2
@@ -28,4 +28,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 90e1a483554315b4dabccd750e98cac2, type: 2}
   - {fileID: 11400000, guid: 279f865c263d6904599baf7b43c9a56c, type: 2}
   - {fileID: 11400000, guid: 4844332aa70e65b449a8760a1897914c, type: 2}
-  pageNumber: 0
+  pageNumber: 3
+  entry: {fileID: 0}

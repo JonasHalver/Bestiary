@@ -38,6 +38,7 @@ public class Entry : MonoBehaviour
         statChecks.Add(StatEntries.HitPoints, false); statChecks.Add(StatEntries.Speed, false); statChecks.Add(StatEntries.Movement, false);
         statChecks.Add(StatEntries.Resistances, false); statChecks.Add(StatEntries.Weaknesses, false);
         guess.characterType = CharacterStats.CharacterTypes.NPC;
+        guess.characterName = null;
         guess.speed = 5;
         guess.movement = 1;
         guess.hitPoints = 1;

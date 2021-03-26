@@ -84,10 +84,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     // Update is called once per frame
     void Update()
     {
+        currentHitpoints = stats.hitPoints - damageTaken;
+        currentHitpoints = Mathf.Clamp(currentHitpoints, 0, stats.hitPoints);
+
         if (currentHitpoints == 0) alive = false;
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
-        currentHitpoints = Mathf.Clamp(currentHitpoints, 0, stats.hitPoints);
         initiative = conditions.Contains(Debuff.ControlType.Slow) ? stats.speed - 2 : stats.speed;
 
         buffCount = buffs.Count;
@@ -174,6 +176,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         for (int i = 0; i < expiredDebuffs.Count; i++)
         {
+            expiredDebuffs[i].RemoveDebuff();
             debuffs.Remove(expiredDebuffs[i]);
             LostDebuff.Invoke(expiredDebuffs[i]);
         }

@@ -36,52 +36,64 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
 
     private void UpdateCard()
     {
+        
         isMerc = actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer;
-        if (actor.currentAction.highlighted) background.color = bgHighlight;
+        if (actor.alive && actor.currentAction.highlighted) background.color = bgHighlight;
         else background.color = isMerc ? bgMerc : bgMonster;
         icon.sprite = actor.stats.characterIcon;
         icon.color = actor.stats.characterIconColor;
-
         string d = "";
+        string cname = "";
+        Entry e = null;
         if (isMerc)
         {
             initiative = actor.stats.speed;
-            d = actor.stats.characterName + " will use " + actor.currentAction.action.actionName;
+            cname = actor.stats.characterName;
+            d = $"{cname} will use {actor.currentAction.action.actionName}";
         }
         else
         {
-            bool flag = false;
             for (int i = 0; i < Book.monsterEntries.Count; i++)
             {
                 if (Book.monsterEntries[i].origin.characterCode.Equals(actor.stats.characterCode))
                 {
-                    Entry e = Book.monsterEntries[i];
+                    e = Book.monsterEntries[i];
+                    cname = e.guess.characterName != null ? e.guess.characterName : "The monster";
+                    if (cname.Length == 0) cname = "The monster";
                     initiative = e.guess.speed - (actor.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0);
-                    for (int j = 0; j < e.actionChecks.Count; j++)
+                    if (actor.alive)
                     {
-                        if (e.actionChecks[j].originalAction != null)
+                        bool flag = false;
+                        for (int j = 0; j < e.actionChecks.Count; j++)
                         {
-                            if (actor.currentAction.action.actionCode.Equals(e.actionChecks[j].originalAction.actionCode))
+                            if (e.actionChecks[j].originalAction != null)
                             {
-                                d = (e.guess.characterName != null ? e.guess.characterName : "The monster") + " will use " + e.actionChecks[j].guessAction.actionName;
-                                flag = true;
-                                break;
-                            }
+                                if (actor.currentAction.action.actionCode.Equals(e.actionChecks[j].originalAction.actionCode))
+                                {
+                                    d = cname + " will use " + e.actionChecks[j].guessAction.actionName;
+                                    flag = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    d = cname + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
+
+                                }
+                                if (flag) break;
+                            }                            
                             else
                             {
-                                d = (e.guess.characterName != null ? e.guess.characterName : "The monster") + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
-
+                                d = cname + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
                             }
                         }
-                        else
-                        {
-                            d = (e.guess.characterName != null ? e.guess.characterName : "The monster") + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
-
-                        }
                     }
-                    if (flag) break;
+
                 }
-            }
+            }            
+        }
+        if (!actor.alive)
+        {
+            d = $"{cname} is dead.";
         }
         description.text = d;
     }

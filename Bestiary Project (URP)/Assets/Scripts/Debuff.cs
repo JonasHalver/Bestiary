@@ -89,6 +89,16 @@ public class Debuff : ScriptableObject
         }
     }
 
+    public void RemoveDebuff()
+    {
+        switch (debuffType)
+        {
+            case DebuffType.Control:
+                if (affectedCharacter.conditions.Contains(controlType)) affectedCharacter.conditions.Remove(controlType);
+                break;
+        }
+    }
+
     public void CheckDuration(EffectTiming timing)
     {
         if (timing == effectTiming)

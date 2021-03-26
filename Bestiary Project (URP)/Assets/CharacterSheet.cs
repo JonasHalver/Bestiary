@@ -47,6 +47,7 @@ public class CharacterSheet : MonoBehaviour
         }
         CharacterStats stats = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer ? character.stats : instance.currentEntry.guess;
         instance.characterName.text = stats.characterName != null ? stats.characterName : "Unknown Monster";
+        if (instance.characterName.text.Length == 0) instance.characterName.text = "Unknown Monster";
         instance.characterActions.Clear();
 
         for (int i = 0; i <= stats.actions.Count; i++)

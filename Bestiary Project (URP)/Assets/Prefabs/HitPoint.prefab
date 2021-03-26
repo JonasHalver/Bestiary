@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4204856617653468511}
   - component: {fileID: 2735349951401630724}
   - component: {fileID: 8493294101766957542}
+  - component: {fileID: -7587858732166354761}
   m_Layer: 5
   m_Name: HitPoint
   m_TagString: Untagged
@@ -95,3 +96,26 @@ MonoBehaviour:
   healthyColor: {r: 0.9960785, g: 0, b: 0, a: 1}
   poisonedColor: {r: 0.2153039, g: 1, b: 0, a: 1}
   armoredColor: {r: 1, g: 0.5835624, b: 0, a: 1}
+  isFull: 1
+  isHalf: 0
+  isEmpty: 0
+--- !u!114 &-7587858732166354761
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9170759876029831411}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 50
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
