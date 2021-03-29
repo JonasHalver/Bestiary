@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
   m_Name: Punch
   m_EditorClassIdentifier: 
-  actionName: Punch
+  actionName: Pressure Points
   actionCode: testonepunchman
-  description: If I can only reach one enemy, I will punch them very hard.
+  description: If an enemy is within melee range, I will critically hit them with
+    crushing damage.
   actionDescription: 
   descriptionIndex: -1
   actionType: 0

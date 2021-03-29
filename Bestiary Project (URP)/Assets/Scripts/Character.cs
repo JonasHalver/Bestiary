@@ -31,6 +31,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public event System.Action<Buff> LostBuff;
 
     public List<Debuff.ControlType> conditions = new List<Debuff.ControlType>();
+    public List<Buff.BuffType> currentBuffs = new List<Buff.BuffType>();
 
     [HideInInspector]
     public CombatAction lastCombatAction;
@@ -40,8 +41,6 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public List<Buff> expiredBuffs = new List<Buff>();
     [HideInInspector]
     public List<DamageTypes> temporaryResistances = new List<DamageTypes>();
-    public bool temporaryArmor = false;
-    public bool temporaryDodge = false;
     public int initiative;
 
     private Animator anim;
@@ -90,7 +89,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (currentHitpoints == 0) alive = false;
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
-        initiative = conditions.Contains(Debuff.ControlType.Slow) ? stats.speed - 2 : stats.speed;
+        int initiativeMod = 0 - (conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        initiative =  stats.speed + initiativeMod;
 
         buffCount = buffs.Count;
         debuffCount = debuffs.Count;
@@ -133,8 +133,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     public void ResetStats()
     {
-        temporaryArmor = false;
-        temporaryDodge = false;
+        currentBuffs.Clear();
         temporaryResistances.Clear();
         conditions.Clear();
     }
@@ -190,11 +189,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         switch (interaction.action.actionType)
         {
             case Action.ActionType.Attack:
-                if (!temporaryDodge)
+                if (!currentBuffs.Contains(Buff.BuffType.Dodge))
                     ReceiveHit(interaction.action, interaction.action.isCritical);
                 break;
             case Action.ActionType.AttackDebuff:
-                if (!temporaryDodge)
+                if (!currentBuffs.Contains(Buff.BuffType.Dodge))
                 {
 
                     ReceiveHit(interaction.action, interaction.action.isCritical);
@@ -273,7 +272,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 }
                 break;
             case Action.ActionType.Debuff:
-                if (temporaryDodge) return;
+                if (currentBuffs.Contains(Buff.BuffType.Dodge)) return;
                 debuff = ScriptableObject.CreateInstance<Debuff>();
                 debuff.SetValues(interaction.debuff, interaction.action.value, this);
                 bool flag1 = false;
@@ -319,7 +318,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void ReceiveHit(Action action, bool critical)
     {
         float damage = 1;
-        if (stats.armored || temporaryArmor) damage /= 2;
+        if (stats.armored || !currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(action.damageType)) damage /= 2;
         if (action.isCritical || critical || stats.weaknesses.Contains(action.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
@@ -331,7 +330,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void ReceiveHit(Debuff debuff)
     {
         float damage = .5f;
-        if (stats.armored || temporaryArmor) damage /= 2;
+        if (stats.armored || !currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(debuff.damageType)) damage /= 2;
         if (stats.weaknesses.Contains(debuff.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;

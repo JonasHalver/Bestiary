@@ -10,32 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: Stone Throw
+  m_Name: Rally
   m_EditorClassIdentifier: 
-  actionName: Stone Throw
-  actionCode: teststonethrow
-  description: If I can see an enemy, I will hit them with a stone.
+  actionName: Rally
+  actionCode: testrally
+  description: If I am alone, I will grant my party regeneration
   actionDescription: 
   descriptionIndex: -1
-  actionType: 0
+  actionType: 1
   actionPriority: 4
   debuff: {fileID: 0}
-  buff: {fileID: 0}
-  position: 5
+  buff: {fileID: 11400000, guid: d6d58d02f8b5bf24099c5d25ca7d3ef2, type: 2}
+  position: 4
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
+  shape: 5
   minimumHits: 1
-  target: 1
-  targetGroup: 0
-  targetConditions: 03000000
+  target: 3
+  targetGroup: 1
+  targetConditions: 04000000
   targetPriority: 0
-  canHitSelf: 0
+  canHitSelf: 1
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 0
-  damageType: 2
+  damageType: 0
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0

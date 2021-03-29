@@ -20,7 +20,8 @@ public class Buff : ScriptableObject
 
     public bool removeAtEndOfRound = false;
     public Debuff.EffectTiming effectTiming = Debuff.EffectTiming.StartOfTurn;
-
+    public bool ignoreFirstInstance;
+    private bool firstInstance = true;
     
 
     public Buff (BuffType _buffType, int _duration)
@@ -40,6 +41,7 @@ public class Buff : ScriptableObject
         removeAtEndOfRound = buff.removeAtEndOfRound;
         effectTiming = buff.effectTiming;
         tooltipString = buff.tooltipString;
+        ignoreFirstInstance = buff.ignoreFirstInstance;
     }
 
     public void ApplyBuff(bool onApplication)
@@ -47,7 +49,7 @@ public class Buff : ScriptableObject
         switch (buffType)
         {
             case BuffType.Armor:
-                affectedCharacter.temporaryArmor = true;
+                affectedCharacter.currentBuffs.Add(buffType);
                 break;
             case BuffType.Resistance:
                 for (int i = 0; i < resistances.Count; i++)
@@ -56,9 +58,10 @@ public class Buff : ScriptableObject
                 }
                 break;
             case BuffType.Speed:
+                affectedCharacter.currentBuffs.Add(buffType);
                 break;
             case BuffType.Dodge:
-                affectedCharacter.temporaryDodge = true;
+                affectedCharacter.currentBuffs.Add(buffType);
                 break;
             case BuffType.Regeneration:
                 if (!onApplication)
@@ -74,6 +77,11 @@ public class Buff : ScriptableObject
 
     public void CheckDuration(Debuff.EffectTiming timing)
     {
+        if (ignoreFirstInstance && firstInstance)
+        {
+            firstInstance = false;
+            return;
+        }
         if (timing == effectTiming)
         {
             durationRemaining--;

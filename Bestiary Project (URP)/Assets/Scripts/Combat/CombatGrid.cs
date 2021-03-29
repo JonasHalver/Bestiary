@@ -155,6 +155,36 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             case Action.Shape.Line:
                 output = GenerateLine(ca.targetNode.coordinate, ca.origin.position);
                 break;
+            case Action.Shape.All:
+                foreach (Character actor in CombatManager.actors)
+                {
+                    if (actor.alive)
+                    {
+                        switch (ca.action.targetGroup)
+                        {
+                            case Action.TargetGroup.Allies:
+                                if (actor != ca.origin && Character.AllyOrEnemy(ca.origin, actor))
+                                {
+                                    output.Add(actor.movement.currentNode);
+                                }
+                                else if (actor == ca.origin && ca.action.canHitSelf)
+                                {
+                                    output.Add(actor.movement.currentNode);
+                                }
+                                break;
+                            case Action.TargetGroup.Enemies:
+                                if (!Character.AllyOrEnemy(ca.origin, actor))
+                                {
+                                    output.Add(actor.movement.currentNode);
+                                }
+                                break;
+                            case Action.TargetGroup.All:
+                                output.Add(actor.movement.currentNode);
+                                break;
+                        }
+                    }
+                }
+                break;
         }
 
         return output;

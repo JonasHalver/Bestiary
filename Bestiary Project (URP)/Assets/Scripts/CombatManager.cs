@@ -385,20 +385,32 @@ public class CombatManager : MonoBehaviour
 
     public void UIInteractable(bool check, bool fromPause)
     {
-        if (!fromPause) interactableCheck = check;
-        foreach(Transform item in combatUI)
+        CombatUI.instance.commitButton.interactable = check;
+
+        //if (!fromPause) interactableCheck = check;
+        //foreach(Transform item in combatUI)
+        //{
+        //    Button b = item.GetComponent<Button>();
+        //    if (b)
+        //    {
+        //        // this whole thing might be a mess
+        //        if (fromPause && check && interactableCheck) b.interactable = true;
+        //        else if (fromPause && check && !interactableCheck) b.interactable = false;
+        //        else if (fromPause && !check) b.interactable = false;
+        //        else if (!fromPause && !GameManager.paused) b.interactable = check;
+        //        else if (!fromPause && GameManager.paused) b.interactable = false;
+        //    }
+        //}
+    }
+    
+    public static bool CharacterIsBeingAttacked(Character character)
+    {
+        bool output = false;
+        for (int i = 0; i < combatActions.Count; i++)
         {
-            Button b = item.GetComponent<Button>();
-            if (b)
-            {
-                // this whole thing might be a mess
-                if (fromPause && check && interactableCheck) b.interactable = true;
-                else if (fromPause && check && !interactableCheck) b.interactable = false;
-                else if (fromPause && !check) b.interactable = false;
-                else if (!fromPause && !GameManager.paused) b.interactable = check;
-                else if (!fromPause && GameManager.paused) b.interactable = false;
-            }
+            if (combatActions[i].affectedNodes.Contains(character.movement.currentNode)) output = true;
         }
+        return output;
     }
 
     public void Delay()

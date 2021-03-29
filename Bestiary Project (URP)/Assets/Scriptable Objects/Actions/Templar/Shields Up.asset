@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: Judgment
+  m_Name: Shields Up
   m_EditorClassIdentifier: 
-  actionName: Judgment
-  actionCode: testjudgment
-  description: If I can see an enemy, who isn't slowed, I will slow them.
+  actionName: Shields Up
+  actionCode: testshieldsup
+  description: If I am surrounded, or am being attacked, I will grant myself armor.
   actionDescription: 
   descriptionIndex: -1
-  actionType: 3
-  actionPriority: 3
-  debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
-  buff: {fileID: 0}
-  position: 4
-  useBeingAttackedOverride: 0
-  nearTargetCount: 1
+  actionType: 1
+  actionPriority: 2
+  debuff: {fileID: 0}
+  buff: {fileID: 11400000, guid: 5a4fc372eafb2e84a842c3be011feb95, type: 2}
+  position: 0
+  useBeingAttackedOverride: 1
+  nearTargetCount: 2
   shape: 0
   minimumHits: 1
-  target: 1
-  targetGroup: 0
-  targetConditions: 03000000
-  targetPriority: 8
-  canHitSelf: 0
+  target: 0
+  targetGroup: 1
+  targetConditions: 04000000
+  targetPriority: 0
+  canHitSelf: 1
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2

@@ -31,7 +31,7 @@ public class Action : ScriptableObject
     [Tooltip("Number of targets needed for position to be valid. Default 1.")]
     public int nearTargetCount = 1;
 
-    public enum Shape { Single, Arc, Cone, Line, ThreeByThree }
+    public enum Shape { Single, Arc, Cone, Line, ThreeByThree, All }
     [Tooltip("When targeting ALL, use Single")]
     [Header("Targeting")]
     public Shape shape = Shape.Single;
@@ -189,6 +189,33 @@ public class Action : ScriptableObject
                         {
                             bestTarget = result.targetNode;
                             flag2 = true;
+                        }
+                    }
+                    break;
+                case Shape.All:
+                    flag1 = true;
+                    foreach (Character actor in CombatManager.actors)
+                    {
+                        if (actor.alive)
+                        {
+                            switch (targetGroup)
+                            {
+                                case TargetGroup.Allies:
+                                    if (actor != bpi.origin && Character.AllyOrEnemy(bpi.origin, actor))
+                                    {
+                                        possibleTargets.Add(actor.movement.currentNode);
+                                    }
+                                    break;
+                                case TargetGroup.Enemies:
+                                    if (!Character.AllyOrEnemy(bpi.origin, actor))
+                                    {
+                                        possibleTargets.Add(actor.movement.currentNode);
+                                    }
+                                    break;
+                                case TargetGroup.All:
+                                    possibleTargets.Add(actor.movement.currentNode);
+                                    break;
+                            }
                         }
                     }
                     break;
@@ -514,7 +541,14 @@ public class Action : ScriptableObject
                     break;
             }
         }
-        if (!flag3 && useBeingAttackedOverride) flag3 = true;
+        if (!flag3 && useBeingAttackedOverride)
+        {
+            if (CombatManager.CharacterIsBeingAttacked(bpi.origin))
+            {
+                bestTarget = bpi.origin.movement.currentNode;
+                flag3 = true;
+            }
+        }
 
         if (flag3 && bestTarget == null && possibleTargets.Count > 0)
         {

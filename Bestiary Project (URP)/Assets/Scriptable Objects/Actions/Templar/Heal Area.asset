@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Heal Area
   actionCode: testhealarea
-  description: If I am near allies, I will heal all allies close to me.
+  description: If I am near at least 2 allies, I will heal all allies close to me.
   actionDescription: 
   descriptionIndex: -1
   actionType: 2
@@ -23,7 +23,7 @@ MonoBehaviour:
   buff: {fileID: 0}
   position: 2
   useBeingAttackedOverride: 0
-  nearTargetCount: 1
+  nearTargetCount: 2
   shape: 4
   minimumHits: 1
   target: 0

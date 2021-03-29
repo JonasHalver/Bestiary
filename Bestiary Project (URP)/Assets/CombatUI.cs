@@ -9,6 +9,8 @@ public class CombatUI : MonoBehaviour
     public static CombatUI instance;
     public TextMeshProUGUI stageDisplay, stageInfo, combatLog, roundDisplay;
 
+    public Button commitButton;
+
     private void Awake()
     {
         instance = this;

@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
   m_Name: Blind
   m_EditorClassIdentifier: 
-  actionName: Blind
+  actionName: Unsteady Ground
   actionCode: testpocketsand
-  description: If I am close to any number of enemies, I will blind all of them,
+  description: If I am close to any number of enemies, I will disorient all of them,
     causing them to have trouble attacking.
   actionDescription: 
   descriptionIndex: -1

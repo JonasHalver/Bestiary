@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Smite
   actionCode: testsmiteevil
-  description: If I am close to an enemy, I will hit them with my sword.
+  description: If I am in melee an enemy, I will hit them with cutting damage and
+    slow them.
   actionDescription: 
   descriptionIndex: -1
-  actionType: 0
-  actionPriority: 2
-  debuff: {fileID: 0}
+  actionType: 4
+  actionPriority: 3
+  debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
   buff: {fileID: 0}
   position: 0
   useBeingAttackedOverride: 0
@@ -33,7 +34,7 @@ MonoBehaviour:
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
-  value: 1
+  value: 2
   isCritical: 0
   damageType: 0
   descriptionSet: 0

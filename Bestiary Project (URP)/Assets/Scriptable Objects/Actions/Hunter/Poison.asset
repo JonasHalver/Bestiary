@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Poison Arrow
   actionCode: testpoisonarrow
-  description: If an enemy is not already poisoned, I will poison them, dealing damage
-    over time.
+  description: If I am alone, I will hit an enemy with a poison arrow, dealing piercing
+    damage and applying a poison debuff. I prefer hitting targets without poison.
   actionDescription: 
   descriptionIndex: -1
-  actionType: 3
+  actionType: 4
   actionPriority: 4
   debuff: {fileID: 11400000, guid: 20586cdd6064b8a4490642ad5c849c84, type: 2}
   buff: {fileID: 0}
-  position: 5
+  position: 4
   useBeingAttackedOverride: 0
   nearTargetCount: 1
   shape: 0
@@ -36,7 +36,7 @@ MonoBehaviour:
   canFriendlyFire: 0
   value: 2
   isCritical: 0
-  damageType: 6
+  damageType: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0

@@ -10,33 +10,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: Volley
+  m_Name: Healing Spirit
   m_EditorClassIdentifier: 
-  actionName: Volley
-  actionCode: testvolleyofarrows
-  description: If I can hit more than one enemy with a cone attack, I will shoot
-    an arrow at each of them.
+  actionName: Healing Spirit
+  actionCode: healingspiritmonk
+  description: If I am alone, I will grant regeneration to the most hurt ally.
   actionDescription: 
   descriptionIndex: -1
-  actionType: 0
-  actionPriority: 3
+  actionType: 1
+  actionPriority: 4
   debuff: {fileID: 0}
-  buff: {fileID: 0}
-  position: 5
+  buff: {fileID: 11400000, guid: d6d58d02f8b5bf24099c5d25ca7d3ef2, type: 2}
+  position: 4
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 2
-  minimumHits: 2
-  target: 2
-  targetGroup: 0
+  shape: 0
+  minimumHits: 1
+  target: 1
+  targetGroup: 1
   targetConditions: 04000000
-  targetPriority: 0
-  canHitSelf: 0
+  targetPriority: 2
+  canHitSelf: 1
   alwaysHitsSelf: 0
   canFriendlyFire: 0
-  value: 1
+  value: 3
   isCritical: 0
-  damageType: 1
+  damageType: 7
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0

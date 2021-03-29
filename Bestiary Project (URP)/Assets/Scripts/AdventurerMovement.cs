@@ -163,18 +163,9 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void StartOfRound()
     {
-        if (character.conditions.Contains(Debuff.ControlType.Slow))
-        {
-            movementLeft = Mathf.Max(1, character.stats.movement - 2);
-        }
-        else if (character.conditions.Contains(Debuff.ControlType.Root))
-        {
-            movementLeft = 0;
-        }
-        else
-        {
-            movementLeft = character.stats.movement;
-        }
+        int movementMod = 0 - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (character.currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        movementLeft = Mathf.Max(1, character.stats.movement + movementMod);
+        if (character.conditions.Contains(Debuff.ControlType.Root)) movementLeft = 0;
         destinationNodes.Clear();
     }
 
@@ -245,7 +236,8 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void AIMovement()
     {
-        int currentMovement = character.stats.entry.guess.movement - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0);
+        int movementMod = 0 - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (character.currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        int currentMovement = character.stats.entry.guess.movement + movementMod;
         List<Node> destinations = new List<Node>();
         if (!character.conditions.Contains(Debuff.ControlType.Root))
             destinations = GenerateDestinationList(movementLeft);
