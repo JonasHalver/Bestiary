@@ -27,10 +27,16 @@ public class ResistanceEditor : MonoBehaviour
         //if (currentTypes.Count == 0) CreateNone();
         //else
         //{
-            for (int i = 0; i < currentTypes.Count; i++)
-            {
-                AddDamageTypeIcon(currentTypes[i]);
-            }
+        for (int i = 0; i < icons.Count; i++)
+        {
+            Destroy(icons[i]);
+            icons.RemoveAt(i);
+            i--;
+        }
+        for (int i = 0; i < currentTypes.Count; i++)
+        {
+            AddDamageTypeIcon(currentTypes[i]);
+        }
         //}
     }
 

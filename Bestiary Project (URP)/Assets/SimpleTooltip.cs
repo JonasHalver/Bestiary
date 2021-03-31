@@ -6,12 +6,27 @@ using UnityEngine.UI;
 
 public class SimpleTooltip : MonoBehaviour
 {
+    public static SimpleTooltip instance;
     public string tooltipString;
     public GameObject tooltip;
     public Vector2 extraOffset, offset, modifier;
     public TextMeshProUGUI tooltipText;
     public Vector2 mousepos;
     public SimpleTooltipSpawner spawn;
+
+    private void Awake()
+    {
+        if (instance == null) instance = this;
+        else
+        {
+            if (instance != this)
+            {
+                Destroy(instance.gameObject);
+                
+                instance = this;
+            }
+        }
+    }
 
     private void Start()
     {

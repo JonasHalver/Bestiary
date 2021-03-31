@@ -8,7 +8,7 @@ public class HitPointEditor : MonoBehaviour
 {
     public TMP_InputField input;
     public Slider slider;
-    public HitPointDisplay display;
+    public HitPointDisplay display, pageDisplay;
     public int value;
     // Start is called before the first frame update
     void Start()
@@ -22,6 +22,12 @@ public class HitPointEditor : MonoBehaviour
         input.text = value.ToString();
         display.ClearHearts();
         display.value = value;
+        pageDisplay = Book.currentEntry.page.pageUI.hitpointDisplay;
+        pageDisplay.editing = true;
+    }
+    private void OnDisable()
+    {
+        pageDisplay.editing = false;
     }
 
     // Update is called once per frame

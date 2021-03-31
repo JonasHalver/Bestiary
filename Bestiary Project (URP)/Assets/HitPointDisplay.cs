@@ -29,6 +29,7 @@ public class HitPointDisplay : MonoBehaviour
     private int fullHeartsCount, emptyHeartsCount, halfHeartCount;
     private bool spawningHearts = false;
     private int runCount = 0;
+    public bool editing = false;
 
     // Start is called before the first frame update
     void Start()
@@ -40,17 +41,20 @@ public class HitPointDisplay : MonoBehaviour
     void Update()
     {
         value = Mathf.Clamp(value, 1, 50);
-        if (!spawningHearts)
+        if (!editing)
         {
-            if (previousValue != value)
+            if (!spawningHearts)
             {
-                StartCoroutine(HeartsCoroutine());
-                previousValue = value;
-            }
-            else if (previousDamageTaken != damageTaken)
-            {
-                StartCoroutine(HeartsCoroutine());
-                previousDamageTaken = damageTaken;
+                if (previousValue != value)
+                {
+                    StartCoroutine(HeartsCoroutine());
+                    previousValue = value;
+                }
+                else if (previousDamageTaken != damageTaken)
+                {
+                    StartCoroutine(HeartsCoroutine());
+                    previousDamageTaken = damageTaken;
+                }
             }
         }
     }

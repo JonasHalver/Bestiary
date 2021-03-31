@@ -67,6 +67,11 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             userIcon.color = user.stats.characterIconColor;
             actionName.text = ca.action.actionName;
         }
+        if (ca.action.isPass)
+        {
+            Pass();
+            return;
+        }
         switch (ca.action.actionType)
         {
             case Action.ActionType.Attack:
@@ -126,6 +131,17 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                 effectText.text = "healing";
                 break;
         }
+        if (victim != null)
+        {
+            if (victim.currentBuffs.Contains(Buff.BuffType.Dodge))
+            {
+                if (ca.action.actionType != Action.ActionType.Healing && ca.action.actionType != Action.ActionType.HealingBuff &&
+                    ca.action.actionType != Action.ActionType.Buff)
+                {
+                    affected.text = "missed";
+                }
+            }
+        }
 
         if (victim == null)
         {
@@ -159,6 +175,20 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             xCharacters.gameObject.SetActive(false);
         }
         UpdateCanvas();
+    }
+
+    public void Pass()
+    {
+        victimNameText.gameObject.SetActive(false);
+        victimIcon.gameObject.SetActive(false);
+        xCharacters.gameObject.SetActive(false);
+        buffIcon.gameObject.SetActive(false);
+        buffText.gameObject.SetActive(false);
+        affected.gameObject.SetActive(false);
+        effectText.gameObject.SetActive(false);
+        andText.gameObject.SetActive(false);
+        effectIcon.gameObject.SetActive(false);
+        actionName.text = "passed.";
     }
 
     public void UpdateCanvas()

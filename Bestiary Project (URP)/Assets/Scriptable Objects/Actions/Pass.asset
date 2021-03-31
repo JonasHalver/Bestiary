@@ -10,26 +10,25 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: Blind
+  m_Name: Pass
   m_EditorClassIdentifier: 
-  actionName: Unsteady Ground
-  actionCode: testpocketsand
-  description: If I am close to any number of enemies, I will disorient all of them,
-    causing them to have trouble attacking.
+  actionName: Pass
+  actionCode: passtest
+  description: I have no good targets, and will pass.
   actionDescription: 
   descriptionIndex: -1
-  actionType: 3
-  actionPriority: 3
-  debuff: {fileID: 11400000, guid: d3bf40d3bf0168541a1c08de90c22718, type: 2}
+  actionType: 0
+  actionPriority: 1
+  debuff: {fileID: 0}
   buff: {fileID: 0}
-  position: 0
+  position: 5
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 4
+  shape: 0
   minimumHits: 1
-  target: 0
+  target: 1
   targetGroup: 0
-  targetConditions: 04000000
+  targetConditions: 
   targetPriority: 0
   canHitSelf: 0
   alwaysHitsSelf: 0
@@ -40,3 +39,4 @@ MonoBehaviour:
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 1

@@ -54,6 +54,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     [HideInInspector] public Entry entry;
     [HideInInspector] public bool highlightMyNode = false;
+    public Action pass;
 
     private void Awake()
     {
@@ -97,7 +98,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         damageTaken = Mathf.Clamp(damageTaken, 0, Mathf.Infinity);
 
-        if (stats.characterType == CharacterStats.CharacterTypes.NPC) entry = stats.entry;
+        //if (stats.characterType == CharacterStats.CharacterTypes.NPC) 
+            entry = stats.entry;
 
 
     }
@@ -318,7 +320,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void ReceiveHit(Action action, bool critical)
     {
         float damage = 1;
-        if (stats.armored || !currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
+        if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(action.damageType)) damage /= 2;
         if (action.isCritical || critical || stats.weaknesses.Contains(action.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
@@ -330,7 +332,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void ReceiveHit(Debuff debuff)
     {
         float damage = .5f;
-        if (stats.armored || !currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
+        if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(debuff.damageType)) damage /= 2;
         if (stats.weaknesses.Contains(debuff.damageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
@@ -354,6 +356,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         currentHitpoints += healing;
         damageTaken -= healing;
+        Healed.Invoke();
     }
 
     public Action CurrentAction()
@@ -394,8 +397,9 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         if (!flag)
         {
-            Debug.LogError("No Available Actions for " + bpi.origin.stats.characterName);
-            return null;
+            //Debug.LogError("No Available Actions for " + bpi.origin.stats.characterName);
+            output = new CombatAction(this, movement.currentNode, pass);
+            return output;
         }
         else
         {

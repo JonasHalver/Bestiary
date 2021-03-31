@@ -26,6 +26,8 @@ public class Debuff : ScriptableObject
     public EffectTiming effectTiming = EffectTiming.StartOfTurn;
 
     public bool removeAtEndOfRound = false;
+    public bool ignoreFirstInstance = false;
+    private bool firstInstance = true;
 
     public Debuff(DebuffType _type, Character.DamageTypes _damageType, int _duration)
     {
@@ -56,6 +58,7 @@ public class Debuff : ScriptableObject
         removeAtEndOfRound = _debuff.removeAtEndOfRound;
         effectTiming = _debuff.effectTiming;
         tooltipString = _debuff.tooltipString;
+        ignoreFirstInstance = _debuff.ignoreFirstInstance;
     }
 
     public void DebuffApplied()
@@ -101,6 +104,11 @@ public class Debuff : ScriptableObject
 
     public void CheckDuration(EffectTiming timing)
     {
+        if (ignoreFirstInstance && firstInstance)
+        {
+            firstInstance = false;
+            return;
+        }
         if (timing == effectTiming)
         {
             durationRemaining--;

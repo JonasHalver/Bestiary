@@ -12,23 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
   m_Name: Caustic Missile
   m_EditorClassIdentifier: 
-  actionName: Caustic Missile
+  actionName: Caustic Spray
   actionCode: teststonethrow
-  description: If I can see an enemy, I will apply acid to them.
+  description: If I can hit at least 1 enemy with a line, I will apply acid damage
+    over time to them.
   actionDescription: 
   descriptionIndex: -1
   actionType: 3
-  actionPriority: 4
+  actionPriority: 2
   debuff: {fileID: 11400000, guid: eda3dc061618fa645b4cfa38f625a509, type: 2}
   buff: {fileID: 0}
   position: 5
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
+  shape: 3
   minimumHits: 1
   target: 1
   targetGroup: 0
-  targetConditions: 03000000
+  targetConditions: 04000000
   targetPriority: 0
   canHitSelf: 0
   alwaysHitsSelf: 0
@@ -39,3 +40,4 @@ MonoBehaviour:
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0

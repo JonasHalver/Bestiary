@@ -45,14 +45,16 @@ public class Entry : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Action newAction = ScriptableObject.CreateInstance<Action>();
+            newAction.targetConditions.Add(Action.Status.Irrelevant);
             actionChecks.Add(new ActionCheck(origin, newAction));
             guess.actions.Add(newAction);
         }
         for (int i = 0; i < actionChecks.Count; i++)
         {
-            actionChecks[i].guessAction.actionPriority = i;
+            actionChecks[i].guessAction.actionPriority = i+1;
             actionChecks[i].guessAction.actionName = "Unknown Action";
             actionChecks[i].guessAction.description = defaultDescription;
+            actionChecks[i].entry = this;
         }
         page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
@@ -72,6 +74,7 @@ public class Entry : MonoBehaviour
         {
             ActionCheck ac = new ActionCheck(origin, origin.actions[i]);
             actionChecks.Add(ac);
+            ac.entry = this;
         }
         page.ConnectActions();
     }
@@ -186,6 +189,9 @@ public class ActionCheck
     public float validPercent;
     public bool descriptionCorrect;
 
+    public Entry entry;
+    public Color panelColor;
+
     int priority;
     Action.ActionType type;
     Debuff debuff; // Only count 1 for percentage
@@ -234,7 +240,6 @@ public class ActionCheck
         SetComparison();
         if (originalAction == null)
         {
-            Debug.LogError("Incorrect comparison, original action invalid");
             return;
         }
         FetchInfo();
@@ -294,5 +299,6 @@ public class ActionCheck
                 descriptionCorrect = true;
             }
         }
+        if (!descriptionCorrect) originalAction = null;
     }
 }

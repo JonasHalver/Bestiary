@@ -15,7 +15,7 @@ MonoBehaviour:
   actionName: Snipe
   actionCode: testlowhealthsnipe
   description: If an enemy has less than 50% of their maximum hit points, I will
-    critically hit them.
+    critically hit them with piercing damage.
   actionDescription: 
   descriptionIndex: -1
   actionType: 0

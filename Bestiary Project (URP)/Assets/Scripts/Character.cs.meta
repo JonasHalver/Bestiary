@@ -3,7 +3,13 @@ guid: 4d687c70f05f1f142b405ca1d9732af3
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - stats: {instanceID: 0}
+  - movement: {instanceID: 0}
+  - characterIcon: {instanceID: 0}
+  - deadImage: {instanceID: 0}
+  - entry: {instanceID: 0}
+  - pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

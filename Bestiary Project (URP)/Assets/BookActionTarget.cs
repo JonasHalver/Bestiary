@@ -8,35 +8,174 @@ public class BookActionTarget : MonoBehaviour
 {
     public TextMeshProUGUI title;
     public TMP_Dropdown position, nearCount, shape, minimumHits, targetStatus, targetPriority;
+    public string titleString;
+    private bool loading = false;
 
     private void OnEnable()
     {
+        StartCoroutine(CardLoaded());
+    }
+    public void SetInfoFromGuess()
+    {
+        Action action = Book.currentEntry.activeAction.guessAction;
 
-        SetPosition();
-        SetNearCount();
-        SetShape();
-        SetMinimumHits();
-        SetTargetStatus();
-        SetTargetPriority();
-        Book.currentEntry.activeAction.guessAction.targetingSet = true;
+        switch (action.position)
+        {
+            case Action.Position.Alone:
+                position.value = 1;
+                break;
+            case Action.Position.NearAlly:
+                position.value = 2;
+                break;
+            case Action.Position.NotNearAlly:
+                position.value = 4;
+                break;
+            case Action.Position.NearEnemy:
+                position.value = 3;
+                break;
+            case Action.Position.NotNearEnemy:
+                position.value = 5;
+                break;
+            case Action.Position.Irrelevant:
+                position.value = 0;
+                break;
+        }
+
+        nearCount.value = action.nearTargetCount - 1;
+        switch (action.shape)
+        {
+            case Action.Shape.Single:
+                if (action.canHitSelf) shape.value = 0;
+                else
+                {
+                    if (action.targetConditions[0] == Action.Status.InMelee) shape.value = 1;
+                    else shape.value = 2;
+                }
+                break;
+            case Action.Shape.Arc:
+                shape.value = 3;
+                break;
+            case Action.Shape.Cone:
+                shape.value = 4;
+                break;
+            case Action.Shape.ThreeByThree:
+                if (!action.canHitSelf) shape.value = 5;
+                else shape.value = 6;
+                break;
+            case Action.Shape.Line:
+                shape.value = 7;
+                break;
+            case Action.Shape.All:
+                shape.value = 8;
+                break;
+        }
+        minimumHits.value = action.minimumHits - 1;
+        switch (action.targetConditions[0])
+        {
+            case Action.Status.Irrelevant:
+                targetStatus.value = 0;
+                break;
+            case Action.Status.Below50:
+                targetStatus.value = 1;
+                break;
+            case Action.Status.Above50:
+                targetStatus.value = 2;
+                break;
+            case Action.Status.InMelee:
+                targetStatus.value = 3;
+                break;
+            case Action.Status.NotInMelee:
+                targetStatus.value = 4;
+                break;
+        }
+        switch (action.targetPriority)
+        {
+            case Action.TargetPriority.LowestHPCurrent:
+                targetPriority.value = 0;
+                break;
+            case Action.TargetPriority.lowestHPPercent:
+                targetPriority.value = 1;
+                break;
+            case Action.TargetPriority.HighestHPCurrent:
+                targetPriority.value = 2;
+                break;
+            case Action.TargetPriority.HighestHPPercent:
+                targetPriority.value = 3;
+                break;
+            case Action.TargetPriority.Closest:
+                targetPriority.value = 4;
+                break;
+            case Action.TargetPriority.Farthest:
+                targetPriority.value = 5;
+                break;
+            case Action.TargetPriority.HasSameDebuff:
+                targetPriority.value = 6;
+                break;
+            case Action.TargetPriority.DoesntHaveSameDebuff:
+                targetPriority.value = 7;
+                break;
+            case Action.TargetPriority.None:
+                targetPriority.value = 8;
+                break;
+        }
     }
     private void Update()
     {
-        string titleText = title.text;
-        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
-        titleText = titleText.Replace("*", replacement);
-        title.text = titleText;
+        string titleText = titleString;
+        string cname = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
 
+        titleText = titleText.Replace("*", cname);
+        title.text = titleText;
     }
+
+    public void ResetValues(bool hard)
+    {
+        loading = true;
+        position.value = 0; nearCount.value = 0; shape.value = 0; minimumHits.value = 0; targetStatus.value = 0; targetPriority.value = 0;
+        loading = false;
+        if (hard)
+        {
+            ValueChanged();
+            Book.currentEntry.activeAction.guessAction.targetingSet = false;
+        }
+    }
+
+    IEnumerator CardLoaded()
+    {
+        loading = true;
+
+        ResetValues(false);
+        loading = true;
+        yield return null;
+        SetInfoFromGuess();
+        yield return null;
+        SetPosition();
+        yield return null;
+        SetNearCount();
+        yield return null;
+        SetShape();
+        yield return null;
+        SetMinimumHits();
+        yield return null;
+        SetTargetStatus();
+        yield return null;
+        SetTargetPriority();
+        yield return null;
+        Book.currentEntry.activeAction.guessAction.targetingSet = true;
+        BookActionCard.CardUpdate();
+        loading = false;
+    }
+
     public void ValueChanged()
     {
+        if (loading) return;
         SetPosition();
         SetNearCount();
         SetShape();
         SetMinimumHits();
         SetTargetStatus();
         SetTargetPriority();
-        Book.currentEntry.activeAction.CalculateValidity();
+        //Book.currentEntry.activeAction.CalculateValidity();
         Book.currentEntry.activeAction.guessAction.targetingSet = true;
         BookActionCard.CardUpdate();
     }
@@ -86,30 +225,63 @@ public class BookActionTarget : MonoBehaviour
             case 0:
                 action.shape = Action.Shape.Single;
                 action.canHitSelf = true;
+                action.target = Action.Target.Self;
+                if (targetStatus.value > 2)
+                {
+                    targetStatus.value = 0;
+                    action.targetConditions[0] = Action.Status.Irrelevant;
+                }
                 break;
             case 1:
                 action.shape = Action.Shape.Single;
                 action.canHitSelf = false;
+                action.target = Action.Target.Character;
+                if (action.targetConditions[0] == Action.Status.Irrelevant)
+                {
+                    targetStatus.value = 3;
+                    action.targetConditions[0] = Action.Status.InMelee;
+                }
+                minimumHits.value = 0;
                 break;
             case 2:
-                action.shape = Action.Shape.Arc;
+                action.shape = Action.Shape.Single;
                 action.canHitSelf = false;
+                action.target = Action.Target.Character;
+                if (action.targetConditions[0] == Action.Status.InMelee)
+                {
+                    targetStatus.value = 0;
+                    action.targetConditions[0] = Action.Status.Irrelevant;
+                }
+                minimumHits.value = 0;
                 break;
             case 3:
-                action.shape = Action.Shape.Cone;
+                action.shape = Action.Shape.Arc;
                 action.canHitSelf = false;
+                action.target = Action.Target.Character;
                 break;
             case 4:
-                action.shape = Action.Shape.ThreeByThree;
+                action.shape = Action.Shape.Cone;
                 action.canHitSelf = false;
+                action.target = Action.Target.Character;
                 break;
             case 5:
                 action.shape = Action.Shape.ThreeByThree;
-                action.canHitSelf = true;
+                action.canHitSelf = false;
+                action.target = Action.Target.Character;
                 break;
             case 6:
+                action.shape = Action.Shape.ThreeByThree;
+                action.canHitSelf = true;
+                action.target = Action.Target.Character;
+                break;
+            case 7:
                 action.shape = Action.Shape.Line;
                 action.canHitSelf = false;
+                action.target = Action.Target.Character;
+                break;
+            case 8:
+                action.shape = Action.Shape.All;
+                action.target = Action.Target.All;
                 break;
         }
         if (action.shape == Action.Shape.Single)
@@ -139,6 +311,7 @@ public class BookActionTarget : MonoBehaviour
     {
         Action action = Book.currentEntry.activeAction.guessAction;
         action.minimumHits = minimumHits.value + 1;
+        if (minimumHits.value > 1 && shape.value == 1) shape.value = 3;
     }
     public void SetTargetStatus()
     {
@@ -158,9 +331,11 @@ public class BookActionTarget : MonoBehaviour
                 break;
             case 3:
                 action.targetConditions.Add(Action.Status.InMelee);
+                if (shape.value != 1 && shape.value != 3) shape.value = 1;
                 break;
             case 4:
                 action.targetConditions.Add(Action.Status.NotInMelee);
+                if (shape.value == 1) shape.value = 2;
                 break;
         }
     }

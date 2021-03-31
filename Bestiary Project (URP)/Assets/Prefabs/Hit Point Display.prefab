@@ -74,8 +74,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d2fa62efd7b88489c56a48ec5a353e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  value: 23
-  damageTaken: 10.5
+  value: 1
+  damageTaken: 0
   displayHalf: 0
   hitPointPrefab: {fileID: 9170759876029831411, guid: bda5781770534a94cb3b4c6fc7a40506,
     type: 3}

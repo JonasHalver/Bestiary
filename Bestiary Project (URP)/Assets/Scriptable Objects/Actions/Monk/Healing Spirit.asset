@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: Healing Spirit
   actionCode: healingspiritmonk
-  description: If I am alone, I will grant regeneration to the most hurt ally.
+  description: If I am not near an enemy, I will grant regeneration to the most hurt
+    ally.
   actionDescription: 
   descriptionIndex: -1
   actionType: 1
   actionPriority: 4
   debuff: {fileID: 0}
   buff: {fileID: 11400000, guid: d6d58d02f8b5bf24099c5d25ca7d3ef2, type: 2}
-  position: 4
+  position: 1
   useBeingAttackedOverride: 0
   nearTargetCount: 1
   shape: 0

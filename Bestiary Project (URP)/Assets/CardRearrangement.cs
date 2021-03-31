@@ -272,7 +272,13 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
         transform.parent = cardHolder;
         transform.SetSiblingIndex(index);
         dragging = false;
-        page.ActionPriorityUpdate();
+        StartCoroutine(Delay(page.gameObject, "ActionPriorityUpdate"));
+    }
+
+    IEnumerator Delay(GameObject target, string message)
+    {
+        yield return null;
+        target.SendMessage(message);
     }
 
     public void OnPointerDown(PointerEventData eventData)

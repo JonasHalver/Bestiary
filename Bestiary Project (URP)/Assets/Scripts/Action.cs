@@ -75,6 +75,8 @@ public class Action : ScriptableObject
     [HideInInspector]
     public bool descriptionSet, targetingSet, outcomeSet;
 
+    public bool isPass = false;
+
     public Node ActionValid(BattlefieldPositionInfo bpi, bool basedOnGuess)
     {
         List<Node> possibleTargets = new List<Node>();
@@ -193,7 +195,7 @@ public class Action : ScriptableObject
                     }
                     break;
                 case Shape.All:
-                    flag1 = true;
+                    flag2 = true;
                     foreach (Character actor in CombatManager.actors)
                     {
                         if (actor.alive)
@@ -202,6 +204,10 @@ public class Action : ScriptableObject
                             {
                                 case TargetGroup.Allies:
                                     if (actor != bpi.origin && Character.AllyOrEnemy(bpi.origin, actor))
+                                    {
+                                        possibleTargets.Add(actor.movement.currentNode);
+                                    }
+                                    else if (actor == bpi.origin)
                                     {
                                         possibleTargets.Add(actor.movement.currentNode);
                                     }
@@ -221,7 +227,15 @@ public class Action : ScriptableObject
                     break;
             }
         }
-
+        // Remove dead targets
+        for (int i = 0; i < possibleTargets.Count; i++)
+        {
+            if (!possibleTargets[i].occupant.alive)
+            {
+                possibleTargets.RemoveAt(i);
+                i--;
+            }
+        }
         // Find possible targets based on target status. If none are found, flag3 is false
         if (flag2  || basedOnGuess)
         {
@@ -552,20 +566,8 @@ public class Action : ScriptableObject
 
         if (flag3 && bestTarget == null && possibleTargets.Count > 0)
         {
-            bool flag4 = false;
-            for (int i = 0; i < possibleTargets.Count; i++)
-            {
-                if (possibleTargets[i] != null)
-                {
-                    bestTarget = possibleTargets[i];
-                    flag4 = true;
-                    break;
-                }
-            }
-            if (!flag4)
-            {
-                flag3 = false;
-            }
+            int index = GameManager.seed[CombatManager.instance.roundCount] % possibleTargets.Count;
+            bestTarget = possibleTargets[index];
         }
         else if (flag3 && bestTarget == null && possibleTargets.Count == 0) flag3 = false;
         else if ((!flag3 && bestTarget != null) && basedOnGuess) flag3 = true;

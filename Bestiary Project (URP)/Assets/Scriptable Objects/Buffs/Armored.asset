@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: Armored
   m_EditorClassIdentifier: 
   buffName: Armor
-  tooltipString: <b>Armored:</b> All hits become glancing hits.
+  tooltipString: <b>Armored:</b> All hits deal half damage. Damage over time deals
+    0.
   affectedCharacter: {fileID: 0}
   buffType: 0
   resistances: 

@@ -137,6 +137,12 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     public static List<Node> NodesAffectedByAction(CombatAction ca)
     {
         List<Node> output = new List<Node>();
+        if (ca.action.isPass)
+        {
+            output.Add(ca.origin.movement.currentNode);
+            return output;
+        }
+
         switch (ca.action.shape)
         {
             case Action.Shape.Arc:

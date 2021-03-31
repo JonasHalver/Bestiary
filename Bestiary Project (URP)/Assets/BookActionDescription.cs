@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class BookActionDescription : MonoBehaviour
 {
     public TextMeshProUGUI title;
+    public string titleString;
     public Transform grid;
     public List<GameObject> buttons = new List<GameObject>();
     private void Awake()
@@ -22,6 +23,10 @@ public class BookActionDescription : MonoBehaviour
     }
     private void OnEnable()
     {
+        foreach(GameObject b in buttons)
+        {
+            b.GetComponent<Button>().interactable = true;
+        }
     }
 
     public void GenerateList()
@@ -42,12 +47,20 @@ public class BookActionDescription : MonoBehaviour
             int index = Book.currentEntry.activeDescriptionIndices[i];
             if (index > -1) buttons[index].GetComponent<Button>().interactable = false;
         }
-        string titleText = title.text;
-        string replacement = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
+        string titleText = titleString;
+        string cname = Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "the monster";
 
-        titleText = titleText.Replace("*", replacement);
+        titleText = titleText.Replace("*", cname);
         title.text = titleText;
+    }
 
+    public void ResetValues()
+    {
+        Book.currentEntry.activeDescriptionIndices.Remove(Book.currentEntry.activeAction.guessAction.descriptionIndex);
+        Book.currentEntry.activeAction.guessAction.descriptionSet = false;
+        Book.currentEntry.activeAction.guessAction.descriptionIndex =-1;
+        Book.currentEntry.activeAction.guessAction.actionDescription = null;
+        Book.currentEntry.activeAction.originalAction = null;
     }
 
     public void NewSelection(int index)
@@ -74,6 +87,5 @@ public class BookActionDescription : MonoBehaviour
 
         gameObject.SetActive(false);
         Book.currentEntry.activeAction.CalculateValidity();
-
     }
 }

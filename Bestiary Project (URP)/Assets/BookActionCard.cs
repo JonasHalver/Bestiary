@@ -35,6 +35,7 @@ public class BookActionCard : MonoBehaviour
     }
     private void OnEnable()
     {
+        
         guess = Book.currentEntry.activeAction.guessAction;
 
         actionNameInput.text = guess.actionName;
@@ -53,6 +54,19 @@ public class BookActionCard : MonoBehaviour
         {
             editable = true;
         }
+    }
+
+    public void ResetValues()
+    {
+        description.SetActive(true); targeting.SetActive(true);outcome.SetActive(true);
+        description.SendMessage("ResetValues");
+        targeting.SendMessage("ResetValues", true);
+        outcome.SendMessage("ResetValues", true);
+        description.SetActive(false); targeting.SetActive(false);outcome.SetActive(false);
+        actionNameInput.text = "Unknown Action";
+        SetName();
+        Book.currentEntry.activeAction.CalculateValidity();
+        CardUpdate();
     }
     public void SetFullDescription()
     {

@@ -25,3 +25,4 @@ MonoBehaviour:
   damageType: 0
   effectTiming: 1
   removeAtEndOfRound: 0
+  ignoreFirstInstance: 1

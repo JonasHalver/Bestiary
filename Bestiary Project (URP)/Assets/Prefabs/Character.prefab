@@ -259,6 +259,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 58f96d990958a93488fe12e9357cf4dc, type: 2}
+  damageTaken: 0
   currentHitpoints: 5
   alive: 1
   movement: {fileID: 7283788277956465980}
@@ -269,11 +270,10 @@ MonoBehaviour:
   characterIconColor: {r: 1, g: 1, b: 1, a: 1}
   deadImage: {fileID: 215725937335092920}
   conditions: 
+  currentBuffs: 
   expiredDebuffs: []
   expiredBuffs: []
   temporaryResistances: 
-  temporaryArmor: 0
-  temporaryDodge: 0
   initiative: 0
   attackAnimation:
     serializedVersion: 2
@@ -310,6 +310,9 @@ MonoBehaviour:
     m_RotationOrder: 4
   debuffCount: 0
   buffCount: 0
+  entry: {fileID: 0}
+  highlightMyNode: 0
+  pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
 --- !u!114 &7283788277956465980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -323,6 +326,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   selected: 0
+  character: {fileID: 0}
   movementLeft: 0
   movementCost: 0
   canMove: 0

@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
     public List<CharacterStats> mercenaries = new List<CharacterStats>();
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
     public Icons currentIconCollection;
+    public Tooltips currentTooltipCollection;
+
+    public static List<int> seed;
 
     public enum GameState { Normal, PauseMenu, Journal, Glossary}
     public static GameState gameState = GameState.Normal;
@@ -43,7 +46,11 @@ public class GameManager : MonoBehaviour
         if (instance == null) instance = this;
         else if (instance != this) Destroy(gameObject);
 
-        
+        seed = new List<int>();
+        for (int i = 0; i < 1000; i++)
+        {
+            seed.Add(Random.Range(0, 10));
+        }
 
         FirstActions();
         DontDestroyOnLoad(this);
@@ -66,6 +73,7 @@ public class GameManager : MonoBehaviour
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
     {
         gameState = GameState.Normal;
+        alliesWon = false; enemiesWon = false;
         combatStartSequence = false;
         actorsSpawned = false;
         FirstActions();
@@ -119,6 +127,7 @@ public class GameManager : MonoBehaviour
     }
     private void FirstActions()
     {
+
     }
 
     private void Update()
@@ -131,7 +140,7 @@ public class GameManager : MonoBehaviour
         if (enemiesWon || alliesWon) GameOver();
 
         GameStateMachine();
-        
+        UpdateWindowsList();
     }
 
     public void UpdateWindowsList()
@@ -211,7 +220,12 @@ public class GameManager : MonoBehaviour
 
         if(focusedWindow == null)
         {
-            OpenPauseMenu();
+            if (gameState != GameState.Normal)
+            {
+                ChangeState(GameState.Normal);
+            }
+            else
+                OpenPauseMenu();
         }
         else
         {

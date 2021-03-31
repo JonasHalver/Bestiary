@@ -21,11 +21,13 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
 
     private void OnDisable()
     {
-        Destroy(tooltip);
+        if (tooltip != null)
+            Destroy(tooltip);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Destroy(tooltip);
+        if (tooltip != null)
+            Destroy(tooltip);
     }
 }

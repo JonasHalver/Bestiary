@@ -59,6 +59,7 @@ public class Book : MonoBehaviour
                 p.entry = monsterEntries[i];
                 monsterEntries[i].page = p;
                 monsterEntries[i].origin.pageNumber = i;
+                newPage.SetActive(false);
                 p.entry.CreateChecks();
             }
         }
@@ -69,6 +70,7 @@ public class Book : MonoBehaviour
                 GameObject newPage = Instantiate(pagePrefab, mercBinding.transform);
                 Page p = newPage.GetComponent<Page>();
                 mercPages.Add(p);
+                newPage.SetActive(false);
                 p.entry = mercEntries[i];
                 mercEntries[i].page = p;
                 mercEntries[i].origin.pageNumber = i;

@@ -27,6 +27,7 @@ public class Icons : ScriptableObject
     public Sprite lineVert;
     public Sprite box;
     public Sprite selfBox;
+    public Sprite all;
     [Header("Buff Icons")]
     public Sprite dodge;
     public Sprite regeneration;

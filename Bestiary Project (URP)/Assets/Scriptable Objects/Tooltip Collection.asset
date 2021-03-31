@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 461d36537fb0c2f4f9f9b5c7e6ab8ec9, type: 3}
+  m_Name: Tooltip Collection
+  m_EditorClassIdentifier: 
+  damageTypes:
+  - Cutting damage.
+  - Piercing damage.
+  - Crushing damage.
+  - Fire damage.
+  - Acid damage.
+  - Cold damage.
+  - Poison damage.
+  - Healing.
+  shapes:
+  - <b>All:</b> This action hits all characters within the same target group.
+  - <b>Arc:</b> This action hits three adjacent spaces within melee range.
+  - <b>Cone:</b> This action hits an expanding cone shape originating from the character.
+  - <b>Line:</b> This action hits each space in a straight line from the user.
+  - <b>Melee:</b> This action hits a character on an adjacent space.
+  - <b>Self:</b> This action hits the user.
+  - <b>Ranged:</b> This action hits another character at range.
+  - <b>Pulse:</b> This action hits all adjacent spaces.
+  - <b>Box:</b> This action hits all spaces in a 3x3 field.

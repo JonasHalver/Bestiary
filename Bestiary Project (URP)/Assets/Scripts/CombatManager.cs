@@ -179,6 +179,22 @@ public class CombatManager : MonoBehaviour
     public void SortByInitiative()
     {
         actors.Sort((actor2, actor1) => actor1.initiative.CompareTo(actor2.initiative));
+        Character temp;
+        for (int i = 0; i < actors.Count; i++)
+        {
+            if (i+1 < actors.Count)
+            {
+                if (actors[i+1].initiative == actors[i].initiative)
+                {
+                    if (actors[i].stats.characterType == CharacterStats.CharacterTypes.Adventurer && actors[i+1].stats.characterType == CharacterStats.CharacterTypes.NPC)
+                    {
+                        temp = actors[i];
+                        actors[i] = actors[i + 1];
+                        actors[i + 1] = temp;
+                    }
+                }
+            }
+        }
     }
 
     public void UpdateCombat()
@@ -455,7 +471,12 @@ public class CombatAction
     }
 
     public void ResolveAction()
-    { 
+    {
+        if (action.isPass)
+        {
+            origin.lastCombatAction = null;
+            return;
+        }
         foreach (Node node in affectedNodes)
         {
             if (origin.stats.characterType == CharacterStats.CharacterTypes.Adventurer)

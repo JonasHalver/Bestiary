@@ -25,7 +25,8 @@ MonoBehaviour:
   movement: 1
   actions:
   - {fileID: 11400000, guid: cf7e84f54ffaca04a83c58d8594b1ed2, type: 2}
-  - {fileID: 11400000, guid: b5fc240bc5e2ca74f88bd03affa32ec4, type: 2}
-  - {fileID: 11400000, guid: aeb7cbbd64918844598d3549925529d2, type: 2}
   - {fileID: 11400000, guid: 1a50cac2f83ab27458b0cc46423fe0e0, type: 2}
-  pageNumber: 0
+  - {fileID: 11400000, guid: a6b0fb3493497f84092864ad0aa24d1c, type: 2}
+  - {fileID: 11400000, guid: aeb7cbbd64918844598d3549925529d2, type: 2}
+  pageNumber: 2
+  entry: {fileID: 0}

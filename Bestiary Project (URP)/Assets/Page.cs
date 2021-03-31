@@ -12,6 +12,7 @@ public class Page : MonoBehaviour
     public List<CardRearrangement> actionCards = new List<CardRearrangement>();
     public Image icon;
     public StatsEditor editor;
+    public PageUI pageUI;
 
 
     private void Start()
@@ -39,12 +40,15 @@ public class Page : MonoBehaviour
             {
                 actionCards[i].actionCheck = entry.actionChecks[i];
                 actionCards[i].panelColor = actionCards[i].panelColors[i];
+                entry.actionChecks[i].panelColor = actionCards[i].panelColor;
             }
         }
     }
 
     public void MonsterNameChanged()
     {
+        print(entry.guess.characterName);
+        print(nameInput.text);
         entry.guess.characterName = nameInput.text;
     }
     public void ActionPriorityUpdate()
@@ -52,7 +56,7 @@ public class Page : MonoBehaviour
         for (int i = 0; i < actionCards.Count; i++)
         {
             actionCards[i].actionCheck.guessAction.actionPriority = actionCards[i].transform.GetSiblingIndex() + 1;
-            
+
         }
     }
 

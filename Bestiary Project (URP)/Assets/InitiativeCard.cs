@@ -35,8 +35,7 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
     }
 
     private void UpdateCard()
-    {
-        
+    {        
         isMerc = actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer;
         if (actor.alive && actor.currentAction.highlighted) background.color = bgHighlight;
         else background.color = isMerc ? bgMerc : bgMonster;
@@ -49,17 +48,29 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
         {
             initiative = actor.stats.speed;
             cname = actor.stats.characterName;
-            d = $"{cname} will use {actor.currentAction.action.actionName}";
+            if (actor.alive && !actor.currentAction.action.isPass)
+                d = $"{cname} will use {actor.currentAction.action.actionName}";
+            else if (actor.alive && actor.currentAction.action.isPass) d = $"{cname} has no valid action and will pass.";
         }
         else
         {
             for (int i = 0; i < Book.monsterEntries.Count; i++)
             {
+                
                 if (Book.monsterEntries[i].origin.characterCode.Equals(actor.stats.characterCode))
                 {
                     e = Book.monsterEntries[i];
                     cname = e.guess.characterName != null ? e.guess.characterName : "The monster";
                     if (cname.Length == 0) cname = "The monster";
+                    if (!actor.alive)
+                        break;
+
+                    if (actor.currentAction.action.isPass)
+                    {
+                        d = $"{cname} has no valid action and will pass.";
+                        break;
+                    }
+
                     initiative = e.guess.speed - (actor.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0);
                     if (actor.alive)
                     {
