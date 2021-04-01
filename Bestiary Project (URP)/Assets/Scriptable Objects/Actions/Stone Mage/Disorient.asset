@@ -19,7 +19,7 @@ MonoBehaviour:
   actionDescription: 
   descriptionIndex: -1
   actionType: 3
-  actionPriority: 4
+  actionPriority: 2
   debuff: {fileID: 11400000, guid: d3bf40d3bf0168541a1c08de90c22718, type: 2}
   buff: {fileID: 0}
   position: 0
@@ -40,3 +40,4 @@ MonoBehaviour:
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0

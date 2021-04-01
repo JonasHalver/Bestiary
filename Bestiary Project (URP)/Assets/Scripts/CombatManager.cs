@@ -243,7 +243,30 @@ public class CombatManager : MonoBehaviour
 
     public void LogConstructor()
     {
+        foreach (GameObject card in initiativeCards) card.SendMessage("UpdateCard");
+
         initiativeCards.Sort((card2, card1) => card1.GetComponent<InitiativeCard>().initiative.CompareTo(card2.GetComponent<InitiativeCard>().initiative));
+
+        GameObject temp;
+
+        for (int i = 0; i < initiativeCards.Count; i++)
+        {
+            InitiativeCard card = initiativeCards[i].GetComponent<InitiativeCard>();
+            if (i+1 < initiativeCards.Count)
+            {
+                InitiativeCard card2 = initiativeCards[i + 1].GetComponent<InitiativeCard>();
+                if (card.initiative == card2.initiative)
+                {
+                    if (card.isMerc && !card2.isMerc)
+                    {
+                        temp = initiativeCards[i];
+                        initiativeCards[i] = initiativeCards[i + 1];
+                        initiativeCards[i + 1] = temp;
+                    }
+                }
+            }
+        }
+
         for (int i = 0; i < initiativeCards.Count; i++)
         {
             initiativeCards[i].transform.SetSiblingIndex(i);

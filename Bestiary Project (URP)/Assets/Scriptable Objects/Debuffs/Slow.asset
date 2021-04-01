@@ -20,9 +20,10 @@ MonoBehaviour:
   debuffType: 1
   controlType: 0
   icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
-  iconColor: {r: 0, g: 0.30562156, b: 0.990566, a: 1}
+  iconColor: {r: 0.4198113, g: 0.5986838, b: 1, a: 1}
   duration: 0
   durationRemaining: 0
   damageType: 0
   effectTiming: 2
   removeAtEndOfRound: 1
+  ignoreFirstInstance: 0

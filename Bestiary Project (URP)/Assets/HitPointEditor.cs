@@ -23,24 +23,26 @@ public class HitPointEditor : MonoBehaviour
         display.ClearHearts();
         display.value = value;
         pageDisplay = Book.currentEntry.page.pageUI.hitpointDisplay;
-        pageDisplay.editing = true;
+        HitPointDisplay.editing = true;
+        HitPointDisplay.instance = display;
     }
     private void OnDisable()
     {
-        pageDisplay.editing = false;
+        HitPointDisplay.editing = false;
+        HitPointDisplay.instance = null;
     }
 
     // Update is called once per frame
     void Update()
     {
-        value = Mathf.Clamp(value, 0, 50);
+        value = Mathf.Clamp(value, 0, 22);
         display.value = value;
     }
 
     public void Add()
     {
         value++;
-        value = Mathf.Clamp(value, 0, 50);
+        value = Mathf.Clamp(value, 0, 22);
 
         slider.value = value;
         input.text = value.ToString();
@@ -49,7 +51,7 @@ public class HitPointEditor : MonoBehaviour
     public void Subtract()
     {
         value--;
-        value = Mathf.Clamp(value, 0, 50);
+        value = Mathf.Clamp(value, 0, 22);
 
         slider.value = value;
         input.text = value.ToString();

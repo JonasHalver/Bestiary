@@ -9,7 +9,7 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
 {
     public SimpleTooltipSpawner ttp;
     public Image iconGridBackground;
-    public TextMeshProUGUI description;
+    public TextMeshProUGUI description, actionName;
     public Image icon1, icon2, icon3, icon4;
     public Entry entry;
     public Action action;
@@ -22,7 +22,7 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
         iconGridBackground.color = actionCheck.panelColor;
         description.text = actionCheck.guessAction.description;
         action = actionCheck.guessAction;
-        
+        actionName.text = action.actionName;
         priority = action.actionPriority;
         SetPriorityTooltip();
         switch (action.actionType)

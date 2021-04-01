@@ -20,7 +20,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private int t = 0;
     private void Update()
     {
-        if (t > 10) UpdateCanvas();
+        if (t > 10) { UpdateCanvas(); CreateCard(); }
         t++;
     }
 
@@ -193,6 +193,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void UpdateCanvas()
     {
+
         t = 0;
         Canvas.ForceUpdateCanvases();
         topLine.SetActive(true);

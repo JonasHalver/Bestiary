@@ -19,7 +19,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     bool displayingDamageOrHeal = false;
     public HitPointDisplay hpd;
     private Color bgColor;
-
+    public Color b, d;
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
@@ -129,25 +129,29 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public void DisplayEffect(Buff buff)
     {
         GameObject newEffect = Instantiate(effectPrefab, effectsDisplay);
-        Image img = newEffect.GetComponent<Image>();
+        Image img = newEffect.transform.GetChild(0).GetComponent<Image>();
         img.sprite = buff.icon;
         img.color = buff.iconColor;
+        Image bg = newEffect.GetComponent<Image>();
+        bg.color = b;
         newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = buff.tooltipString;
-        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = (buff.durationRemaining+1).ToString();
-        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), buff));
+        newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = (buff.durationRemaining+1).ToString();
+        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>(), buff));
     }
 
     public void DisplayEffect(Debuff debuff)
     {
         GameObject newEffect = Instantiate(effectPrefab, effectsDisplay);
-        Image img = newEffect.GetComponent<Image>();
+        Image img = newEffect.transform.GetChild(0).GetComponent<Image>();
         img.sprite = debuff.icon;
         img.color = debuff.iconColor;
+        Image bg = newEffect.GetComponent<Image>();
+        bg.color = d;
         newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = debuff.tooltipString;
 
-        newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+        newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text =
             debuff.debuffType == Debuff.DebuffType.DamageOverTime ? debuff.durationRemaining.ToString() : (debuff.durationRemaining + 1).ToString();
-        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(0).GetComponent<TextMeshProUGUI>(), debuff));
+        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>(), debuff));
     }
 
     public void RemoveEffect(Debuff debuff)

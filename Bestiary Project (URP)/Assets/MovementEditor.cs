@@ -10,6 +10,7 @@ public class MovementEditor : MonoBehaviour
     public int value = 1;
     public Color valid, invalid;
     public List<Image> tiles = new List<Image>();
+    public Image characterIcon;
     public Transform grid;
     // Start is called before the first frame update
     void Start()
@@ -24,6 +25,8 @@ public class MovementEditor : MonoBehaviour
     {
         value = Book.currentEntry.guess.movement;
         input.text = value.ToString();
+        characterIcon.sprite = Book.currentEntry.origin.characterIcon;
+        characterIcon.color = Book.currentEntry.origin.characterIconColor;
     }
 
     // Update is called once per frame

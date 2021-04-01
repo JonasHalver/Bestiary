@@ -1140,6 +1140,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dtiPrefab: {fileID: 1408626974544802674, guid: 1b5d3d32171d0f24eb157b675c42b9fc,
     type: 3}
+  moveCharacterIcon: {fileID: 3904319959347809810}
   hitPointDisplay: {fileID: 4548437898297746842}
   hitPointValue: 0
   displayedValue: 0

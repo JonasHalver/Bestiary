@@ -21,6 +21,7 @@ public class Page : MonoBehaviour
         //entry.CreateChecks();
     }
 
+
     public void UpdateName()
     {
         if (Book.currentEntry.isMerc) nameInput.text = Book.currentEntry.origin.characterName;

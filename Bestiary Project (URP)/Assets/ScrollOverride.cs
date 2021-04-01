@@ -11,6 +11,11 @@ public class ScrollOverride : MonoBehaviour
     {
         sr = GetComponent<Scrollbar>();
     }
+    private void OnEnable()
+    {
+        sr = GetComponent<Scrollbar>();
+        sr.value = 0;
+    }
 
     // Update is called once per frame
     void Update()

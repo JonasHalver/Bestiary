@@ -8,6 +8,8 @@ public class StatsEditor : MonoBehaviour
 {
     public GameObject dtiPrefab;
 
+    public Image moveCharacterIcon;
+
     [Header("Hit Points")]
     public HitPointDisplay hitPointDisplay;
     public float hitPointValue = 0;
@@ -43,6 +45,8 @@ public class StatsEditor : MonoBehaviour
     {
         editable = !Book.currentEntry.isMerc;
         hitPointValue = Book.currentEntry.guess.hitPoints;
+        moveCharacterIcon.sprite = Book.currentEntry.origin.characterIcon;
+        moveCharacterIcon.color = Book.currentEntry.origin.characterIconColor;
     }
 
     private void OnEnable()
