@@ -12,6 +12,8 @@ public class CharacterStats : ScriptableObject
     public string characterCode;
     public enum CharacterTypes { NPC, Adventurer }
     public CharacterTypes characterType = CharacterTypes.NPC;
+    public enum Personality { Aggressive, Annoying, Cunning, Efficient, Fearful, PainAverse, Reckless, Relentless }
+    public Personality personality;
     public Sprite characterIcon;
     public Color characterIconColor;
     public float hitPoints = 1;

@@ -77,6 +77,8 @@ public class Action : ScriptableObject
 
     public bool isPass = false;
 
+    public enum Condition { Acid, Armor, Bleeding, Burning, Disorient, Fear, Haste, Poison, Regeneration, Root, Slow, Strengthen, Stun, Taunt, Vulnerable, Weaken }
+
     public Node ActionValid(BattlefieldPositionInfo bpi, bool basedOnGuess)
     {
         List<Node> possibleTargets = new List<Node>();

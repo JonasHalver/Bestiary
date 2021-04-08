@@ -718,6 +718,12 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         int dist = Mathf.Max(Mathf.Abs(Mathf.RoundToInt(dir.x)), Mathf.Abs(Mathf.RoundToInt(dir.y)));
         return dist;
     }
+    public static int NodeToDistance(Node n1, Node n2)
+    {
+        Vector2 dir = n1.coordinate - n2.coordinate;
+        int dist = Mathf.Max(Mathf.Abs(Mathf.RoundToInt(dir.x)), Mathf.Abs(Mathf.RoundToInt(dir.y)));
+        return dist;
+    }
 
     public static void ShowPreviousPositions(BattlefieldPositionInfo bpi, Character user, List<Character> victims)
     {

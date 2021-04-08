@@ -45,6 +45,7 @@ public class CombatManager : MonoBehaviour
     public static event System.Action<Character> StartOfTurn, EndOfTurn, EndOfMovement;
     private int counter = 0;
 
+    public static Dictionary<Character, float> threat = new Dictionary<Character, float>();
     private void Awake()
     {
         instance = this;

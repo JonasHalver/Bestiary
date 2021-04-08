@@ -30,7 +30,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public event System.Action<Buff> AcquiredBuff;
     public event System.Action<Buff> LostBuff;
 
-    public List<Debuff.ControlType> conditions = new List<Debuff.ControlType>();
+    //public List<Debuff.ControlType> conditions = new List<Debuff.ControlType>();
+    private List<Action.Condition> conditions = new List<Action.Condition>();
+    public List<Action.Condition> Conditions
+    {
+        get { return conditions; }
+    }
     public List<Buff.BuffType> currentBuffs = new List<Buff.BuffType>();
 
     [HideInInspector]
