@@ -155,7 +155,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 output.Add(ca.targetNode);
                 if (ca.action.alwaysHitsSelf) output.Add(ca.origin.movement.currentNode);
                 break;
-            case Action.Shape.ThreeByThree:
+            case Action.Shape.Area:
                 output = GenerateThreeByThree(ca.targetNode);
                 break;
             case Action.Shape.Line:
@@ -269,8 +269,9 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         Node originNode = test.origin.movement.currentNode;
         Vector2 originV2 = originNode.coordinate;
 
-        int hitCount = 0, hitCountMax = 0;
+        int hitCount = 0;
         bool validTarget = false;
+        ShapeTest output = new ShapeTest(test.action, test.origin);
         foreach (Node node in originNode.neighbors)
         {
             if (node != null)
@@ -281,21 +282,31 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 {
                     if (n.occupant != null)
                     {
-                        validTarget = (test.hitEnemyOnly && !Character.AllyOrEnemy(test.origin, n.occupant)) || (!test.hitEnemyOnly && Character.AllyOrEnemy(test.origin, n.occupant));
+                        switch (test.targetGroup)
+                        {
+                            case Action.TargetGroup.Enemies:
+                                validTarget = !Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.Allies:
+                                validTarget = Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.All:
+                                validTarget = true;
+                                break;
+                        }
                         if (validTarget && n.occupant.alive)
                             hitCount++;
                     }
                     
                 }
-                if (hitCount > hitCountMax && hitCount >= test.hitMinimum)
+                if (hitCount >= test.hitMinimum)
                 {
-                    bestTarget = node;
-                    valid = true;
-                    hitCountMax = hitCount;
+                    output.potentialTargets.Add(new TargetInfo(node, targetTest));
                 }
             }
         }
-        return new ShapeTest(valid, bestTarget);
+        if (output.potentialTargets.Count > 0) output.valid = true;
+        return output;
     }
 
     public static ShapeTest ConeTest(ShapeTest test)
@@ -306,6 +317,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
 
         Node originNode = test.origin.movement.currentNode;
         Vector2 originV2 = originNode.coordinate;
+        ShapeTest output = new ShapeTest(test.action, test.origin);
 
         int hitCount = 0, hitCountMax = 0;
         foreach (Node node in originNode.neighbors)
@@ -318,20 +330,32 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 {
                     if (n.occupant != null)
                     {
-                        validTarget = (test.hitEnemyOnly && !Character.AllyOrEnemy(test.origin, n.occupant)) || (!test.hitEnemyOnly && Character.AllyOrEnemy(test.origin, n.occupant));
-                        if (validTarget && n.occupant.alive) hitCount++;
+                        switch (test.targetGroup)
+                        {
+                            case Action.TargetGroup.Enemies:
+                                validTarget = !Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.Allies:
+                                validTarget = Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.All:
+                                validTarget = true;
+                                break;
+                        }
+                        if (validTarget && n.occupant.alive)
+                            hitCount++;
                     }
-                    
+
                 }
-                if (hitCount > hitCountMax && hitCount >= test.hitMinimum)
+                if (hitCount >= test.hitMinimum)
                 {
-                    bestTarget = node;
-                    valid = true;
-                    hitCountMax = hitCount;
+                    output.potentialTargets.Add(new TargetInfo(node, targetTest));
                 }
             }
         }
-        return new ShapeTest(valid, bestTarget);
+        if (output.potentialTargets.Count > 0) output.valid = true;
+
+        return output;
     }
 
     public static ShapeTest LineTest(ShapeTest test)
@@ -342,6 +366,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
 
         Node originNode = test.origin.movement.currentNode;
         Vector2 originV2 = originNode.coordinate;
+        ShapeTest output = new ShapeTest(test.action, test.origin);
 
         int hitCount = 0, hitCountMax = 0;
 
@@ -351,58 +376,86 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             {
                 hitCount = 0;
                 List<Node> targetTest = GenerateLine(node.coordinate, originV2);
-                foreach(Node n in targetTest)
+                foreach (Node n in targetTest)
                 {
                     if (n.occupant != null)
                     {
-                        validTarget = (test.hitEnemyOnly && !Character.AllyOrEnemy(test.origin, n.occupant)) || (!test.hitEnemyOnly && Character.AllyOrEnemy(test.origin, n.occupant));
-                        if (validTarget && n.occupant.alive) hitCount++;
+                        switch (test.targetGroup)
+                        {
+                            case Action.TargetGroup.Enemies:
+                                validTarget = !Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.Allies:
+                                validTarget = Character.AllyOrEnemy(test.origin, n.occupant);
+                                break;
+                            case Action.TargetGroup.All:
+                                validTarget = true;
+                                break;
+                        }
+                        if (validTarget && n.occupant.alive)
+                            hitCount++;
                     }
+
                 }
-                if (hitCount > hitCountMax && hitCount >= test.hitMinimum)
+                if (hitCount >= test.hitMinimum)
                 {
-                    bestTarget = node;
-                    valid = true;
-                    hitCountMax = hitCount;
+                    output.potentialTargets.Add(new TargetInfo(node, targetTest));
                 }
             }
         }
-        return new ShapeTest(valid, bestTarget);
+        if (output.potentialTargets.Count > 0) output.valid = true;
+
+        return output;
     }
 
-    public static ShapeTest PointBlankAoETest(ShapeTest test)
+    public static ShapeTest PulseTest(ShapeTest test)
     {
         bool valid = false, validTarget = false;
         Node bestTarget = null;
+        ShapeTest output = new ShapeTest(test.action, test.origin);
 
         Node originNode = test.origin.movement.currentNode;
-
+        List<Node> nodeList = new List<Node>();
         int hitCount = 0;
         foreach (Node node in originNode.neighbors)
         {
             if (node != null)
             {
+                nodeList.Add(node);
                 if (node.occupant != null)
                 {
-                    validTarget = (test.hitEnemyOnly && !Character.AllyOrEnemy(test.origin, node.occupant))||(!test.hitEnemyOnly && Character.AllyOrEnemy(test.origin, node.occupant));
-                    if (validTarget && node.occupant.alive) hitCount++;
+                    switch (test.targetGroup)
+                    {
+                        case Action.TargetGroup.Enemies:
+                            validTarget = !Character.AllyOrEnemy(test.origin, node.occupant);
+                            break;
+                        case Action.TargetGroup.Allies:
+                            validTarget = Character.AllyOrEnemy(test.origin, node.occupant);
+                            break;
+                        case Action.TargetGroup.All:
+                            validTarget = true;
+                            break;
+                    }
+                    if (validTarget && node.occupant.alive)
+                        hitCount++;
                 }
             }
         }
         if (hitCount >= test.hitMinimum)
         {
-            bestTarget = originNode;
-            valid = true;
+            output.potentialTargets.Add(new TargetInfo(originNode, nodeList));
         }
+        if (output.potentialTargets.Count > 0) output.valid = true;
 
-        return new ShapeTest(valid, bestTarget);
+        return output;
     }
 
-    public static ShapeTest ThreeByThreeTest(ShapeTest test)
+    public static ShapeTest AreaTest(ShapeTest test)
     {
         bool valid = false;
         bool validTarget = false;
         Node bestTarget = null;
+        ShapeTest output = new ShapeTest(test.action, test.origin);
 
         int hitCount = 0, hitCountMax = 0;
 
@@ -410,22 +463,36 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         {
             hitCount = 0;
             List<Node> targetTest = GenerateThreeByThree(node);
-            foreach (Node target in targetTest)
+            foreach (Node n in targetTest)
             {
-                if (target.occupant != null)
+                if (n.occupant != null)
                 {
-                    validTarget = test.hitEnemyOnly && !Character.AllyOrEnemy(test.origin, target.occupant);
-                    if (validTarget && target.occupant.alive) hitCount++;
-                }                
+                    switch (test.targetGroup)
+                    {
+                        case Action.TargetGroup.Enemies:
+                            validTarget = !Character.AllyOrEnemy(test.origin, n.occupant);
+                            break;
+                        case Action.TargetGroup.Allies:
+                            validTarget = Character.AllyOrEnemy(test.origin, n.occupant);
+                            break;
+                        case Action.TargetGroup.All:
+                            validTarget = true;
+                            break;
+                    }
+                    if (validTarget && n.occupant.alive)
+                        hitCount++;
+                }
+
             }
-            if (hitCount > hitCountMax && hitCount >= test.hitMinimum)
+            if (hitCount >= test.hitMinimum)
             {
-                bestTarget = node;
-                valid = true;
-                hitCountMax = hitCount;
+                output.potentialTargets.Add(new TargetInfo(node, targetTest));
             }
         }
-        return new ShapeTest(valid, bestTarget);
+    
+        if (output.potentialTargets.Count > 0) output.valid = true;
+
+        return output;
     }
 
     public static List<Node> GenerateArc(Vector2 target, Vector2 origin)
@@ -750,6 +817,46 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     }
 }
 
+public class TargetInfo
+{
+    public Character targetCharacter;
+    public Node targetNode;
+    public List<Node> affectedNodes = new List<Node>();
+    public List<Character> affectedCharacters = new List<Character>();
+
+    public TargetInfo(Character target, List<Node> nodesHit)
+    {
+        targetCharacter = target;
+        targetNode = target.movement.currentNode;
+        affectedNodes = nodesHit;
+        for (int i = 0; i < affectedNodes.Count; i++)
+        {
+            affectedCharacters.Add(affectedNodes[i].occupant);
+
+        }
+    }
+    public TargetInfo(Node target, List<Node> nodesHit)
+    {
+        targetNode = target;
+        targetCharacter = target.occupant;
+        affectedNodes = nodesHit;
+        for (int i = 0; i < affectedNodes.Count; i++)
+        {
+            affectedCharacters.Add(affectedNodes[i].occupant);
+        }
+    }
+    public TargetInfo(Character target, List<Character> targetsHit)
+    {
+        targetNode = target.movement.currentNode;
+        targetCharacter = target;
+        for (int i = 0; i < targetsHit.Count; i++)
+        {
+            affectedNodes.Add(targetsHit[i].movement.currentNode);
+        }
+        affectedCharacters = targetsHit;
+    }
+}
+
 public class Node
 {
     public GameObject tile;
@@ -828,8 +935,11 @@ public class ShapeTest
     public Character origin;
     public int hitMinimum;
     public bool hitEnemyOnly;
-
-    public Node targetNode;
+    public Action.TargetGroup targetGroup;
+    public Action.Target targeting;
+    public Node bestTargetNode;
+    public Character bestTargetCharacter;
+    public List<TargetInfo> potentialTargets = new List<TargetInfo>();
     public bool valid;
 
     public ShapeTest(Action _action, Character _origin, int _hitMinimum, bool _hitEnemyOnly)
@@ -840,9 +950,29 @@ public class ShapeTest
         hitEnemyOnly = _hitEnemyOnly;
     }
 
+    public ShapeTest(Action _action, Character _origin, int _hitMinimum, Action.TargetGroup _targetGroup, Action.Target _targeting)
+    {
+        action = _action;
+        origin = _origin;
+        hitMinimum = _hitMinimum;
+        targetGroup = _targetGroup;
+        targeting = _targeting;
+    }
+
     public ShapeTest(bool _valid, Node _targetNode)
     {
         valid = _valid;
-        targetNode = _targetNode;
+        bestTargetNode = _targetNode;
+    }
+    public ShapeTest(bool _valid, Character _targetCharacter)
+    {
+        valid = _valid;
+        bestTargetCharacter = _targetCharacter;
+    }
+
+    public ShapeTest(Action _action, Character _origin)
+    {
+        action = _action;
+        origin = _origin;
     }
 }

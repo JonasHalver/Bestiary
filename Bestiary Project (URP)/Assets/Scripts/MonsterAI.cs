@@ -570,11 +570,41 @@ public class LastRoundMemory
     private float damageDealt = 0;
     private float damageTaken = 0;
     private float maxDamageTaken = 0;
+    private float healingReceived = 0;
     private List<Action.Condition> conditionsGained = new List<Action.Condition>();
     private List<Character.DamageTypes> damageTypesTaken = new List<Character.DamageTypes>();
     private List<Character> healers = new List<Character>();
     private List<Character> hurtMe = new List<Character>();
     private Character biggestThreat;
+    
+    public bool ReceivedBuff
+    {
+        get
+        {
+            if (conditionsGained.Count > 0)
+            {
+                for (int i = 0; i < conditionsGained.Count; i++)
+                {
+                    if (Action.ConditionIsBuff[conditionsGained[i]]) return true;
+                }
+            }
+            return false;
+        }
+    }
+    public bool ReceivedDebuff
+    {
+        get
+        {
+            if (conditionsGained.Count > 0)
+            {
+                for (int i = 0; i < conditionsGained.Count; i++)
+                {
+                    if (!Action.ConditionIsBuff[conditionsGained[i]]) return true;
+                }
+            }
+            return false;
+        }
+    }
 
     public List<Action.Condition> ConditionsGained
     {
@@ -601,6 +631,11 @@ public class LastRoundMemory
             }
             damageTaken += value;
         }
+    }
+    public float HealingReceived
+    {
+        get { return healingReceived; }
+        set { healingReceived += value; }
     }
     public Character BiggestThreat
     {

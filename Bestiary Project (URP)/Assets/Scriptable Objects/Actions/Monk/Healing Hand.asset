@@ -27,7 +27,6 @@ MonoBehaviour:
   nearTargetCount: 1
   shape: 0
   minimumHits: 1
-  target: 1
   targetGroup: 1
   targetConditions: 0000000002000000
   targetPriority: 1
@@ -40,3 +39,6 @@ MonoBehaviour:
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  contexts: []
+  target: 1

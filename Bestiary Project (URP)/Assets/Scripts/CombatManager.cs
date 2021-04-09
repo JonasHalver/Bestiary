@@ -208,7 +208,7 @@ public class CombatManager : MonoBehaviour
                 CombatAction newCombatAction = actors[i].CombatAction(new BattlefieldPositionInfo(actors[i], characterPositions));
                 if (newCombatAction != null)
                 {
-                    if (actors[i].conditions.Contains(Debuff.ControlType.Blind))
+                    if (actors[i].Conditions.Contains(Action.Condition.Disorient))
                     {
                         if (actors[i].lastCombatAction == null)
                         {
@@ -475,24 +475,39 @@ public class CombatAction
 {
     public Character origin;
     public Character target;
+    public Character secondaryTarget;
     public Node targetNode;
+    public Node secondaryTargetNode;
     public Action action;
     public bool valid;
     public bool highlighted = false;
 
     public List<Node> affectedNodes = new List<Node>();
     public List<Character> affectedCharacters = new List<Character>();
+    
+    public List<Node> secondaryAffectedNodes = new List<Node>();
+    public List<Character> secondaryAffectedCharacters = new List<Character>();
 
     public BattlefieldPositionInfo bpi;
+    public Action.TargetGroup primaryTargetGroup, secondaryTargetGroup;
 
-    public CombatAction(Character _origin, Node _targetNode, Action _action)
+    public CombatAction(Character _origin, Node _targetNode, Action _action, Action.TargetGroup _group)
     {
         origin = _origin;
         targetNode = _targetNode;
         action = _action;
-
+        primaryTargetGroup = _group;
         if (targetNode != null && targetNode.occupant != null) target = targetNode.occupant;
     }
+    public CombatAction(Character _origin, Character _target, Action _action, Action.TargetGroup _group)
+    {
+        origin = _origin;
+        target = _target;
+        action = _action;
+        primaryTargetGroup = _group;
+        targetNode = _target.movement.currentNode;
+    }
+
 
     public void ResolveAction()
     {
@@ -605,18 +620,7 @@ public class BattlefieldPositionInfo
         foreach(KeyValuePair<Character, int> positions in enemyDistances)
         {            
             if (positions.Value == 1) enemiesInMelee.Add(positions.Key);
-        }
-
-        //FindClumpedAllies(actor, kvp);
-        //FindClumpedEnemies(actor, kvp);
-        //EnemyMostNeighbors(actor, kvp);
-        //AllyMostNeighbors(actor, kvp);
-        //FindClosestAndFarthest(actor, kvp);
-
-        //if (!flag1 || !flag2 || !flag3 || !flag4 || !flag5 || !flag6)
-        //{
-        //    Debug.LogError("BPI failed, 1 = " + flag1 + ", 2 = " + flag2 + ", 3 = " + flag3 + ", 4 = " + flag4 + ", 5 = " + flag5 + ", 6 = " + flag6);
-        //}
+        }        
     }
 
     public void FillOutInfo(Character actor, Dictionary<Character, Vector2> kvp)

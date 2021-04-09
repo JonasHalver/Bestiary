@@ -67,7 +67,7 @@ public class Debuff : ScriptableObject
         {
             case DebuffType.Control:
 
-                affectedCharacter.conditions.Add(controlType);
+                //affectedCharacter.conditions.Add(controlType);
 
                 break;
             case DebuffType.DamageOverTime:
@@ -82,7 +82,7 @@ public class Debuff : ScriptableObject
         switch (debuffType)
         {
             case DebuffType.Control:
-                affectedCharacter.conditions.Add(controlType);
+                //affectedCharacter.conditions.Add(controlType);
                                
                 break;
             case DebuffType.DamageOverTime:
@@ -97,7 +97,7 @@ public class Debuff : ScriptableObject
         switch (debuffType)
         {
             case DebuffType.Control:
-                if (affectedCharacter.conditions.Contains(controlType)) affectedCharacter.conditions.Remove(controlType);
+                //if (affectedCharacter.conditions.Contains(controlType)) affectedCharacter.conditions.Remove(controlType);
                 break;
         }
     }

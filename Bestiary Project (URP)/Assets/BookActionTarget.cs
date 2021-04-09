@@ -281,7 +281,7 @@ public class BookActionTarget : MonoBehaviour
                 break;
             case 8:
                 action.shape = Action.Shape.All;
-                action.target = Action.Target.All;
+                //action.target = Action.Target.All;
                 break;
         }
         if (action.shape == Action.Shape.Single)

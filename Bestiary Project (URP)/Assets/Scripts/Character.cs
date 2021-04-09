@@ -57,6 +57,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     public int debuffCount, buffCount;
 
+    public LastRoundMemory memory;
     [HideInInspector] public Entry entry;
     [HideInInspector] public bool highlightMyNode = false;
     public Action pass;
@@ -95,7 +96,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (currentHitpoints == 0) alive = false;
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
-        int initiativeMod = 0 - (conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        int initiativeMod = 0 - (Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
         initiative =  stats.speed + initiativeMod;
 
         buffCount = buffs.Count;

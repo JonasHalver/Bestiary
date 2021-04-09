@@ -163,9 +163,9 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void StartOfRound()
     {
-        int movementMod = 0 - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (character.currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        int movementMod = 0 - (character.Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (character.Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
         movementLeft = Mathf.Max(1, character.stats.movement + movementMod);
-        if (character.conditions.Contains(Debuff.ControlType.Root)) movementLeft = 0;
+        if (character.Conditions.Contains(Action.Condition.Root)) movementLeft = 0;
         destinationNodes.Clear();
     }
 
@@ -236,10 +236,10 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void AIMovement()
     {
-        int movementMod = 0 - (character.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0) + (character.currentBuffs.Contains(Buff.BuffType.Speed) ? 2 : 0);
+        int movementMod = 0 - (character.Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (character.Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
         int currentMovement = character.stats.entry.guess.movement + movementMod;
         List<Node> destinations = new List<Node>();
-        if (!character.conditions.Contains(Debuff.ControlType.Root))
+        if (!character.Conditions.Contains(Action.Condition.Root))
             destinations = GenerateDestinationList(movementLeft);
         if (destinations.Count == 0) targetNode = currentNode;
         
@@ -258,7 +258,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         destinationNodes = destinations;
         targetNode = destination;
         destinations.Clear();
-        if (!character.conditions.Contains(Debuff.ControlType.Root)) destinations = GenerateDestinationList(currentMovement);
+        if (!character.Conditions.Contains(Action.Condition.Root)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;
         StartCoroutine(MoveToNewLocation(true));
     }

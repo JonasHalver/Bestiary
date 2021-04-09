@@ -71,7 +71,7 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
                         break;
                     }
 
-                    initiative = e.guess.speed - (actor.conditions.Contains(Debuff.ControlType.Slow) ? 2 : 0);
+                    initiative = e.guess.speed - (actor.Conditions.Contains(Action.Condition.Slow) ? 2 : 0);
                     if (actor.alive)
                     {
                         bool flag = false;

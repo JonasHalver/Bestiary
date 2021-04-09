@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 
 [CreateAssetMenu(fileName = "New Action", menuName = "Action")]
@@ -9,6 +10,9 @@ public class Action : ScriptableObject
     public string actionName;
     public string actionCode;
     public string description;
+
+    [HideInInspector] public Character actor;
+    [HideInInspector] public MonsterAI monsterAI;
 
     public string actionDescription;
     public int descriptionIndex = -1;
@@ -31,17 +35,13 @@ public class Action : ScriptableObject
     [Tooltip("Number of targets needed for position to be valid. Default 1.")]
     public int nearTargetCount = 1;
 
-    public enum Shape { Single, Arc, Cone, Line, ThreeByThree, All }
-    [Tooltip("When targeting ALL, use Single")]
+    public enum Shape { Melee, Ranged, Self, Arc, Cone, Line, Area, Pulse, All }
+    //[Tooltip("When targeting ALL, use Single")]
     [Header("Targeting")]
-    public Shape shape = Shape.Single;
+    //public Shape shape = Shape.Single;
 
     [Tooltip("Minimum number of hits to be valid")]
     public int minimumHits = 1;
-
-    public enum Target { Self, Character, Ground, All }
-    [Tooltip("Where the center of the attack is.")]
-    public Target target = Target.Character;
 
     public enum TargetGroup { Enemies, Allies, All }
     public TargetGroup targetGroup = TargetGroup.Enemies;
@@ -50,9 +50,10 @@ public class Action : ScriptableObject
     [Tooltip("Needs to be true for the action to be chosen")]
     public List<Status> targetConditions = new List<Status>();
 
-    public enum TargetPriority { None, LowestHPCurrent, lowestHPPercent, HighestHPCurrent, HighestHPPercent, Closest, Farthest, HasSameDebuff, DoesntHaveSameDebuff }
+    public enum TargetPriority { MostHurt, MostHits, NotHurtingAlly, HasSpecificCondition, DoesntHaveSpecificCondition }
     [Tooltip("Tiebreaker if multiple targets have the same target status")]
-    public TargetPriority targetPriority = TargetPriority.None;
+    public TargetPriority targetPriority = TargetPriority.MostHurt;
+    public Condition priorityConditionComparison;
 
     [Tooltip("If this character is within the AoE of its own attack, does it get hit?")]
     public bool canHitSelf = false;
@@ -76,9 +77,190 @@ public class Action : ScriptableObject
     public bool descriptionSet, targetingSet, outcomeSet;
 
     public bool isPass = false;
-
     public enum Condition { Acid, Armor, Bleeding, Burning, Disorient, Fear, Haste, Poison, Regeneration, Root, Slow, Strengthen, Stun, Taunt, Vulnerable, Weaken }
+    public static readonly Dictionary<Condition, bool> ConditionIsBuff = new Dictionary<Condition, bool>()
+    {
+        { Condition.Acid, false },
+        { Condition.Armor, true },
+        { Condition.Bleeding, false },
+        { Condition.Burning, false },
+        { Condition.Disorient, false },
+        { Condition.Fear, false },
+        { Condition.Haste, true },
+        { Condition.Poison, false },
+        { Condition.Regeneration, true },
+        { Condition.Root, false },
+        { Condition.Slow, false },
+        { Condition.Strengthen, true },
+        { Condition.Stun, false },
+        { Condition.Taunt, false },
+        { Condition.Vulnerable, false },
+        { Condition.Weaken, false }
+    };
+    public enum Context { NearAlly, NotNearAlly, NearEnemy, NotNearEnemy, Alone, 
+        TookDamage, TookDamageOfType, TookNoDamage, DealtDamage, ReceivedHealing, ReceivedSpecificCondition, ReceivedBuff, ReceivedDebuff,
+        SelfHurt, EnemyHurt, SelfHasSpecificCondition, EnemyHasSpecificCondition }
+    public static readonly Dictionary<Context, List<Context>> InvalidContextPairs = new Dictionary<Context, List<Context>>()
+    {
+        { Context.Alone, new List<Context>(){Context.NearAlly, Context.NearEnemy, Context.NotNearAlly, Context.NotNearEnemy} },
+        { Context.NearEnemy, new List<Context>(){Context.NotNearEnemy, Context.Alone} },
+        { Context.NearAlly, new List<Context>(){Context.NotNearAlly, Context.Alone} },
+        { Context.NotNearEnemy, new List<Context>(){Context.NearEnemy, Context.Alone} },
+        { Context.NotNearAlly, new List<Context>(){Context.NearAlly, Context.Alone} },
+        { Context.TookDamage, new List<Context>(){Context.TookNoDamage} },
+        { Context.TookDamageOfType, new List<Context>(){Context.TookNoDamage} }
+    };
+    [Tooltip("A list of contextual triggers that need to be true for the primary action to be valid.")]
+    public List<ContextInfo> primaryContext = new List<ContextInfo>();
+    public enum Target { Character, Ground }
+    [Tooltip("What the primary action targets.")]
+    public Target primaryTarget = Target.Character;
+    [Tooltip("What the secondary action targets.")]
+    public Target secondaryTarget = Target.Character;
+    public Shape primaryShape = Shape.Melee;
+    public Shape secondaryShape = Shape.Self;
+    public TargetGroup primaryTargetGroup = TargetGroup.Enemies;
+    public TargetGroup secondaryTargetGroup = TargetGroup.Allies;
+    public enum Output { Damage, Healing, Condition, Movement }
+    [Tooltip("Output of the primary action.")]
+    public List<OutputInfo> primaryOutput = new List<OutputInfo>();
+    public List<OutputInfo> secondaryOutput = new List<OutputInfo>();
 
+    public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
+    {
+        CombatAction output = null;
+        if (!ActionValidation(bpi, guess)) return output;
+        ShapeTest primaryTest = NodeTarget(bpi, true);
+        ShapeTest secondaryTest = null;
+        if (secondaryOutput.Count > 0) secondaryTest = NodeTarget(bpi, false);
+        if (primaryTest.valid)
+        {
+            if (primaryTest.potentialTargets.Count > 1)
+            {
+
+            }
+        }
+    }
+
+    public bool ActionValidation(BattlefieldPositionInfo bpi, bool guess)
+    {
+        if (guess) return true;
+        int count = 0;
+        for (int i = 0; i < primaryContext.Count; i++)
+        {
+            if (primaryContext[i].ContextValid(bpi)) count++;
+        }
+        if (count != primaryContext.Count) return false;
+
+        else return false;
+    }
+
+    private ShapeTest NodeTarget(BattlefieldPositionInfo bpi, bool primary)
+    {
+        ShapeTest test = new ShapeTest(this, actor, primary ? minimumHits : 0, primary ? primaryTargetGroup : secondaryTargetGroup, primary ? primaryTarget : secondaryTarget);
+        ShapeTest result = null;
+        List<Character> possibleTargets = new List<Character>();
+        switch (primary ? primaryTargetGroup : secondaryTargetGroup)
+        {
+            case TargetGroup.Enemies:
+                foreach(Character c in CombatManager.actors)
+                {
+                    if (!Character.AllyOrEnemy(c, actor)) possibleTargets.Add(c);
+                }
+                break;
+            case TargetGroup.Allies:
+                foreach (Character c in CombatManager.actors)
+                {
+                    if (Character.AllyOrEnemy(c, actor)) possibleTargets.Add(c);
+                }
+                break;
+            case TargetGroup.All:
+                possibleTargets = CombatManager.actors;
+                break;
+        }
+        switch (primary ? primaryShape : secondaryShape)
+        {
+            case Shape.Self:
+                possibleTargets.Clear();
+                possibleTargets.Add(actor);
+                break;
+            case Shape.Melee:
+                possibleTargets.Clear();
+                switch (primary ? primaryTargetGroup : secondaryTargetGroup)
+                {
+                    case TargetGroup.Enemies:
+                        foreach (Character c in bpi.enemiesInMelee) possibleTargets.Add(c);
+                        break;
+                    case TargetGroup.Allies:
+                        foreach (Character c in bpi.alliesInMelee) possibleTargets.Add(c);
+                        break;
+                    case TargetGroup.All:
+                        foreach (Character c in bpi.enemiesInMelee) possibleTargets.Add(c);
+                        foreach (Character c in bpi.alliesInMelee) possibleTargets.Add(c);
+                        break;
+                }
+                break;
+            case Shape.Ranged:
+                switch(primary ? primaryTargetGroup : secondaryTargetGroup)
+                {
+                    case TargetGroup.Enemies:
+                        foreach (Character c in bpi.enemiesInMelee) possibleTargets.Remove(c);
+                        break;
+                    case TargetGroup.Allies:
+                        foreach (Character c in bpi.alliesInMelee) possibleTargets.Remove(c);
+                        break;
+                    case TargetGroup.All:
+                        foreach (Character c in bpi.alliesInMelee) possibleTargets.Remove(c);
+                        foreach (Character c in bpi.enemiesInMelee) possibleTargets.Remove(c);
+                        break;
+                }
+                break;
+            case Shape.Arc:
+                result = CombatGrid.ArcTest(test);                
+                break;
+            case Shape.Cone:
+                result = CombatGrid.ConeTest(test);
+                break;
+            case Shape.Line:
+                result = CombatGrid.LineTest(test);
+                break;
+            case Shape.Area:
+                result = CombatGrid.AreaTest(test);
+                break;
+            case Shape.Pulse:
+                result = CombatGrid.PulseTest(test);
+                break;
+            case Shape.All:
+                result.valid = true;
+                result.potentialTargets.Add(new TargetInfo(actor, possibleTargets));
+                break;
+        }
+        return result;
+    }
+
+    private Node BestTarget(List<TargetInfo> ti)
+    {
+        Node output = null;
+
+        switch (targetPriority)
+        {
+            case TargetPriority.MostHurt:
+                
+                break;
+            case TargetPriority.MostHits:
+                break;
+            case TargetPriority.NotHurtingAlly:
+                break;
+            case TargetPriority.HasSpecificCondition:
+                break;
+            case TargetPriority.DoesntHaveSpecificCondition:
+                break;
+        }
+
+        return output;
+    }
+    #region Old Validation
+    /*
     public Node ActionValid(BattlefieldPositionInfo bpi, bool basedOnGuess)
     {
         List<Node> possibleTargets = new List<Node>();
@@ -579,4 +761,98 @@ public class Action : ScriptableObject
         else
             return null;
     }
+    */
+    #endregion
+    
+}
+
+[Serializable]
+public class ContextInfo : Action
+{
+    public Context context;
+    public new int value;
+    public Condition condition;
+    public new Character.DamageTypes damageType;
+    public Entry.Difficulty difficulty;
+
+    public bool ContextValid(BattlefieldPositionInfo bpi)
+    {
+        bool output = false;
+        switch (context)
+        {
+            // Positions
+            case Context.NearAlly:
+                output = bpi.alliesInMelee.Count >= value;
+                break;
+            case Context.NearEnemy:
+                output = bpi.enemiesInMelee.Count >= value;
+                break;
+            case Context.NotNearAlly:
+                output = bpi.alliesInMelee.Count == 0;
+                break;
+            case Context.NotNearEnemy:
+                output = bpi.enemiesInMelee.Count == 0;
+                break;
+            case Context.Alone:
+                output = bpi.alliesInMelee.Count == 0 && bpi.enemiesInMelee.Count == 0;
+                break;
+            // Memory
+            case Context.DealtDamage:
+                output = actor.memory.DamageDealt > 0f;
+                break;
+            case Context.TookDamage:
+                output = actor.memory.DamageTaken > 0f;
+                break;
+            case Context.TookDamageOfType:
+                output = actor.memory.DamageTypesTaken.Contains(damageType);
+                break;
+            case Context.TookNoDamage:
+                output = actor.memory.DamageTaken == 0;
+                break;
+            case Context.ReceivedSpecificCondition:
+                output = actor.memory.ConditionsGained.Contains(condition);
+                break;
+            case Context.ReceivedBuff:
+                output = actor.memory.ReceivedBuff;
+                break;
+            case Context.ReceivedDebuff:
+                output = actor.memory.ReceivedDebuff;
+                break;
+            case Context.ReceivedHealing:
+                output = actor.memory.HealingReceived > 0f;
+                break;
+            // Status
+            case Context.SelfHasSpecificCondition:
+                break;
+            case Context.EnemyHasSpecificCondition:
+                break;
+            case Context.SelfHurt:
+                output = actor.damageTaken > (actor.stats.hitPoints / 2);
+                break;
+            case Context.EnemyHurt:
+                for (int i = 0; i < CombatManager.actors.Count; i++)
+                {
+                    if(!Character.AllyOrEnemy(actor, CombatManager.actors[i]))
+                    {
+                        if (CombatManager.actors[i].damageTaken > (CombatManager.actors[i].stats.hitPoints / 2))
+                        {
+                            output = true;
+                            break;
+                        }
+                    }
+                }
+                break;
+        }
+        return output;
+    }
+}
+
+[Serializable]
+public class OutputInfo : Action
+{
+    public Output output;
+    public new int value;
+    public Condition condition;
+    public new Character.DamageTypes damageType;
+    public Entry.Difficulty difficulty;
 }

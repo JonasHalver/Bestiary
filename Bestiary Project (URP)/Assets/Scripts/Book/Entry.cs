@@ -19,7 +19,7 @@ public class Entry : MonoBehaviour
 
     public List<ActionCheck> actionChecks = new List<ActionCheck>();
 
-    
+    public enum Difficulty { Easy, Medium, Hard, VeryHard }
 
     public Entry (CharacterStats _origin)
     {
