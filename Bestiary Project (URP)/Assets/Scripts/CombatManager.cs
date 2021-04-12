@@ -474,13 +474,16 @@ public class CombatManager : MonoBehaviour
 public class CombatAction
 {
     public Character origin;
-    public Character target;
-    public Character secondaryTarget;
+    public Character targetC;
+    public Character secondaryTargetC;
     public Node targetNode;
     public Node secondaryTargetNode;
     public Action action;
     public bool valid;
     public bool highlighted = false;
+
+    public Action.Target primaryTarget;
+    public Action.Target secondaryTarget;
 
     public List<Node> affectedNodes = new List<Node>();
     public List<Character> affectedCharacters = new List<Character>();
@@ -507,7 +510,12 @@ public class CombatAction
         primaryTargetGroup = _group;
         targetNode = _target.movement.currentNode;
     }
-
+    public CombatAction(Character _origin, Action _action, Action.TargetGroup _group)
+    {
+        origin = _origin;
+        action = _action;
+        primaryTargetGroup = _group;
+    }
 
     public void ResolveAction()
     {

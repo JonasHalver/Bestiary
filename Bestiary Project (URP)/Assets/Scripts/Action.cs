@@ -112,11 +112,11 @@ public class Action : ScriptableObject
     };
     [Tooltip("A list of contextual triggers that need to be true for the primary action to be valid.")]
     public List<ContextInfo> primaryContext = new List<ContextInfo>();
-    public enum Target { Character, Ground }
+    public enum Targeting { Character, Ground }
     [Tooltip("What the primary action targets.")]
-    public Target primaryTarget = Target.Character;
+    public Targeting primaryTarget = Targeting.Character;
     [Tooltip("What the secondary action targets.")]
-    public Target secondaryTarget = Target.Character;
+    public Targeting secondaryTarget = Targeting.Character;
     public Shape primaryShape = Shape.Melee;
     public Shape secondaryShape = Shape.Self;
     public TargetGroup primaryTargetGroup = TargetGroup.Enemies;
@@ -125,10 +125,29 @@ public class Action : ScriptableObject
     [Tooltip("Output of the primary action.")]
     public List<OutputInfo> primaryOutput = new List<OutputInfo>();
     public List<OutputInfo> secondaryOutput = new List<OutputInfo>();
+    public struct Target
+    {
+        public Node Node
+        {
+            get;set;
+        }
+        public Character Character
+        {
+            get;set;
+        }
+        public List<Node> AffectedNodes
+        {
+            get;set;
+        }
+        public List<Character> AffectedCharacters
+        {
+            get;set;
+        }
+    }
 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
     {
-        CombatAction output = null;
+        CombatAction output = new CombatAction(actor, this, primaryTargetGroup);
         if (!ActionValidation(bpi, guess)) return output;
         ShapeTest primaryTest = NodeTarget(bpi, true);
         ShapeTest secondaryTest = null;
@@ -137,9 +156,37 @@ public class Action : ScriptableObject
         {
             if (primaryTest.potentialTargets.Count > 1)
             {
-
+                Target t = BestTarget(primaryTest.potentialTargets);
+                output.primaryTarget = t;
+            }
+            else
+            {
+                output.primaryTarget = new Target();
+                output.primaryTarget.Character = primaryTest.potentialTargets[0].targetCharacter;
+                output.primaryTarget.Node = primaryTest.potentialTargets[0].targetNode;
+                output.primaryTarget.AffectedCharacters = primaryTest.potentialTargets[0].affectedCharacters;
+                output.primaryTarget.AffectedNodes = primaryTest.potentialTargets[0].affectedNodes;
+            }
+            if (secondaryTest!= null && secondaryTest.valid)
+            {
+                output.secondaryTargetGroup = secondaryTargetGroup;
+                if (secondaryTest.potentialTargets.Count > 1)
+                {
+                    Target t = BestTarget(secondaryTest.potentialTargets);
+                    output.secondaryTarget = t;
+                }
+                else
+                {
+                    output.secondaryTarget = new Target();
+                    output.secondaryTarget.Character = secondaryTest.potentialTargets[0].targetCharacter;
+                    output.secondaryTarget.Node = secondaryTest.potentialTargets[0].targetNode;
+                    output.secondaryTarget.AffectedCharacters = secondaryTest.potentialTargets[0].affectedCharacters;
+                    output.secondaryTarget.AffectedNodes = secondaryTest.potentialTargets[0].affectedNodes;
+                }
             }
         }
+
+        return output;
     }
 
     public bool ActionValidation(BattlefieldPositionInfo bpi, bool guess)
@@ -152,7 +199,7 @@ public class Action : ScriptableObject
         }
         if (count != primaryContext.Count) return false;
 
-        else return false;
+        else return true;
     }
 
     private ShapeTest NodeTarget(BattlefieldPositionInfo bpi, bool primary)
@@ -238,22 +285,106 @@ public class Action : ScriptableObject
         return result;
     }
 
-    private Node BestTarget(List<TargetInfo> ti)
+    private Target BestTarget(List<TargetInfo> ti)
     {
-        Node output = null;
+        Target output = new Target();
+
+        float damageTaken = 0;
+        int hits = 0;
 
         switch (targetPriority)
         {
             case TargetPriority.MostHurt:
-                
+                for (int i = 0; i < ti.Count; i++)
+                {
+                    for (int j = 0; j < ti[i].affectedCharacters.Count; j++)
+                    {
+                        if (ti[i].affectedCharacters[j].damageTaken > damageTaken)
+                        {
+                            damageTaken = ti[i].affectedCharacters[j].damageTaken;
+                            output.Node = ti[i].targetNode;
+                            output.Character = ti[i].targetCharacter;
+                            output.AffectedNodes = ti[i].affectedNodes;
+                            output.AffectedCharacters = ti[i].affectedCharacters;
+                        }
+                    }
+                }
                 break;
             case TargetPriority.MostHits:
+                for (int i = 0; i < ti.Count; i++)
+                {
+                    if (ti[i].affectedCharacters.Count > hits)
+                    {
+                        hits = ti[i].affectedCharacters.Count;
+                        output.Node = ti[i].targetNode;
+                        output.Character = ti[i].targetCharacter;
+                        output.AffectedNodes = ti[i].affectedNodes;
+                        output.AffectedCharacters = ti[i].affectedCharacters;
+                    }
+                }
                 break;
             case TargetPriority.NotHurtingAlly:
+                bool flag = false;
+                for (int i = 0; i < ti.Count; i++)
+                {
+                    for (int j = 0; j < ti[i].affectedCharacters.Count; j++)
+                    {
+                        if (Character.AllyOrEnemy(actor, ti[i].affectedCharacters[j]))
+                        {
+                            flag = false;
+                            break;
+                        }
+                        flag = true;
+                    }
+                    if (flag)
+                    {
+                        output.Node = ti[i].targetNode;
+                        output.Character = ti[i].targetCharacter;
+                        output.AffectedNodes = ti[i].affectedNodes;
+                        output.AffectedCharacters = ti[i].affectedCharacters;
+                    }
+                }
                 break;
             case TargetPriority.HasSpecificCondition:
+                bool flag1 = false;
+                for (int i = 0; i < ti.Count; i++)
+                {
+                    for (int j = 0; j < ti[i].affectedCharacters.Count; j++)
+                    {
+                        if (ti[i].affectedCharacters[j].Conditions.Contains(priorityConditionComparison))
+                        {
+                            output.Node = ti[i].targetNode;
+                            output.Character = ti[i].targetCharacter;
+                            output.AffectedNodes = ti[i].affectedNodes;
+                            output.AffectedCharacters = ti[i].affectedCharacters;
+                            flag1 = true;
+                            break;
+                        }
+                    }
+                    if (flag1) break;
+                }
                 break;
             case TargetPriority.DoesntHaveSpecificCondition:
+                bool flag2 = false;
+                for (int i = 0; i < ti.Count; i++)
+                {
+                    for (int j = 0; j < ti[i].affectedCharacters.Count; j++)
+                    {
+                        if (ti[i].affectedCharacters[j].Conditions.Contains(priorityConditionComparison))
+                        {
+                            break;
+                        }
+                        flag2 = true;
+                    }
+                    if (flag2)
+                    {
+                        output.Node = ti[i].targetNode;
+                        output.Character = ti[i].targetCharacter;
+                        output.AffectedNodes = ti[i].affectedNodes;
+                        output.AffectedCharacters = ti[i].affectedCharacters;
+                        break;
+                    }
+                }
                 break;
         }
 

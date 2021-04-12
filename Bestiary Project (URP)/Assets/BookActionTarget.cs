@@ -225,7 +225,7 @@ public class BookActionTarget : MonoBehaviour
             case 0:
                 action.shape = Action.Shape.Single;
                 action.canHitSelf = true;
-                action.target = Action.Target.Self;
+                action.target = Action.Targeting.Character;
                 if (targetStatus.value > 2)
                 {
                     targetStatus.value = 0;
@@ -235,7 +235,7 @@ public class BookActionTarget : MonoBehaviour
             case 1:
                 action.shape = Action.Shape.Single;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 if (action.targetConditions[0] == Action.Status.Irrelevant)
                 {
                     targetStatus.value = 3;
@@ -246,7 +246,7 @@ public class BookActionTarget : MonoBehaviour
             case 2:
                 action.shape = Action.Shape.Single;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 if (action.targetConditions[0] == Action.Status.InMelee)
                 {
                     targetStatus.value = 0;
@@ -257,27 +257,27 @@ public class BookActionTarget : MonoBehaviour
             case 3:
                 action.shape = Action.Shape.Arc;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 break;
             case 4:
                 action.shape = Action.Shape.Cone;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 break;
             case 5:
-                action.shape = Action.Shape.ThreeByThree;
+                action.shape = Action.Shape.Area;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 break;
             case 6:
-                action.shape = Action.Shape.ThreeByThree;
+                action.shape = Action.Shape.Pulse;
                 action.canHitSelf = true;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 break;
             case 7:
                 action.shape = Action.Shape.Line;
                 action.canHitSelf = false;
-                action.target = Action.Target.Character;
+                action.target = Action.Targeting.Character;
                 break;
             case 8:
                 action.shape = Action.Shape.All;

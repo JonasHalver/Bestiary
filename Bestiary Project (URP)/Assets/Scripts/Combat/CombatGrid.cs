@@ -936,7 +936,7 @@ public class ShapeTest
     public int hitMinimum;
     public bool hitEnemyOnly;
     public Action.TargetGroup targetGroup;
-    public Action.Target targeting;
+    public Action.Targeting targeting;
     public Node bestTargetNode;
     public Character bestTargetCharacter;
     public List<TargetInfo> potentialTargets = new List<TargetInfo>();
@@ -950,7 +950,7 @@ public class ShapeTest
         hitEnemyOnly = _hitEnemyOnly;
     }
 
-    public ShapeTest(Action _action, Character _origin, int _hitMinimum, Action.TargetGroup _targetGroup, Action.Target _targeting)
+    public ShapeTest(Action _action, Character _origin, int _hitMinimum, Action.TargetGroup _targetGroup, Action.Targeting _targeting)
     {
         action = _action;
         origin = _origin;
