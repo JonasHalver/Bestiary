@@ -15,27 +15,49 @@ MonoBehaviour:
   actionName: Heal Area
   actionCode: testhealarea
   description: If I am near at least 2 allies, I will heal all allies close to me.
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
   actionType: 2
-  actionPriority: 1
   debuff: {fileID: 0}
   buff: {fileID: 0}
   position: 2
   useBeingAttackedOverride: 0
   nearTargetCount: 2
-  shape: 4
-  minimumHits: 1
-  target: 0
-  targetGroup: 1
   targetConditions: 04000000
-  targetPriority: 0
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 1
   isCritical: 0
   damageType: 7
+  targetGroup: 1
+  minimumHits: 2
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 0
+    value: 2
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 1
+  primaryShape: 7
+  primaryTargetGroup: 2
+  primaryOutput:
+  - output: 1
+    value: 1
+    condition: 0
+    critical: 0
+    damageType: 7
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

@@ -48,7 +48,7 @@ public class CharacterSheet : MonoBehaviour
             {
                 if (instance.currentEntry.actionChecks[j].guessAction.actionPriority == i+1)
                 {
-                    instance.cards[i].ChangeInfo(instance.currentEntry.actionChecks[j]);
+                    // instance.cards[i].ChangeInfo(instance.currentEntry.actionChecks[j]);
                 }                
             }
         }

@@ -10,6 +10,8 @@ public class BookActionDescription : MonoBehaviour
     public string titleString;
     public Transform grid;
     public List<GameObject> buttons = new List<GameObject>();
+    
+    /* Outdated
     private void Awake()
     {
         if (buttons.Count == 0)
@@ -88,4 +90,5 @@ public class BookActionDescription : MonoBehaviour
         gameObject.SetActive(false);
         Book.currentEntry.activeAction.CalculateValidity();
     }
+    */
 }

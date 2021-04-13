@@ -15,6 +15,7 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
     public Action action;
     private int priority = 0;
 
+    /* Outdated
     public void ChangeInfo(ActionCheck actionCheck)
     {
         entry = actionCheck.entry;
@@ -181,6 +182,7 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
         }
         ttp.tooltipString = tooltipString;
     }
+    */
 
     public void OnPointerClick(PointerEventData eventData)
     {

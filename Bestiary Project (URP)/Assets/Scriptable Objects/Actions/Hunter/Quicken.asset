@@ -15,27 +15,49 @@ MonoBehaviour:
   actionName: Quicken
   actionCode: testquicken
   description: If I am close to an ally, I grant them haste.
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
   actionType: 1
-  actionPriority: 3
   debuff: {fileID: 0}
   buff: {fileID: 11400000, guid: 2f89e243a6244ea4892110f69e60114d, type: 2}
   position: 2
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
-  minimumHits: 1
-  target: 1
-  targetGroup: 1
   targetConditions: 02000000
-  targetPriority: 8
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 1
+  targetGroup: 1
+  minimumHits: 1
+  targetPriority: 4
+  priorityConditionComparison: 6
+  actionPriority: 3
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 0
+    value: 1
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 0
+  primaryShape: 0
+  primaryTargetGroup: 1
+  primaryOutput:
+  - output: 2
+    value: 1
+    condition: 7
+    critical: 0
+    damageType: 0
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

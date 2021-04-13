@@ -15,27 +15,55 @@ MonoBehaviour:
   actionName: Vampiric Link
   actionCode: vampiriclinktest
   description: 
+  monsterAI: {fileID: 0}
   actionDescription: inhales deeply
   descriptionIndex: 6
   actionType: 1
-  actionPriority: 2
   debuff: {fileID: 0}
   buff: {fileID: 11400000, guid: d6d58d02f8b5bf24099c5d25ca7d3ef2, type: 2}
   position: 2
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 4
-  minimumHits: 1
-  target: 0
-  targetGroup: 1
   targetConditions: 04000000
-  targetPriority: 0
   canHitSelf: 1
   alwaysHitsSelf: 1
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 7
+  targetGroup: 1
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 2
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 0
+    value: 1
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 1
+  primaryShape: 0
+  primaryTargetGroup: 1
+  primaryOutput:
+  - output: 2
+    value: 2
+    condition: 9
+    critical: 0
+    damageType: 0
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput:
+  - output: 2
+    value: 0
+    condition: 9
+    critical: 0
+    damageType: 0
+    difficulty: 0

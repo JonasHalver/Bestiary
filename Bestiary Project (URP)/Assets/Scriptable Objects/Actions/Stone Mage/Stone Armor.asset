@@ -16,27 +16,55 @@ MonoBehaviour:
   actionCode: teststonearmor
   description: If I am close to an ally, I will grant them and myself armor until
     the next round.
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
   actionType: 1
-  actionPriority: 1
   debuff: {fileID: 0}
   buff: {fileID: 11400000, guid: 5a4fc372eafb2e84a842c3be011feb95, type: 2}
   position: 2
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
-  minimumHits: 1
-  target: 1
-  targetGroup: 1
   targetConditions: 02000000
-  targetPriority: 1
   canHitSelf: 1
   alwaysHitsSelf: 1
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 0
+  targetGroup: 1
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 0
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 0
+  primaryShape: 0
+  primaryTargetGroup: 1
+  primaryOutput:
+  - output: 2
+    value: 2
+    condition: 1
+    critical: 0
+    damageType: 0
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput:
+  - output: 2
+    value: 2
+    condition: 1
+    critical: 0
+    damageType: 0
+    difficulty: 0

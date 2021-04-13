@@ -26,14 +26,16 @@ public class CombatManager : MonoBehaviour
 
     public static List<CombatAction> combatActions = new List<CombatAction>();
     public static Dictionary<Character, Vector2> characterPositions = new Dictionary<Character, Vector2>();
+    
+    // Find out if this is outdated 
     public event System.Action updateCombat;
-    public static event System.Action startCombat;
+    //public static event System.Action startCombat;
     public TextMeshProUGUI log;
 
     public bool combatStarted;
     public int roundCount = 1;
 
-    public static event System.Action StartRound, EndRound;
+    //public static event System.Action StartRound, EndRound;
     public static bool combatFlag = false;
 
     public enum CombatStage { Setup, Combat, EnemyMovement }
@@ -42,10 +44,12 @@ public class CombatManager : MonoBehaviour
 
     public int combatActionCount;
 
-    public static event System.Action<Character> StartOfTurn, EndOfTurn, EndOfMovement;
     private int counter = 0;
 
     public static Dictionary<Character, float> threat = new Dictionary<Character, float>();
+    public enum CombatTiming { CombatBegins, StartOfNewRound, StartOfCombatStage, StartOfCharacterTurn, EndOfCharacterTurn, EndOfRound}
+    public static event System.Action<CombatTiming> RoundPhases;
+    public static event System.Action<CombatTiming, Character> TurnPhases;
     private void Awake()
     {
         instance = this;
@@ -123,7 +127,6 @@ public class CombatManager : MonoBehaviour
 
     public void StartCombat(int encounterIndex)
     {
-
         for (int i = 0; i < GameManager.instance.mercenaries.Count; i++)
         {
             GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
@@ -154,7 +157,9 @@ public class CombatManager : MonoBehaviour
             initiativeCards.Add(newICard);
         }
         GameManager.actorsSpawned = true;
-        startCombat.Invoke();
+        RoundPhases.Invoke(CombatTiming.CombatBegins);
+        RoundPhases.Invoke(CombatTiming.StartOfNewRound);
+        //startCombat.Invoke();
         SortByInitiative();
         Delay("UpdateCombat");
     }
@@ -206,9 +211,9 @@ public class CombatManager : MonoBehaviour
             if (actors[i].alive)
             {
                 CombatAction newCombatAction = actors[i].CombatAction(new BattlefieldPositionInfo(actors[i], characterPositions));
-                if (newCombatAction != null)
+                if (newCombatAction.valid)
                 {
-                    if (actors[i].Conditions.Contains(Action.Condition.Disorient))
+                    if (actors[i].Conditions.ContainsKey(Action.Condition.DisorientMonster) || actors[i].Conditions.ContainsKey(Action.Condition.DisorientMerc))
                     {
                         if (actors[i].lastCombatAction == null)
                         {
@@ -226,6 +231,7 @@ public class CombatManager : MonoBehaviour
                         actors[i].currentAction = newCombatAction;
                     }
                 }
+                else actors[i].currentAction = new CombatAction(actors[i], actors[i].pass);
             }
             else actors[i].currentAction = null;
         }
@@ -273,33 +279,6 @@ public class CombatManager : MonoBehaviour
             initiativeCards[i].transform.SetSiblingIndex(i);
             initiativeCards[i].SendMessage("UpdateCard");
         }
-
-        //string log = "";
-        //string line = "";
-        //int order = 1;
-        //for (int i = 0; i < actors.Count; i++)
-        //{
-        //    line = "";
-        //    if (actors[i].alive)
-        //    {
-        //        CombatAction c = actors[i].currentAction;
-        //        if (c != null && combatActions.Contains(c))
-        //        {
-        //            if (c.highlighted) line = "<color=#FFC70B>"; else line = "<color=#000000>";
-        //            line += order.ToString() + ". " + c.origin.stats.characterName + " will use " + c.action.actionName + ".</color>" + Environment.NewLine;
-        //            log += line;
-        //        }
-        //        else
-        //        {
-        //            line += order.ToString() + ". " + actors[i].stats.characterName + " has no good targets, and will pass." + Environment.NewLine;
-        //            log += line;
-        //        }
-        //        order++;
-        //
-        //    }
-        //}        
-        //
-        //return log;
     }
     public void Commit()
     {
@@ -310,6 +289,7 @@ public class CombatManager : MonoBehaviour
 
     public void StartOfRound()
     {
+        RoundPhases.Invoke(CombatTiming.StartOfCombatStage);
         StartCoroutine(CombatRound());
     }
 
@@ -323,8 +303,8 @@ public class CombatManager : MonoBehaviour
         {
             CombatGrid.StopHighlight();
             if (!actors[i].alive) continue;
-            ResolveBuffsAndDebuffs(actors[i]);
-            StartOfTurn.Invoke(actors[i]);
+            //ResolveBuffsAndDebuffs(actors[i]);
+            TurnPhases.Invoke(CombatTiming.StartOfCharacterTurn, actors[i]);
             for (int j = 0; j < 10; j++)
             {
                 while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
@@ -343,7 +323,12 @@ public class CombatManager : MonoBehaviour
                 if (action.origin == actors[i] && action.origin.alive)
                 {
                     action.highlighted = true;
-                    Vector2 dir = (action.targetNode.coordinate - actors[i].position).normalized;
+                    Vector2 dir = Vector2.zero;
+                    if (action.primaryTarget.Character == null) Debug.Log("no target");
+                    if (action.primaryTargeting == Action.Targeting.Character)
+                        dir = (action.primaryTarget.Character.position - actors[i].position).normalized;
+                    else
+                        dir = (action.primaryTarget.Node.coordinate - actors[i].position).normalized;
                     actors[i].StartCoroutine("TakeAction", dir);
                     while (!combatFlag)
                     {
@@ -357,7 +342,7 @@ public class CombatManager : MonoBehaviour
                 }
             }
             combatFlag = false;
-            EndOfTurn.Invoke(actors[i]);
+            TurnPhases.Invoke(CombatTiming.EndOfCharacterTurn, actors[i]);
             for (int j = 0; j < 20; j++)
             {
                 while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
@@ -367,6 +352,7 @@ public class CombatManager : MonoBehaviour
         StartCoroutine(EnemyMovement());
     }    
 
+    /* Outdated condition resolution
     public void ResolveBuffsAndDebuffs(Character actor)
     {
         actor.ResetStats();
@@ -379,6 +365,7 @@ public class CombatManager : MonoBehaviour
             actor.debuffs[d].ResolveDebuff();
         }
     }
+    */
 
     IEnumerator EnemyMovement()
     {
@@ -392,13 +379,13 @@ public class CombatManager : MonoBehaviour
             {
                 actors[i].movement.AIMovement();
             }
-            EndOfMovement.Invoke(actors[i]);
             for (int j = 0; j < 10; j++)
             {
                 while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
                 yield return new WaitForSeconds(0.05f);
             }
         }
+        RoundPhases.Invoke(CombatTiming.EndOfRound);
         EndOfRound();
     }
 
@@ -410,8 +397,8 @@ public class CombatManager : MonoBehaviour
             actors[i].lastCombatAction = null;
         }
         //EndRound.Invoke();
-        StartRound.Invoke();
-        //EndRound.Invoke();
+        //StartRound.Invoke();
+        RoundPhases.Invoke(CombatTiming.StartOfNewRound);
         Delay("UpdateCombat");
         UIInteractable(true, false);
         SortByInitiative();
@@ -471,7 +458,7 @@ public class CombatManager : MonoBehaviour
     }
 }
 
-public class CombatAction
+public class CombatAction : Action
 {
     public Character origin;
     public Character targetC;
@@ -482,8 +469,8 @@ public class CombatAction
     public bool valid;
     public bool highlighted = false;
 
-    public Action.Target primaryTarget;
-    public Action.Target secondaryTarget;
+    public Target primaryTarget;
+    public Target secondaryTarget;
 
     public List<Node> affectedNodes = new List<Node>();
     public List<Character> affectedCharacters = new List<Character>();
@@ -492,8 +479,8 @@ public class CombatAction
     public List<Character> secondaryAffectedCharacters = new List<Character>();
 
     public BattlefieldPositionInfo bpi;
-    public Action.TargetGroup primaryTargetGroup, secondaryTargetGroup;
 
+    /*
     public CombatAction(Character _origin, Node _targetNode, Action _action, Action.TargetGroup _group)
     {
         origin = _origin;
@@ -510,11 +497,11 @@ public class CombatAction
         primaryTargetGroup = _group;
         targetNode = _target.movement.currentNode;
     }
-    public CombatAction(Character _origin, Action _action, Action.TargetGroup _group)
+    */
+    public CombatAction(Character _origin, Action _action)
     {
         origin = _origin;
         action = _action;
-        primaryTargetGroup = _group;
     }
 
     public void ResolveAction()
@@ -524,6 +511,9 @@ public class CombatAction
             origin.lastCombatAction = null;
             return;
         }
+        #region Old Code
+
+        /*Outdated
         foreach (Node node in affectedNodes)
         {
             if (origin.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
@@ -570,6 +560,67 @@ public class CombatAction
                     actionTarget.Interaction(newInteraction);
                     affectedCharacters.Add(actionTarget);
                     if (origin.stats.characterType == CharacterStats.CharacterTypes.NPC) node.ActionHighlight();
+                }
+            }
+        } 
+        */
+        #endregion
+
+        // Update targeting if relevant
+        if (action.primaryTargeting == Targeting.Character)
+        {
+            switch (action.primaryShape)
+            {
+                default:
+                    break;
+                case Shape.Arc:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    primaryTarget.AffectedNodes = CombatGrid.GenerateArc(primaryTarget.Character.movement.currentNode.coordinate, origin.movement.currentNode.coordinate);
+                    break;
+                case Shape.Area:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    primaryTarget.AffectedNodes = CombatGrid.GenerateThreeByThree(primaryTarget.Character.movement.currentNode);
+                    break;
+                case Shape.Cone:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    primaryTarget.AffectedNodes = CombatGrid.GenerateCone(primaryTarget.Character.movement.currentNode.coordinate, origin.movement.currentNode.coordinate);
+                    break;
+            }
+            for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+            {
+                if (primaryTarget.AffectedNodes[i].occupant == null) continue;
+                if (!primaryTarget.AffectedCharacters.Contains(primaryTarget.AffectedNodes[i].occupant)) primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+            }
+        }
+
+        // Primary
+        for (int i = 0; i < action.primaryOutput.Count; i++)
+        {
+            for (int j = 0; j < primaryTarget.AffectedNodes.Count; j++)
+            {
+                primaryTarget.AffectedNodes[j].ActionHighlight();
+            }
+            for (int j = 0; j < primaryTarget.AffectedCharacters.Count; j++)
+            {
+                primaryTarget.AffectedCharacters[j].Interaction(new Interaction(action.primaryOutput[i], origin, action, primaryTarget));
+            }            
+        }
+
+        // Secondary
+        if (action.secondaryOutput.Count > 0)
+        {
+            for (int i = 0; i < action.secondaryOutput.Count; i++)
+            {
+                for (int j = 0; j < secondaryTarget.AffectedNodes.Count; j++)
+                {
+                    secondaryTarget.AffectedNodes[j].ActionHighlight();
+                }
+                for (int j = 0; j < secondaryTarget.AffectedCharacters.Count; j++)
+                {
+                    secondaryTarget.AffectedCharacters[j].Interaction(new Interaction(action.secondaryOutput[i], origin, action, primaryTarget));
                 }
             }
         }
@@ -861,63 +912,16 @@ public class BattlefieldPositionInfo
 public class Interaction
 {
     // For interacting with nodes in combat
-
-    public Node affectedNode;
+    public OutputInfo effect;
     public Character origin;
     public Action action;
-    public float value = 1;
-    public bool applyBuff;
-    public bool applyDebuff;
+    public Action.Target primaryTarget;
 
-    public Buff buff;
-    public Debuff debuff;
-
-    public Interaction(Character _origin, Node _affectedNode, Action _action)
+    public Interaction (OutputInfo _effect, Character _origin, Action _action, Action.Target _primaryTarget)
     {
-        affectedNode = _affectedNode;
+        effect = _effect;
         origin = _origin;
         action = _action;
-    }
-    public Interaction(Character _origin, Node _affectedNode, Action _action, Debuff _debuff)
-    {
-        affectedNode = _affectedNode;
-        origin = _origin;
-        action = _action;
-        applyDebuff = true;
-        debuff = _debuff;
-    }
-    public Interaction(Character _origin, Node _affectedNode, Action _action, float _value, Debuff _debuff)
-    {
-        affectedNode = _affectedNode;
-        origin = _origin;
-        action = _action;
-        applyDebuff = true;
-        debuff = _debuff;
-        value = _value;
-    }
-
-    public Interaction(Character _origin, Node _affectedNode, Action _action, Buff _buff)
-    {
-        affectedNode = _affectedNode;
-        origin = _origin;
-        action = _action;
-        applyBuff = true;
-        buff = _buff;
-    }
-    public Interaction(Character _origin, Node _affectedNode, Action _action, float _value, Buff _buff)
-    {
-        affectedNode = _affectedNode;
-        origin = _origin;
-        action = _action;
-        applyBuff = true;
-        buff = _buff;
-        value = _value;
-    }
-    public Interaction(Character _origin, Node _affectedNode, Action _action, float _value)
-    {
-        affectedNode = _affectedNode;
-        origin = _origin;
-        action = _action;
-        value = _value;
+        primaryTarget = _primaryTarget;
     }
 }

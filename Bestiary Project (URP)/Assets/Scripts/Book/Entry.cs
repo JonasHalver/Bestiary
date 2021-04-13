@@ -193,21 +193,25 @@ public class ActionCheck
     public Color panelColor;
 
     int priority;
-    Action.ActionType type;
+   // Action.ActionType type;
     Debuff debuff; // Only count 1 for percentage
     Buff buff;
-    Action.Position position;
+   // Action.Position position;
     int nearTargetCount; // Dont count for percentage
 
-    Action.Shape shape;
+    Action.Shape primaryShape;
+    Action.Shape secondaryShape;
     int minimumHits; // Dont count for percentage
-    Action.Target target; // Dont count for percentage
-    Action.TargetGroup targetGroup;
+    Action.Targeting primaryTargeting; // Dont count for percentage
+    Action.Targeting secondaryTargeting;
+    Action.TargetGroup primaryTargetGroup;
+    Action.TargetGroup secondaryTargetGroup;
     List<Action.Status> targetConditions;
     Action.TargetPriority targetPriority;
     bool canHitSelf; // Dont count for percentage
     Character.DamageTypes damageType;
     bool isCritical;
+    List<Action.Context> primaryContexts = new List<Action.Context>();
 
     public ActionCheck(CharacterStats o, Action g)
     {
@@ -217,6 +221,7 @@ public class ActionCheck
 
     public void FetchInfo()
     {
+        /* Outdated
         priority = originalAction.actionPriority;
         type = originalAction.actionType;
         debuff = originalAction.debuff;
@@ -224,17 +229,22 @@ public class ActionCheck
         position = originalAction.position;
         nearTargetCount = originalAction.nearTargetCount;
 
-        shape = originalAction.shape;
+        primaryShape = originalAction.primaryShape;
+        secondaryShape = originalAction.secondaryShape;
         minimumHits = originalAction.minimumHits;
-        target = originalAction.target;
-        targetGroup = originalAction.targetGroup;
+        primaryTargeting = originalAction.primaryTarget;
+        secondaryTargeting = originalAction.secondaryTarget;
+        primaryTargetGroup = originalAction.primaryTargetGroup;
+        secondaryTargetGroup = originalAction.secondaryTargetGroup;
         targetConditions = originalAction.targetConditions;
         targetPriority = originalAction.targetPriority;
         canHitSelf = originalAction.canHitSelf;
         damageType = originalAction.damageType;
         isCritical = originalAction.isCritical;
+        */
     }
 
+    /* Outdated
     public void CalculateValidity()
     {
         SetComparison();
@@ -286,6 +296,7 @@ public class ActionCheck
             Debug.Log(kvp.Key + " is invalid");
         }
     }
+    */
 
     public void SetComparison()
     {

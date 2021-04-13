@@ -15,27 +15,61 @@ MonoBehaviour:
   actionName: Lash out
   actionCode: lashouttest
   description: 
+  monsterAI: {fileID: 0}
   actionDescription: opens its mouth wide
   descriptionIndex: 9
   actionType: 4
-  actionPriority: 1
   debuff: {fileID: 11400000, guid: 45a4c424ef8b3a348aa9390571d5eaf0, type: 2}
   buff: {fileID: 0}
   position: 0
   useBeingAttackedOverride: 0
   nearTargetCount: 2
-  shape: 4
-  minimumHits: 1
-  target: 0
-  targetGroup: 0
   targetConditions: 04000000
-  targetPriority: 0
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 0
+  targetGroup: 0
+  minimumHits: 2
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 2
+    value: 2
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 1
+  primaryShape: 7
+  primaryTargetGroup: 0
+  primaryOutput:
+  - output: 0
+    value: 0
+    condition: 0
+    critical: 0
+    damageType: 0
+    difficulty: 0
+  - output: 2
+    value: 2
+    condition: 2
+    critical: 0
+    damageType: 0
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput:
+  - output: 2
+    value: 1
+    condition: 7
+    critical: 0
+    damageType: 0
+    difficulty: 0

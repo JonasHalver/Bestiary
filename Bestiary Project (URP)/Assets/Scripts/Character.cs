@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(ConditionManager))]
 public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
     public enum DamageTypes { Cutting, Piercing, Crushing, Fire, Acid, Cold, Poison, Healing }
@@ -31,10 +32,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public event System.Action<Buff> LostBuff;
 
     //public List<Debuff.ControlType> conditions = new List<Debuff.ControlType>();
-    private List<Action.Condition> conditions = new List<Action.Condition>();
-    public List<Action.Condition> Conditions
+    public Dictionary<Action.Condition, int> Conditions
     {
-        get { return conditions; }
+        get
+        {
+            return conditions.Conditions;
+        }
     }
     public List<Buff.BuffType> currentBuffs = new List<Buff.BuffType>();
 
@@ -61,6 +64,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     [HideInInspector] public Entry entry;
     [HideInInspector] public bool highlightMyNode = false;
     public Action pass;
+    public ConditionManager conditions;
 
     private void Awake()
     {
@@ -71,6 +75,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         CharacterStats newStats = ScriptableObject.CreateInstance<CharacterStats>();
         stats = newStats;
         Action newAction = ScriptableObject.CreateInstance<Action>();
+        //newAction.actor = this;
         stats.actions.Add(newAction); stats.actions.Add(newAction); stats.actions.Add(newAction); stats.actions.Add(newAction);
     }
 
@@ -82,9 +87,16 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     private void OnEnable()
     {
-        CombatManager.StartOfTurn += StartOfTurn;
-        CombatManager.EndOfTurn += EndOfTurn;
-        CombatManager.EndOfMovement += EndOfMovement;
+        //CombatManager.StartOfTurn += StartOfTurn;
+        //CombatManager.EndOfTurn += EndOfTurn;
+        //CombatManager.EndOfMovement += EndOfMovement;
+        CombatManager.RoundPhases += RoundChange;
+        CombatManager.TurnPhases += OnMyTurn;
+    }
+    private void OnDisable()
+    {
+        CombatManager.RoundPhases -= RoundChange;
+        CombatManager.TurnPhases -= OnMyTurn;
     }
 
     // Update is called once per frame
@@ -96,7 +108,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (currentHitpoints == 0) alive = false;
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
-        int initiativeMod = 0 - (Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
+        int initiativeMod = 0 - ((Conditions.ContainsKey(Action.Condition.SlowMonster) || Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0) + (Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
         initiative =  stats.speed + initiativeMod;
 
         buffCount = buffs.Count;
@@ -123,7 +135,9 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         for (int i = 0; i < stats.actions.Count; i++)
         {
             if (stats.actions[i].descriptionIndex > -1) stats.actions[i].actionDescription = Book.instance.descriptionsList.descriptions[i];
+            stats.actions[i].Actor = this;
         }
+        memory = new LastRoundMemory();
         characterIcon.sprite = stats.characterIcon;
         characterIcon.color = stats.characterIconColor;
     }
@@ -139,11 +153,25 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     }
 
+    private void RoundChange(CombatManager.CombatTiming timing)
+    {
+        conditions.UpdateDurations(timing);
+    }
+
+    private void OnMyTurn(CombatManager.CombatTiming timing, Character currentActor)
+    {
+        if (currentActor != this) return;
+        if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) conditions.TriggerOverTimeEffects();
+        conditions.UpdateDurations(timing);
+    }
+
+    #region Outdated Condition Code
+    /*
     public void ResetStats()
     {
         currentBuffs.Clear();
         temporaryResistances.Clear();
-        conditions.Clear();
+        //conditions.Clear();
     }
 
     public void StartOfTurn(Character actor)
@@ -188,9 +216,14 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             LostDebuff.Invoke(expiredDebuffs[i]);
         }
     }
+    */
+    #endregion
 
     public void Interaction(Interaction interaction)
     {
+        #region Old Code
+        /* Outdated
+                   
         Debuff debuff = null; 
         Buff buff = null;
         bool flag = false;
@@ -308,6 +341,25 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 }
                 break;
         }
+        */
+        #endregion
+
+        switch (interaction.effect.output)
+        {
+            case Action.Output.Damage:
+                if (Conditions.ContainsKey(Action.Condition.Dodge)) break;
+                ReceiveHit(interaction.effect);
+                break;
+            case Action.Output.Healing:
+                ReceiveHealing(interaction.effect);
+                break;
+            case Action.Output.Condition:
+
+                break;
+            case Action.Output.Movement:
+                MoveByAction(interaction);
+                break;
+        }
     }
 
     IEnumerator TakeAction(Vector2 dir)
@@ -323,40 +375,39 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
     }
     
-    public void ReceiveHit(Action action, bool critical)
+    public void ReceiveHit(OutputInfo info)
     {
         float damage = 1;
+        if (info.critical || stats.weaknesses.Contains(info.damageType)) damage++;
+        if (Conditions.ContainsKey(Action.Condition.Vulnerable)) damage++;
         if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
-        if (stats.resistances.Contains(action.damageType)) damage /= 2;
-        if (action.isCritical || critical || stats.weaknesses.Contains(action.damageType)) damage *= 2;
+        if (stats.resistances.Contains(info.damageType)) damage /= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
         TookDamage.Invoke();
     }
 
-    public void ReceiveHit(Debuff debuff)
+    public void ReceiveHit(DamageTypes conditionDamageType)
     {
         float damage = .5f;
-        if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
-        if (stats.resistances.Contains(debuff.damageType)) damage /= 2;
-        if (stats.weaknesses.Contains(debuff.damageType)) damage *= 2;
+        if (stats.resistances.Contains(conditionDamageType)) damage /= 2;
+        if (stats.weaknesses.Contains(conditionDamageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
         TookDamage.Invoke();
     }
 
-    public void ReceiveHealing(Action action)
+    public void ReceiveHealing(OutputInfo info)
     {
-        float healing = action.value;
+        float healing = info.value;
 
         currentHitpoints += healing;
         damageTaken -= healing;
         Healed.Invoke();
     }
-    
-    public void ReceiveHealing(Buff buff)
+    public void ReceiveHealing(bool fromRegeneration)
     {
         float healing = .5f;
 
@@ -364,6 +415,36 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         damageTaken -= healing;
         Healed.Invoke();
     }
+
+
+    public void MoveByAction(Interaction interaction)
+    {
+        Node target;
+        if (interaction.primaryTarget.Character == this)
+        {
+            target = interaction.origin.movement.currentNode;
+        }
+        else
+        {
+            target = interaction.primaryTarget.Character.movement.currentNode;
+        }
+        Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized * (interaction.effect.towards ? 1 : -1);
+        Vector2 move = Vector2.zero, destination = Vector2.zero;
+        for (int i = interaction.effect.value; i > -1; i--)
+        {
+            move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
+            destination = movement.currentNode.coordinate + move;
+            if (destination.x < 5 && destination.x > -1)
+            {
+                if (destination.y < 5 && destination.y > -1)
+                {
+                    break;
+                }
+            }
+        }        
+        movement.MoveByAction(CombatGrid.grid[(int)destination.x, (int)destination.y]);
+    }
+    
 
     public Action CurrentAction()
     {
@@ -386,11 +467,13 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi)
     {
         List<CombatAction> availableActions = new List<CombatAction>();
-        CombatAction output = new CombatAction(this, null, null);
-        bool flag = false;
+        CombatAction output;
 
         for (int i = 0; i < stats.actions.Count; i++)
         {
+            output = stats.actions[i].CombatAction(bpi, false);
+            if (output.valid) return output;
+            /* Outdated
             Node check = stats.actions[i].ActionValid(bpi, false);
             if (check != null)
             {
@@ -399,18 +482,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 flag = true;
                 output = newAction;
                 break;
-            }
+            } */
         }
-        if (!flag)
-        {
+        
             //Debug.LogError("No Available Actions for " + bpi.origin.stats.characterName);
-            output = new CombatAction(this, movement.currentNode, pass);
-            return output;
-        }
-        else
-        {
-            return output;
-        }
+        output = new CombatAction(this, pass);
+        return output;        
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -459,7 +536,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             {
                 if (ga.targetingSet)
                 {
-                    CombatAction ca = new CombatAction(this, ga.ActionValid(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true), ga);
+                    CombatAction ca = ga.CombatAction(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true);
+                        //new CombatAction(this, ga.ActionValid(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true), ga);
                     ca.affectedNodes = CombatGrid.NodesAffectedByAction(ca);
                     CombatGrid.instance.HighlighAction(ca);
                 }

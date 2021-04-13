@@ -38,18 +38,21 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     private void OnEnable()
     {
-        //CombatManager.EndRound += StartOfRound;
+        /*CombatManager.EndRound += StartOfRound;
         CombatManager.startCombat += StartOfRound;
         CombatManager.StartOfTurn += CharacterCheck;
-        CombatManager.StartRound += StartOfRound;
+        CombatManager.StartRound += StartOfRound;*/
+        CombatManager.RoundPhases += RoundChanges;
+        CombatManager.TurnPhases += MyTurn;
     }
 
     private void OnDisable()
     {
-        //CombatManager.EndRound -= StartOfRound;
+        /*CombatManager.EndRound -= StartOfRound;
         CombatManager.StartRound -= StartOfRound;
         CombatManager.startCombat -= StartOfRound;
-        CombatManager.StartOfTurn -= CharacterCheck;
+        CombatManager.StartOfTurn -= CharacterCheck;*/
+        CombatManager.RoundPhases -= RoundChanges;
     }
 
     private void Start()
@@ -160,12 +163,32 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             StartOfRound();
         }
     }
+    private void RoundChanges(CombatManager.CombatTiming timing)
+    {
+        switch (timing)
+        {
+            default: break;
+            case CombatManager.CombatTiming.CombatBegins:
+                StartOfRound();
+                break;
+            case CombatManager.CombatTiming.EndOfRound:
+                break;
+            case CombatManager.CombatTiming.StartOfNewRound:
+                break;
+        }
+    }
+
+    private void MyTurn(CombatManager.CombatTiming timing, Character currentActor)
+    {
+        if (currentActor != character) return;
+        //if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) ;
+    }
 
     public void StartOfRound()
     {
-        int movementMod = 0 - (character.Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (character.Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
+        int movementMod = 0 - ((character.Conditions.ContainsKey(Action.Condition.SlowMonster) || character.Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
         movementLeft = Mathf.Max(1, character.stats.movement + movementMod);
-        if (character.Conditions.Contains(Action.Condition.Root)) movementLeft = 0;
+        if (character.Conditions.ContainsKey(Action.Condition.RootMonster) || character.Conditions.ContainsKey(Action.Condition.RootMerc)) movementLeft = 0;
         destinationNodes.Clear();
     }
 
@@ -236,10 +259,10 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void AIMovement()
     {
-        int movementMod = 0 - (character.Conditions.Contains(Action.Condition.Slow) ? 2 : 0) + (character.Conditions.Contains(Action.Condition.Haste) ? 2 : 0);
+        int movementMod = 0 - (character.Conditions.ContainsKey(Action.Condition.SlowMonster) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
         int currentMovement = character.stats.entry.guess.movement + movementMod;
         List<Node> destinations = new List<Node>();
-        if (!character.Conditions.Contains(Action.Condition.Root))
+        if (!character.Conditions.ContainsKey(Action.Condition.RootMonster))
             destinations = GenerateDestinationList(movementLeft);
         if (destinations.Count == 0) targetNode = currentNode;
         
@@ -258,9 +281,15 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         destinationNodes = destinations;
         targetNode = destination;
         destinations.Clear();
-        if (!character.Conditions.Contains(Action.Condition.Root)) destinations = GenerateDestinationList(currentMovement);
+        if (!character.Conditions.ContainsKey(Action.Condition.RootMonster)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;
         StartCoroutine(MoveToNewLocation(true));
+    }
+
+    public void MoveByAction(Node end)
+    {
+        targetNode = end;
+        StartCoroutine(MoveToNewLocation(false));
     }
     public void OnPointerDown(PointerEventData eventData)
     {

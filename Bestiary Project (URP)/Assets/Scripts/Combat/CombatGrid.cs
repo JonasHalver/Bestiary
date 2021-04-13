@@ -143,6 +143,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             return output;
         }
 
+        /* Outdated
         switch (ca.action.shape)
         {
             case Action.Shape.Arc:
@@ -192,7 +193,8 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 }
                 break;
         }
-
+        */
+        output = ca.affectedNodes;
         return output;
     }
 
@@ -220,6 +222,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         }
     }
 
+    /* Outdated
     public List<Node> Arc(CombatAction ca)
     {
         List<Node> output = new List<Node>();
@@ -260,6 +263,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             return baseline;
         }
     }
+    */
 
     public static ShapeTest ArcTest(ShapeTest test)
     {
@@ -831,8 +835,8 @@ public class TargetInfo
         affectedNodes = nodesHit;
         for (int i = 0; i < affectedNodes.Count; i++)
         {
-            affectedCharacters.Add(affectedNodes[i].occupant);
-
+            if (affectedNodes[i].occupant != null)
+                affectedCharacters.Add(affectedNodes[i].occupant);
         }
     }
     public TargetInfo(Node target, List<Node> nodesHit)
@@ -842,7 +846,8 @@ public class TargetInfo
         affectedNodes = nodesHit;
         for (int i = 0; i < affectedNodes.Count; i++)
         {
-            affectedCharacters.Add(affectedNodes[i].occupant);
+            if (affectedNodes[i].occupant != null)
+                affectedCharacters.Add(affectedNodes[i].occupant);
         }
     }
     public TargetInfo(Character target, List<Character> targetsHit)
@@ -972,6 +977,7 @@ public class ShapeTest
 
     public ShapeTest(Action _action, Character _origin)
     {
+        valid = true;
         action = _action;
         origin = _origin;
     }

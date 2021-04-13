@@ -181,6 +181,7 @@ GameObject:
   - component: {fileID: 7283788277956465954}
   - component: {fileID: 7283788277956465982}
   - component: {fileID: 7283788277956465980}
+  - component: {fileID: 329833077950276860}
   m_Layer: 8
   m_Name: Character
   m_TagString: Untagged
@@ -266,11 +267,12 @@ MonoBehaviour:
   position: {x: 0, y: 0}
   debuffs: []
   buffs: []
+  currentAction: {fileID: 0}
   characterIcon: {fileID: 390191400349471051}
   characterIconColor: {r: 1, g: 1, b: 1, a: 1}
   deadImage: {fileID: 215725937335092920}
-  conditions: 
   currentBuffs: 
+  lastCombatAction: {fileID: 0}
   expiredDebuffs: []
   expiredBuffs: []
   temporaryResistances: 
@@ -313,6 +315,7 @@ MonoBehaviour:
   entry: {fileID: 0}
   highlightMyNode: 0
   pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
+  conditions: {fileID: 329833077950276860}
 --- !u!114 &7283788277956465980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -330,3 +333,16 @@ MonoBehaviour:
   movementLeft: 0
   movementCost: 0
   canMove: 0
+--- !u!114 &329833077950276860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7283788277956465952}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a838bdaba1c5db44891036d36d8776cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  character: {fileID: 7283788277956465982}

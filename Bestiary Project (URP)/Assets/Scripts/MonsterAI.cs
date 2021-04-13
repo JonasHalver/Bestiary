@@ -162,14 +162,11 @@ public class MonsterAI : MonoBehaviour
                     List<GridSpaceAssessment> temp = new List<GridSpaceAssessment>();
                     evaluations.Sort((e2, e1) => e1.ThreatValue.CompareTo(e2.ThreatValue));
                     EnemyEvaluation ee = null;
-                    List<Action.Condition> c = new List<Action.Condition>();
 
                     // Look for vulnerable first
                     for (int i = 0; i < evaluations.Count; i++)
                     {
-                        c.Clear();
-                        c = evaluations[i].Enemy.Conditions;
-                        if (c.Contains(Action.Condition.Vulnerable))
+                        if (evaluations[i].Enemy.Conditions.ContainsKey(Action.Condition.Vulnerable))//if (c.Contains(Action.Condition.Vulnerable))
                         {
                             ee = evaluations[i];
                             break;
@@ -181,9 +178,7 @@ public class MonsterAI : MonoBehaviour
                     {
                         for (int i = 0; i < evaluations.Count; i++)
                         {
-                            c.Clear();
-                            c = evaluations[i].Enemy.Conditions;
-                            if (!c.Contains(Action.Condition.Armor))
+                            if (!evaluations[i].Enemy.Conditions.ContainsKey(Action.Condition.Armor))
                             {
                                 ee = evaluations[i];
                                 break;
@@ -223,14 +218,11 @@ public class MonsterAI : MonoBehaviour
                     List<GridSpaceAssessment> temp = new List<GridSpaceAssessment>();
                     evaluations.Sort((e1, e2) => e1.ThreatValue.CompareTo(e2.ThreatValue));
                     EnemyEvaluation ee = null;
-                    List<Action.Condition> c = new List<Action.Condition>();
 
                     // Look for vulnerable first
                     for (int i = 0; i < evaluations.Count; i++)
                     {
-                        c.Clear();
-                        c = evaluations[i].Enemy.Conditions;
-                        if (c.Contains(Action.Condition.Vulnerable))
+                        if (evaluations[i].Enemy.Conditions.ContainsKey(Action.Condition.Vulnerable))
                         {
                             ee = evaluations[i];
                             break;
@@ -242,9 +234,7 @@ public class MonsterAI : MonoBehaviour
                     {
                         for (int i = 0; i < evaluations.Count; i++)
                         {
-                            c.Clear();
-                            c = evaluations[i].Enemy.Conditions;
-                            if (!c.Contains(Action.Condition.Armor))
+                            if (!evaluations[i].Enemy.Conditions.ContainsKey(Action.Condition.Armor))
                             {
                                 ee = evaluations[i];
                                 break;
@@ -285,13 +275,10 @@ public class MonsterAI : MonoBehaviour
                 else
                     evaluations.Sort((e1, e2) => e1.ThreatValue.CompareTo(e2.ThreatValue));
                 EnemyEvaluation ee = null;
-                List<Action.Condition> c = new List<Action.Condition>();
 
                 for (int i = 0; i < evaluations.Count; i++)
                 {
-                    c.Clear();
-                    c = evaluations[i].Enemy.Conditions;
-                    if (c.Contains(condition))
+                    if (evaluations[i].Enemy.Conditions.ContainsKey(condition))
                     {
                         ee = evaluations[i];
                         break;

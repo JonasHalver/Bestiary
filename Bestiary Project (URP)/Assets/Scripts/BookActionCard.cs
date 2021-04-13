@@ -16,6 +16,7 @@ public class BookActionCard : MonoBehaviour
     private Action guess;
     public static event System.Action<bool> CardUpdated;
     private bool editable = true;
+    /* Outdated
     private void Awake()
     {
         instance = this;
@@ -413,4 +414,5 @@ public class BookActionCard : MonoBehaviour
         outcomeDescription = line;
         outcomeText.text = line;
     }
+    */
 }

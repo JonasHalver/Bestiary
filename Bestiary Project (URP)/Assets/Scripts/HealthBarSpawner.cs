@@ -9,22 +9,23 @@ public class HealthBarSpawner : MonoBehaviour
 
     private void Start()
     {
-        CombatManager.startCombat += SpawnHealthBars;
+        CombatManager.RoundPhases += SpawnHealthBars;
     }
 
     private void OnDisable()
     {
-        CombatManager.startCombat -= SpawnHealthBars;
+        CombatManager.RoundPhases -= SpawnHealthBars;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
-    public void SpawnHealthBars()
+    public void SpawnHealthBars(CombatManager.CombatTiming timing)
     {
+        if (timing != CombatManager.CombatTiming.CombatBegins) return;
         for (int i = 0; i < CombatManager.actors.Count; i++)
         {
             Character character = CombatManager.actors[i];

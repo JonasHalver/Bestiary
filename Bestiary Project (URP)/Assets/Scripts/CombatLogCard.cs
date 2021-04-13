@@ -26,6 +26,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void CreateCard() 
     {
+        /* Rewrite
         user = ca.origin;
         victim = ca.affectedCharacters.Count == 1 ? ca.affectedCharacters[0] : null;
         string username;
@@ -175,6 +176,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
             xCharacters.gameObject.SetActive(false);
         }
         UpdateCanvas();
+        */
     }
 
     public void Pass()

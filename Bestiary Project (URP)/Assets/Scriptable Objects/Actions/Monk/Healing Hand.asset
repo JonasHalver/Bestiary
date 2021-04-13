@@ -15,30 +15,62 @@ MonoBehaviour:
   actionName: Healing Hand
   actionCode: testmonkhealing
   description: If I can touch an ally who is very hurt, I will heal them for 2 hit
-    points.
+    points, and myself for 1.
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
   actionType: 2
-  actionPriority: 1
   debuff: {fileID: 0}
   buff: {fileID: 0}
   position: 2
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
-  minimumHits: 1
-  targetGroup: 1
   targetConditions: 0000000002000000
-  targetPriority: 1
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 7
+  targetGroup: 1
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
   isPass: 0
-  contexts: []
-  target: 1
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 0
+    value: 1
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  - actor: {fileID: 0}
+    context: 15
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTarget: 0
+  primaryShape: 0
+  primaryTargetGroup: 1
+  primaryOutput:
+  - output: 1
+    value: 2
+    condition: 0
+    critical: 0
+    damageType: 7
+    difficulty: 0
+  secondaryTarget: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput:
+  - output: 1
+    value: 1
+    condition: 0
+    critical: 0
+    damageType: 7
+    difficulty: 0

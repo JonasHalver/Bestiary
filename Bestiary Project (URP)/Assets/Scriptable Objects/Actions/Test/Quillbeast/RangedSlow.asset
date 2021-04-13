@@ -15,27 +15,60 @@ MonoBehaviour:
   actionName: Quill Shot
   actionCode: quillshottest
   description: 
+  monsterAI: {fileID: 0}
   actionDescription: ducks down low
   descriptionIndex: 7
-  actionType: 4
-  actionPriority: 4
-  debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
-  buff: {fileID: 0}
   position: 1
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 0
-  minimumHits: 1
-  target: 1
-  targetGroup: 0
   targetConditions: 03000000
-  targetPriority: 1
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 1
+  targetGroup: 0
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 4
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 7
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  - actor: {fileID: 0}
+    context: 3
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 0
+  primaryShape: 1
+  primaryTargetGroup: 0
+  primaryOutput:
+  - output: 0
+    value: 0
+    condition: 0
+    critical: 0
+    damageType: 1
+    towards: 0
+    difficulty: 0
+  - output: 2
+    value: 2
+    condition: 11
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

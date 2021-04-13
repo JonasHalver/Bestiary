@@ -13,7 +13,7 @@ public class BookActionOutcome : MonoBehaviour
     public List<Debuff> debuffs = new List<Debuff>();
     public string titleString;
     public bool isLoading = false;
-
+    /* Outdated
     private void OnEnable()
     {
         StartCoroutine(CardLoad());
@@ -314,4 +314,5 @@ public class BookActionOutcome : MonoBehaviour
                 break;
         }
     }
+    */
 }

@@ -15,27 +15,47 @@ MonoBehaviour:
   actionName: Quicksand
   actionCode: quicksandtest
   description: If I can hit at least two enemies with a box, I will slow them
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
-  actionType: 3
-  actionPriority: 3
-  debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
-  buff: {fileID: 0}
   position: 1
   useBeingAttackedOverride: 0
   nearTargetCount: 1
-  shape: 4
-  minimumHits: 2
-  target: 1
-  targetGroup: 0
   targetConditions: 04000000
-  targetPriority: 0
   canHitSelf: 0
   alwaysHitsSelf: 0
   canFriendlyFire: 0
   value: 2
   isCritical: 0
   damageType: 0
+  targetGroup: 0
+  minimumHits: 2
+  targetPriority: 2
+  priorityConditionComparison: 0
+  actionPriority: 3
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 3
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 1
+  primaryShape: 6
+  primaryTargetGroup: 2
+  primaryOutput:
+  - output: 2
+    value: 2
+    condition: 14
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

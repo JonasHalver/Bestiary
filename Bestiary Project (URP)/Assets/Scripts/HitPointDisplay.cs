@@ -53,7 +53,7 @@ public class HitPointDisplay : MonoBehaviour
                 }
                 else if (previousDamageTaken != damageTaken)
                 {
-                    print("took damage");
+
                     StartCoroutine(UpdateHearts());
                     previousDamageTaken = damageTaken;
                 }
@@ -458,7 +458,7 @@ public class HitPointDisplay : MonoBehaviour
                 {
                     hearts[count].current = hearts[count].half;
                     hearts[count].isFull = false; hearts[count].isHalf = true; hearts[count].isEmpty = false;
-                    if (fullHearts.Contains(hearts[count].gameObject)) { fullHearts.Remove(hearts[count].gameObject); print("removed heart"); }
+                    if (fullHearts.Contains(hearts[count].gameObject)) { fullHearts.Remove(hearts[count].gameObject); }
                     displayHalf = true;
                 }
                 else
@@ -493,7 +493,7 @@ public class HitPointDisplay : MonoBehaviour
         emptyHearts.Clear();
         fullHearts.Clear();
         displayedHearts.Clear();
-        print("cleared hearts");
+
         for (int i = 0; i < compactEmpty.Count; i++)
         {
             Destroy(compactEmpty[i]);

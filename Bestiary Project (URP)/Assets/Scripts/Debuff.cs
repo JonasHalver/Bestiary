@@ -86,7 +86,7 @@ public class Debuff : ScriptableObject
                                
                 break;
             case DebuffType.DamageOverTime:
-                affectedCharacter.ReceiveHit(this);
+                //affectedCharacter.ReceiveHit(this);
 
                 break;
         }

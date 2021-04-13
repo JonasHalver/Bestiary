@@ -84,16 +84,18 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
         }
         if (actionCheck.guessAction.targetingSet)
         {
-            switch (actionCheck.guessAction.shape)
+            /* Rewrite as dictionary
+            switch (actionCheck.guessAction.primaryShape)
             {
-                case Action.Shape.Single:
-                    if (actionCheck.guessAction.canHitSelf) AddIcon(GameManager.instance.currentIconCollection.self);
-                    else if (actionCheck.guessAction.targetConditions.Contains(Action.Status.NotInMelee)) AddIcon(GameManager.instance.currentIconCollection.ranged);
-                    else
-                    {
-                        AddIcon(GameManager.instance.currentIconCollection.meleeVert);
-                        AddIcon(GameManager.instance.currentIconCollection.meleeDia);
-                    }
+                case Action.Shape.Self:
+                    AddIcon(GameManager.instance.currentIconCollection.self);
+                    break;
+                case Action.Shape.Melee:
+                    AddIcon(GameManager.instance.currentIconCollection.meleeVert);
+                    AddIcon(GameManager.instance.currentIconCollection.meleeDia);
+                    break;
+                case Action.Shape.Ranged:
+                    AddIcon(GameManager.instance.currentIconCollection.ranged);
                     break;
                 case Action.Shape.Line:
                     AddIcon(GameManager.instance.currentIconCollection.lineVert);
@@ -107,14 +109,17 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
                     AddIcon(GameManager.instance.currentIconCollection.coneVert);
                     AddIcon(GameManager.instance.currentIconCollection.coneDia);
                     break;
-                case Action.Shape.ThreeByThree:
-                    if (actionCheck.guessAction.canHitSelf) AddIcon(GameManager.instance.currentIconCollection.selfBox);
-                    else AddIcon(GameManager.instance.currentIconCollection.box);
+                case Action.Shape.Area:
+                    AddIcon(GameManager.instance.currentIconCollection.box);
                     break;
-            }
+                case Action.Shape.Pulse:
+                    AddIcon(GameManager.instance.currentIconCollection.selfBox);
+                    break;
+            } */
         }
         if (actionCheck.guessAction.outcomeSet)
         {
+            /* Rewrite as dictionary
             if (actionCheck.guessAction.actionType == Action.ActionType.Attack || actionCheck.guessAction.actionType == Action.ActionType.AttackDebuff)
             {
                 switch (actionCheck.guessAction.damageType)
@@ -203,7 +208,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
                         AddIcon(GameManager.instance.currentIconCollection.dodge);
                         break;
                 }
-            }
+            }*/
         }
     }
 

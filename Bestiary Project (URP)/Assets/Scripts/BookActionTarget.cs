@@ -10,7 +10,7 @@ public class BookActionTarget : MonoBehaviour
     public TMP_Dropdown position, nearCount, shape, minimumHits, targetStatus, targetPriority;
     public string titleString;
     private bool loading = false;
-
+    /* Outdated
     private void OnEnable()
     {
         StartCoroutine(CardLoaded());
@@ -377,4 +377,5 @@ public class BookActionTarget : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+    */
 }
