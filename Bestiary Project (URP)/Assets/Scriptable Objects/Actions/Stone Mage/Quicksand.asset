@@ -18,17 +18,7 @@ MonoBehaviour:
   monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
-  position: 1
-  useBeingAttackedOverride: 0
-  nearTargetCount: 1
-  targetConditions: 04000000
-  canHitSelf: 0
-  alwaysHitsSelf: 0
-  canFriendlyFire: 0
-  value: 2
-  isCritical: 0
-  damageType: 0
-  targetGroup: 0
+  cooldown: 1
   minimumHits: 2
   targetPriority: 2
   priorityConditionComparison: 0

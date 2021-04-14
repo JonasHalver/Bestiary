@@ -66,6 +66,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public Action pass;
     public ConditionManager conditions;
 
+    public Dictionary<Action, int> actionCooldowns = new Dictionary<Action, int>();
+
     private void Awake()
     {
         if (stats == null) CreateEmptyStats();
@@ -129,11 +131,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         if (!CombatManager.actors.Contains(this)) CombatManager.actors.Add(this);
         stats.actions.Sort((action1, action2) => action1.actionPriority.CompareTo(action2.actionPriority));
-
+        
         currentHitpoints = stats.hitPoints;
         initiative = stats.speed;
         for (int i = 0; i < stats.actions.Count; i++)
         {
+            actionCooldowns.Add(stats.actions[i], 0);
             if (stats.actions[i].descriptionIndex > -1) stats.actions[i].actionDescription = Book.instance.descriptionsList.descriptions[i];
             stats.actions[i].Actor = this;
         }
@@ -161,8 +164,23 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     private void OnMyTurn(CombatManager.CombatTiming timing, Character currentActor)
     {
         if (currentActor != this) return;
-        if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) conditions.TriggerOverTimeEffects();
+        if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) 
+        { 
+            conditions.TriggerOverTimeEffects();
+            CooldownTick();            
+        }
         conditions.UpdateDurations(timing);
+    }
+    public void CooldownTick()
+    {
+        int cooldownTimer;
+        for (int i = 0; i < stats.actions.Count; i++)
+        {
+            cooldownTimer = actionCooldowns[stats.actions[i]];
+            cooldownTimer--;
+            cooldownTimer = Mathf.Max(0, cooldownTimer);
+            actionCooldowns[stats.actions[i]] = cooldownTimer;
+        }
     }
 
     #region Outdated Condition Code

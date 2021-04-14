@@ -45,7 +45,7 @@ public class Entry : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             Action newAction = ScriptableObject.CreateInstance<Action>();
-            newAction.targetConditions.Add(Action.Status.Irrelevant);
+            //newAction.targetConditions.Add(Action.Status.Irrelevant);
             actionChecks.Add(new ActionCheck(origin, newAction));
             guess.actions.Add(newAction);
         }

@@ -19,20 +19,32 @@ public class Action : ScriptableObject
 
     public string actionDescription;
     public int descriptionIndex = -1;
+    [Tooltip("How many turns must elaps between each use of this action?")]
+    public int cooldown = 1;
+    public bool OnCooldown
+    {
+        get
+        {
+            bool output = Actor.actionCooldowns[this] > 0;
+            if (output) Debug.Log($"{actionName} is on cooldown for {Actor.actionCooldowns[this]} turns");
+            return Actor.actionCooldowns[this] > 0;
+        }
+    }
+
     public enum ActionType { Attack, Buff, Healing, Debuff, AttackDebuff, HealingBuff }
-
+    
     public enum Position { NearEnemy, NotNearEnemy, NearAlly, NotNearAlly, Alone, Irrelevant }
-    [Header("Outdated")]
-
+    
+    /*
     public Position position = Position.Irrelevant;
     [Tooltip("Set to true if position check should be ignored if being attacked")]
     public bool useBeingAttackedOverride;
     [Tooltip("Number of targets needed for position to be valid. Default 1.")]
     public int nearTargetCount = 1;
     
-    public enum Shape { Melee, Ranged, Self, Arc, Cone, Line, Area, Pulse, All }
+    */public enum Shape { Melee, Ranged, Self, Arc, Cone, Line, Area, Pulse, All }/*
     //[Tooltip("When targeting ALL, use Single")]
-    public enum Status { Below50, Above50, InMelee, NotInMelee, Irrelevant }
+    */public enum Status { Below50, Above50, InMelee, NotInMelee, Irrelevant }/*
     [Tooltip("Needs to be true for the action to be chosen")]
     public List<Status> targetConditions = new List<Status>();
     [Tooltip("If this character is within the AoE of its own attack, does it get hit?")]
@@ -51,7 +63,7 @@ public class Action : ScriptableObject
     public bool isCritical = false;
 
     public Character.DamageTypes damageType = Character.DamageTypes.Cutting;
-    public TargetGroup targetGroup = TargetGroup.Enemies;
+    public TargetGroup targetGroup = TargetGroup.Enemies;*/
 
 
     [Header("Targeting")]
@@ -188,7 +200,20 @@ public class Action : ScriptableObject
         {
             get;set;
         }
-    }
+        private Vector2 direction;
+        public Vector2 Direction
+        {
+            get
+            {
+                if (direction == null) return Vector2.zero;
+                else return direction;
+            }
+            set
+            {
+                direction = new Vector2(Mathf.Round(value.x), Mathf.Round(value.y));
+            }
+        }
+    }  
 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
     {
@@ -212,6 +237,7 @@ public class Action : ScriptableObject
                 output.primaryTarget.Node = primaryTest.potentialTargets[0].targetNode;
                 output.primaryTarget.AffectedCharacters = primaryTest.potentialTargets[0].affectedCharacters;
                 output.primaryTarget.AffectedNodes = primaryTest.potentialTargets[0].affectedNodes;
+                output.primaryTarget.Direction = (output.primaryTarget.Node.coordinate - Actor.position).normalized;
             }
             else
             {
@@ -233,6 +259,7 @@ public class Action : ScriptableObject
                     output.secondaryTarget.Node = secondaryTest.potentialTargets[0].targetNode;
                     output.secondaryTarget.AffectedCharacters = secondaryTest.potentialTargets[0].affectedCharacters;
                     output.secondaryTarget.AffectedNodes = secondaryTest.potentialTargets[0].affectedNodes;
+                    output.secondaryTarget.Direction = (output.secondaryTarget.Node.coordinate - Actor.position).normalized;
                 }
             }
         }
@@ -243,6 +270,7 @@ public class Action : ScriptableObject
     public bool ActionValidation(BattlefieldPositionInfo bpi, bool guess)
     {
         if (guess) return true;
+        if (OnCooldown) return false;
         int count = 0;
         for (int i = 0; i < primaryContext.Count; i++)
         {
@@ -424,6 +452,13 @@ public class Action : ScriptableObject
                         output.AffectedCharacters = ti[i].affectedCharacters;
                     }
                 }
+                if (output.Character == null)
+                {
+                    output.Node = ti[0].targetNode;
+                    output.Character = ti[0].targetCharacter;
+                    output.AffectedCharacters = ti[0].affectedCharacters;
+                    output.AffectedNodes = ti[0].affectedNodes;
+                }
                 break;
             case TargetPriority.HasSpecificCondition:
                 bool flag1 = false;
@@ -442,6 +477,13 @@ public class Action : ScriptableObject
                         }
                     }
                     if (flag1) break;
+                }
+                if (output.Character == null)
+                {
+                    output.Node = ti[0].targetNode;
+                    output.Character = ti[0].targetCharacter;
+                    output.AffectedCharacters = ti[0].affectedCharacters;
+                    output.AffectedNodes = ti[0].affectedNodes;
                 }
                 break;
             case TargetPriority.DoesntHaveSpecificCondition:
@@ -465,9 +507,16 @@ public class Action : ScriptableObject
                         break;
                     }
                 }
+                if (output.Character == null)
+                {
+                    output.Node = ti[0].targetNode;
+                    output.Character = ti[0].targetCharacter;
+                    output.AffectedCharacters = ti[0].affectedCharacters;
+                    output.AffectedNodes = ti[0].affectedNodes;
+                }
                 break;
         }
-
+        output.Direction = (output.Node.coordinate - Actor.position).normalized;
         return output;
     }
     #region Old Validation

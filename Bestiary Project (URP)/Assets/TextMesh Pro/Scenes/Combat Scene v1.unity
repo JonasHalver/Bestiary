@@ -14523,7 +14523,7 @@ MonoBehaviour:
   menuCanvas: {fileID: 1949529733}
   enemiesWon: 0
   alliesWon: 0
-  debugMode: 0
+  debugMode: 1
   enemies:
   - {fileID: 11400000, guid: 4b234ace1951e7a448e3abd51c3e8c6b, type: 2}
   - {fileID: 11400000, guid: d350e05a489801e468f1bb693dbb7de6, type: 2}

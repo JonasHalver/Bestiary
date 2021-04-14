@@ -19,20 +19,7 @@ MonoBehaviour:
   monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
-  actionType: 4
-  debuff: {fileID: 11400000, guid: 23dfc3740ed7ca646ab71fa1f4f46a63, type: 2}
-  buff: {fileID: 0}
-  position: 0
-  useBeingAttackedOverride: 0
-  nearTargetCount: 1
-  targetConditions: 02000000
-  canHitSelf: 0
-  alwaysHitsSelf: 0
-  canFriendlyFire: 0
-  value: 2
-  isCritical: 0
-  damageType: 0
-  targetGroup: 0
+  cooldown: 1
   minimumHits: 1
   targetPriority: 4
   priorityConditionComparison: 10
@@ -48,7 +35,7 @@ MonoBehaviour:
     condition: 0
     damageType: 0
     difficulty: 0
-  primaryTarget: 1
+  primaryTargeting: 0
   primaryShape: 0
   primaryTargetGroup: 0
   primaryOutput:
@@ -57,14 +44,30 @@ MonoBehaviour:
     condition: 0
     critical: 0
     damageType: 0
+    towards: 0
     difficulty: 0
   - output: 2
     value: 2
     condition: 11
     critical: 0
     damageType: 0
+    towards: 0
     difficulty: 0
-  secondaryTarget: 0
+  - output: 3
+    value: 1
+    condition: 11
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
-  secondaryOutput: []
+  secondaryOutput:
+  - output: 3
+    value: 1
+    condition: 0
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0

@@ -795,6 +795,21 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         int dist = Mathf.Max(Mathf.Abs(Mathf.RoundToInt(dir.x)), Mathf.Abs(Mathf.RoundToInt(dir.y)));
         return dist;
     }
+    public static Node NodeFromPosition(Vector2 position)
+    {
+        int x, y;
+        x = (int)position.x;
+        y = (int)position.y;
+        Node output = null;
+        if (x > -1 && x < 5)
+        {
+            if (y > -1 && y < 5)
+            {
+                output = grid[x, y];
+            }
+        }
+        return output;
+    }
 
     public static void ShowPreviousPositions(BattlefieldPositionInfo bpi, Character user, List<Character> victims)
     {

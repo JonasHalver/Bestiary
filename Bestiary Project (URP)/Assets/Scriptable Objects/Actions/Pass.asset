@@ -15,28 +15,24 @@ MonoBehaviour:
   actionName: Pass
   actionCode: passtest
   description: I have no good targets, and will pass.
+  monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1
-  actionType: 0
-  actionPriority: 1
-  debuff: {fileID: 0}
-  buff: {fileID: 0}
-  position: 5
-  useBeingAttackedOverride: 0
-  nearTargetCount: 1
-  shape: 0
+  cooldown: 1
   minimumHits: 1
-  target: 1
-  targetGroup: 0
-  targetConditions: 
   targetPriority: 0
-  canHitSelf: 0
-  alwaysHitsSelf: 0
-  canFriendlyFire: 0
-  value: 1
-  isCritical: 0
-  damageType: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
   isPass: 1
+  primaryContext: []
+  primaryTargeting: 1
+  primaryShape: 2
+  primaryTargetGroup: 1
+  primaryOutput: []
+  secondaryTargeting: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

@@ -96,7 +96,7 @@ public class CombatManager : MonoBehaviour
     {
         //Slow combat updater
         counter++;
-        if (counter >= 10)
+        if (counter >= 10 && currentStage == CombatStage.Setup)
         {
             counter = 0;
             UpdateCombat();
@@ -205,6 +205,7 @@ public class CombatManager : MonoBehaviour
 
     public void UpdateCombat()
     {
+        if (currentStage != CombatStage.Setup) return;
         combatActions.Clear();
         for (int i = 0; i < actors.Count; i++)
         {
@@ -319,25 +320,24 @@ public class CombatManager : MonoBehaviour
             foreach (CombatAction a in combatActions) a.highlighted = false;
             for (int j = 0; j < combatActions.Count; j++)
             {
-                CombatAction action = combatActions[j];
-                if (action.origin == actors[i] && action.origin.alive)
+                CombatAction cAction = combatActions[j];
+                if (cAction.origin == actors[i] && cAction.origin.alive)
                 {
-                    action.highlighted = true;
+                    cAction.highlighted = true;
                     Vector2 dir = Vector2.zero;
-                    if (action.primaryTarget.Character == null) Debug.Log("no target");
-                    if (action.primaryTargeting == Action.Targeting.Character)
-                        dir = (action.primaryTarget.Character.position - actors[i].position).normalized;
+                    if (cAction.action.primaryTargeting == Action.Targeting.Character)
+                        dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
                     else
-                        dir = (action.primaryTarget.Node.coordinate - actors[i].position).normalized;
+                        dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
                     actors[i].StartCoroutine("TakeAction", dir);
                     while (!combatFlag)
                     {
                         yield return null;
                     }
-                    action.ResolveAction();
+                    cAction.ResolveAction();
 
                     GameObject newCard = Instantiate(combatLogCardPrefab, combatLogCardHolder);
-                    newCard.GetComponent<CombatLogCard>().ca = action;
+                    newCard.GetComponent<CombatLogCard>().ca = cAction;
                     newCard.GetComponent<CombatLogCard>().CreateCard();
                 }
             }
@@ -573,26 +573,280 @@ public class CombatAction : Action
             {
                 default:
                     break;
+                case Shape.Melee:
+                    if (CombatGrid.Vector2ToDistance(primaryTarget.Character.position, origin.position) > 1)
+                    {
+                        primaryTarget.AffectedCharacters.Clear();
+                        primaryTarget.AffectedNodes.Clear();
+                        Node newTargetNode = CombatGrid.NodeFromPosition(origin.position + primaryTarget.Direction);
+                        if (newTargetNode != null)
+                        {
+                            primaryTarget.AffectedNodes.Add(newTargetNode);
+                            if (newTargetNode.occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(newTargetNode.occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, newTargetNode.occupant))
+                                            primaryTarget.AffectedCharacters.Add(newTargetNode.occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, newTargetNode.occupant))
+                                            primaryTarget.AffectedCharacters.Add(newTargetNode.occupant);
+                                        break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            origin.actionCooldowns[action] = action.cooldown;
+                            origin.lastCombatAction = null;
+                            return;
+                        }
+                    }
+                    break;
                 case Shape.Arc:
                     primaryTarget.AffectedCharacters.Clear();
                     primaryTarget.AffectedNodes.Clear();
-                    primaryTarget.AffectedNodes = CombatGrid.GenerateArc(primaryTarget.Character.movement.currentNode.coordinate, origin.movement.currentNode.coordinate);
+                    Vector2 dir1 = (primaryTarget.Character.position - origin.position).normalized;
+                    if (CombatGrid.NodeIsOnGrid(origin.position + dir1))
+                    {
+                        primaryTarget.AffectedNodes = CombatGrid.GenerateArc(dir1 + origin.position, origin.position);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        origin.actionCooldowns[action] = action.cooldown;
+                        origin.lastCombatAction = null;
+                        return;
+                    }                    
                     break;
                 case Shape.Area:
                     primaryTarget.AffectedCharacters.Clear();
                     primaryTarget.AffectedNodes.Clear();
                     primaryTarget.AffectedNodes = CombatGrid.GenerateThreeByThree(primaryTarget.Character.movement.currentNode);
+                    for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                    {
+                        if (primaryTarget.AffectedNodes[i].occupant != null)
+                        {
+                            switch (primaryTargetGroup)
+                            {
+                                case TargetGroup.All:
+                                    primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                    break;
+                                case TargetGroup.Allies:
+                                    if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                    break;
+                                case TargetGroup.Enemies:
+                                    if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                    break;
+                            }
+                        }
+                    }
                     break;
                 case Shape.Cone:
                     primaryTarget.AffectedCharacters.Clear();
                     primaryTarget.AffectedNodes.Clear();
-                    primaryTarget.AffectedNodes = CombatGrid.GenerateCone(primaryTarget.Character.movement.currentNode.coordinate, origin.movement.currentNode.coordinate);
+                    Vector2 dir2 = (primaryTarget.Character.position - origin.position).normalized;
+                    dir2 = new Vector2(Mathf.Round(dir2.x), Mathf.Round(dir2.y));
+                    if (CombatGrid.NodeIsOnGrid(origin.position + dir2))
+                    {
+                        primaryTarget.AffectedNodes = CombatGrid.GenerateCone(origin.position + dir2, origin.position);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
                     break;
             }
             for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
             {
                 if (primaryTarget.AffectedNodes[i].occupant == null) continue;
                 if (!primaryTarget.AffectedCharacters.Contains(primaryTarget.AffectedNodes[i].occupant)) primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+            }
+        }
+        else
+        {
+            switch (action.primaryShape)
+            {
+                default: break;
+                case Shape.Melee:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    Node newTarget = CombatGrid.NodeFromPosition(origin.position + primaryTarget.Direction);
+                    if (newTarget != null)
+                    {
+                        primaryTarget.AffectedNodes.Add(newTarget);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        origin.actionCooldowns[action] = action.cooldown;
+                        origin.lastCombatAction = null;
+                        return;
+                    }
+                    break;
+                case Shape.Arc:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    if (CombatGrid.NodeIsOnGrid(origin.position + primaryTarget.Direction))
+                    {
+                        primaryTarget.AffectedNodes = CombatGrid.GenerateArc(origin.position + primaryTarget.Direction, origin.position);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        origin.actionCooldowns[action] = action.cooldown;
+                        origin.lastCombatAction = null;
+                        return;
+                    }
+                    break;
+                case Shape.Cone:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    if (CombatGrid.NodeIsOnGrid(origin.position + primaryTarget.Direction))
+                    {
+                        primaryTarget.AffectedNodes = CombatGrid.GenerateCone(origin.position + primaryTarget.Direction, origin.position);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        origin.actionCooldowns[action] = action.cooldown;
+                        origin.lastCombatAction = null;
+                        return;
+                    }
+                    break;
+                case Shape.Line:
+                    primaryTarget.AffectedCharacters.Clear();
+                    primaryTarget.AffectedNodes.Clear();
+                    if (CombatGrid.NodeIsOnGrid(origin.position + primaryTarget.Direction))
+                    {
+                        primaryTarget.AffectedNodes = CombatGrid.GenerateLine(origin.position + primaryTarget.Direction, origin.position);
+                        for (int i = 0; i < primaryTarget.AffectedNodes.Count; i++)
+                        {
+                            if (primaryTarget.AffectedNodes[i].occupant != null)
+                            {
+                                switch (primaryTargetGroup)
+                                {
+                                    case TargetGroup.All:
+                                        primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Allies:
+                                        if (Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                    case TargetGroup.Enemies:
+                                        if (!Character.AllyOrEnemy(origin, primaryTarget.AffectedNodes[i].occupant))
+                                            primaryTarget.AffectedCharacters.Add(primaryTarget.AffectedNodes[i].occupant);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        origin.actionCooldowns[action] = action.cooldown;
+                        origin.lastCombatAction = null;
+                        return;
+                    }
+                    break;
             }
         }
 
@@ -624,7 +878,7 @@ public class CombatAction : Action
                 }
             }
         }
-
+        origin.actionCooldowns[action] = action.cooldown;
         origin.lastCombatAction = null;
     }
 }

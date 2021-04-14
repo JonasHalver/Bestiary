@@ -174,6 +174,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             case CombatManager.CombatTiming.EndOfRound:
                 break;
             case CombatManager.CombatTiming.StartOfNewRound:
+                StartOfRound();
                 break;
         }
     }
