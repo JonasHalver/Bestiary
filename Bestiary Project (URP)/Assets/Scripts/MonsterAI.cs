@@ -30,8 +30,8 @@ public class MonsterAI : MonoBehaviour
     {
         get; private set;
     }
-
-    private LastRoundMemory memory;    
+    public Gradient heatMap;
+    private float dangerMin = -15, dangerMax = 15;
 
     public Node SafestNode
     {
@@ -339,15 +339,11 @@ public class MonsterAI : MonoBehaviour
         assessments.Clear();
         foreach (Node node in CombatGrid.grid)
         {
-            if (CombatGrid.NodeToDistance(character.movement.currentNode, node) <= character.movement.movementLeft)
+            if (CombatGrid.NodeToDistance(character.movement.currentNode, node) <= character.movement.MovementLeft && node.occupant == null)
             {
                 assessments.Add(new GridSpaceAssessment(character, node, this));
             }
         }
-    }
-    private void Start()
-    {
-        memory = new LastRoundMemory();
     }
 
     public void Interaction(Interaction interaction)
@@ -355,7 +351,7 @@ public class MonsterAI : MonoBehaviour
         // Update the memory here
     }
 
-    private void Behavior()
+    public void Behavior()
     {
         // this needs to be checked before movement
 
@@ -390,6 +386,20 @@ public class MonsterAI : MonoBehaviour
                 Relentless();
                 break;
         }
+        if (GameManager.instance.debugMode) DeclareDestinationValue();
+    }
+
+    private void DeclareDestinationValue()
+    {
+        GridSpaceAssessment gsa = AssessmentByNode(Destination);
+        Debug.Log($"I am moving to {Destination.coordinate}, which has a danger value of {gsa.DangerValue}");
+        foreach (Node n in CombatGrid.grid)
+        {
+            if (AssessmentByNode(n) == null) continue;
+            float d = AssessmentByNode(n).DangerValue;
+            float t = Mathf.InverseLerp(dangerMin, dangerMax, d);
+            n.SetNodeColor(CombatGrid.instance.heatmap.Evaluate(t));
+        }
     }
 
     #region Behaviors
@@ -399,7 +409,7 @@ public class MonsterAI : MonoBehaviour
     }
     private void Annoying()
     {
-        if(memory.DamageDealt > 0)
+        if(character.memory.DamageDealt > 0)
         {
             Destination = SafestNode;
         }
@@ -410,9 +420,9 @@ public class MonsterAI : MonoBehaviour
     }
     private void Cunning()
     {
-        if (memory.Healers.Count > 0)
+        if (character.memory.Healers.Count > 0)
         {
-            Destination = SafestMeleeWithSpecificCharacterNode(memory.Healers[0]);
+            Destination = SafestMeleeWithSpecificCharacterNode(character.memory.Healers[0]);
         }
         else
         {
@@ -429,7 +439,7 @@ public class MonsterAI : MonoBehaviour
     }
     private void PainAverse()
     {
-        if (memory.DamageTaken > 0)
+        if (character.memory.DamageTaken > 0)
         {
             Destination = SafestNode;
         }

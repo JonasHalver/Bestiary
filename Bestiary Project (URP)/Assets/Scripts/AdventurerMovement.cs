@@ -17,8 +17,18 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     public Node currentNode;
     public Node targetNode, previousNode;
     private Node checkNode;
+    private int movementLeft;
 
-    public int movementLeft;
+    public int MovementLeft
+    {
+        get
+        {
+            int movementMod = 0 - ((character.Conditions.ContainsKey(Action.Condition.SlowMonster) || character.Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
+            movementLeft = Mathf.Max(1, character.stats.movement + movementMod);
+            if (character.Conditions.ContainsKey(Action.Condition.RootMonster) || character.Conditions.ContainsKey(Action.Condition.RootMerc)) movementLeft = 0;
+            return movementLeft;
+        }
+    }
     public int movementCost;
 
     public List<Node> destinationNodes = new List<Node>();
@@ -105,7 +115,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 {
                     foreach (Node n in destinationNodes)
                     {
-                        n.MovementHightlight();
+                       // n.MovementHightlight();
                     }
                 }
                 else currentNode.ErrorHighlight();
@@ -187,15 +197,12 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
     public void StartOfRound()
     {
-        int movementMod = 0 - ((character.Conditions.ContainsKey(Action.Condition.SlowMonster) || character.Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
-        movementLeft = Mathf.Max(1, character.stats.movement + movementMod);
-        if (character.Conditions.ContainsKey(Action.Condition.RootMonster) || character.Conditions.ContainsKey(Action.Condition.RootMerc)) movementLeft = 0;
         destinationNodes.Clear();
     }
 
     public void Selected()
     {
-        if (destinationNodes.Count == 0) destinationNodes = GenerateDestinationList(movementLeft);
+        if (destinationNodes.Count == 0) destinationNodes = GenerateDestinationList(MovementLeft);
         currentNode.NodeSelected();
         transform.position = Input.mousePosition + pickupOffset;
         Node c = CurrentNode();
@@ -263,8 +270,8 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         int movementMod = 0 - (character.Conditions.ContainsKey(Action.Condition.SlowMonster) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
         int currentMovement = character.stats.entry.guess.movement + movementMod;
         List<Node> destinations = new List<Node>();
-        if (!character.Conditions.ContainsKey(Action.Condition.RootMonster))
-            destinations = GenerateDestinationList(movementLeft);
+        /*if (!character.Conditions.ContainsKey(Action.Condition.RootMonster))
+            destinations = GenerateDestinationList(MovementLeft);
         if (destinations.Count == 0) targetNode = currentNode;
         
         else 
@@ -279,8 +286,9 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             }
         }
         Node destination = destinations.Count > 0 ? destinations[UnityEngine.Random.Range(0, destinations.Count)] : currentNode;
-        destinationNodes = destinations;
-        targetNode = destination;
+        destinationNodes = destinations;*/
+        character.AI.Behavior();
+        targetNode = character.AI.Destination;
         destinations.Clear();
         if (!character.Conditions.ContainsKey(Action.Condition.RootMonster)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;

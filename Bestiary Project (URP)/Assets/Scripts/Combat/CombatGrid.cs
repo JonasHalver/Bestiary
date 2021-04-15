@@ -23,6 +23,8 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     private Dictionary<Character, Vector2> savedPositions = new Dictionary<Character, Vector2>();
     public static bool displayingThePast;
 
+    public Gradient heatmap;
+
     private void Awake()
     {
         instance = this;
@@ -920,6 +922,11 @@ public class Node
     public void NodeSelected()
     {
         img.color = CombatGrid.instance.characterHighlight;
+    }
+
+    public void SetNodeColor(Color c)
+    {
+        img.color = c;
     }
     
     public void NodeNeighborHighlight()

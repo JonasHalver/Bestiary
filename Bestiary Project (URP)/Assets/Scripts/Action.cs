@@ -26,7 +26,6 @@ public class Action : ScriptableObject
         get
         {
             bool output = Actor.actionCooldowns[this] > 0;
-            if (output) Debug.Log($"{actionName} is on cooldown for {Actor.actionCooldowns[this]} turns");
             return Actor.actionCooldowns[this] > 0;
         }
     }

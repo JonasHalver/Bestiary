@@ -54,7 +54,7 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
   - output: 3
-    value: 1
+    value: 3
     condition: 11
     critical: 0
     damageType: 0
@@ -65,7 +65,7 @@ MonoBehaviour:
   secondaryTargetGroup: 1
   secondaryOutput:
   - output: 3
-    value: 1
+    value: 3
     condition: 0
     critical: 0
     damageType: 0

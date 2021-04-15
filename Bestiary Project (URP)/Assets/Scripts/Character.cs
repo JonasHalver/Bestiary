@@ -31,6 +31,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public event System.Action<Buff> AcquiredBuff;
     public event System.Action<Buff> LostBuff;
 
+    public MonsterAI AI
+    {
+        get;set;
+    }
+
     //public List<Debuff.ControlType> conditions = new List<Debuff.ControlType>();
     public Dictionary<Action.Condition, int> Conditions
     {
@@ -143,6 +148,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         memory = new LastRoundMemory();
         characterIcon.sprite = stats.characterIcon;
         characterIcon.color = stats.characterIconColor;
+        if(stats.characterType == CharacterStats.CharacterTypes.NPC)
+        {
+            AI = gameObject.AddComponent<MonsterAI>();
+            AI.character = this;
+        }
     }
 
     void UpdatePosition()
@@ -446,8 +456,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         {
             target = interaction.primaryTarget.Character.movement.currentNode;
         }
-        Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized * (interaction.effect.towards ? 1 : -1);
+        Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized;
+        dir = new Vector2(Mathf.Round(dir.x), Mathf.Round(dir.y)) * (interaction.effect.towards ? 1 : -1);
         Vector2 move = Vector2.zero, destination = Vector2.zero;
+        Node checkNode = movement.currentNode, destinationNode = movement.currentNode;
+        Character lastImpact = null;
+        bool flag = false;
         for (int i = interaction.effect.value; i > -1; i--)
         {
             move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
@@ -456,11 +470,32 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             {
                 if (destination.y < 5 && destination.y > -1)
                 {
-                    break;
+                    checkNode = CombatGrid.grid[(int)destination.x, (int)destination.y];
+                    if (checkNode.occupant != null)
+                    {
+                        flag = false;
+                        if (checkNode.occupant == this) 
+                        { 
+                            break;
+                        }
+                        destinationNode = movement.currentNode;
+                        lastImpact = checkNode.occupant;
+                    }
+                    else
+                    {
+                        flag = true;
+                        destinationNode = checkNode;
+                    }
                 }
             }
         }        
-        movement.MoveByAction(CombatGrid.grid[(int)destination.x, (int)destination.y]);
+        movement.MoveByAction(destinationNode);
+        if (lastImpact != null)
+        {
+            print($"{stats.characterName} impacted {lastImpact.stats.characterName}");
+            lastImpact.ReceiveHit(DamageTypes.Crushing);
+            ReceiveHit(DamageTypes.Crushing);
+        }
     }
     
 
