@@ -32,7 +32,7 @@ public class Action : ScriptableObject
 
     public enum ActionType { Attack, Buff, Healing, Debuff, AttackDebuff, HealingBuff }
     
-    public enum Position { NearEnemy, NotNearEnemy, NearAlly, NotNearAlly, Alone, Irrelevant }
+    public enum Position { NearOneEnemy, NearManyEnemies, NotNearEnemy, NearOneAlly, NearManyAllies, NotNearAlly, NearAlliesAndEnemies, Alone, Irrelevant }
     
     /*
     public Position position = Position.Irrelevant;
@@ -148,16 +148,17 @@ public class Action : ScriptableObject
         { Condition.Poison, Character.DamageTypes.Poison },
     };
 
-    public enum Context { NearAlly, NotNearAlly, NearEnemy, NotNearEnemy, Alone, 
+    public enum Context { NearOneAlly, NearManyAllies, NotNearAlly, NearOneEnemy, NearManyEnemies, NotNearEnemy, NearAlliesAndEnemies, Alone, 
         TookDamage, TookDamageOfType, TookNoDamage, DealtDamage, ReceivedHealing, ReceivedSpecificCondition, ReceivedBuff, ReceivedDebuff,
         SelfHurt, EnemyHurt, AllyHurt, SelfHasSpecificCondition, EnemyHasSpecificCondition, AllyHasSpecificCondition, SelfBeingAttacked, SelfNotBeingAttacked }
     public static readonly Dictionary<Context, List<Context>> InvalidContextPairs = new Dictionary<Context, List<Context>>()
     {
-        { Context.Alone, new List<Context>(){Context.NearAlly, Context.NearEnemy, Context.NotNearAlly, Context.NotNearEnemy} },
-        { Context.NearEnemy, new List<Context>(){Context.NotNearEnemy, Context.Alone} },
-        { Context.NearAlly, new List<Context>(){Context.NotNearAlly, Context.Alone} },
-        { Context.NotNearEnemy, new List<Context>(){Context.NearEnemy, Context.Alone} },
-        { Context.NotNearAlly, new List<Context>(){Context.NearAlly, Context.Alone} },
+        { Context.Alone, new List<Context>(){Context.NearOneAlly, Context.NearOneEnemy, Context.NearAlliesAndEnemies, Context.NearManyEnemies, Context.NearManyAllies, Context.NotNearAlly, Context.NotNearEnemy} },
+        { Context.NearOneEnemy, new List<Context>(){Context.NotNearEnemy, Context.Alone, Context.NearManyEnemies} },
+        { Context.NearManyEnemies, new List<Context>(){Context.NotNearEnemy, Context.Alone} },
+        { Context.NearOneAlly, new List<Context>(){Context.NotNearAlly, Context.Alone, Context.NearManyAllies} },
+        { Context.NotNearEnemy, new List<Context>(){Context.NearOneEnemy, Context.NearManyEnemies, Context.Alone} },
+        { Context.NotNearAlly, new List<Context>(){Context.NearOneAlly, Context.NearManyAllies, Context.Alone} },
         { Context.TookDamage, new List<Context>(){Context.TookNoDamage} },
         { Context.TookDamageOfType, new List<Context>(){Context.TookNoDamage} },
         { Context.SelfBeingAttacked, new List<Context>(){Context.SelfNotBeingAttacked} },
@@ -1041,17 +1042,26 @@ public class ContextInfo
         switch (context)
         {
             // Positions
-            case Action.Context.NearAlly:
-                output = bpi.alliesInMelee.Count >= value;
+            case Action.Context.NearOneAlly:
+                output = bpi.alliesInMelee.Count == 1;
                 break;
-            case Action.Context.NearEnemy:
-                output = bpi.enemiesInMelee.Count >= value;
+            case Action.Context.NearOneEnemy:
+                output = bpi.enemiesInMelee.Count == 1;
                 break;
             case Action.Context.NotNearAlly:
                 output = bpi.alliesInMelee.Count == 0;
                 break;
             case Action.Context.NotNearEnemy:
                 output = bpi.enemiesInMelee.Count == 0;
+                break;
+            case Action.Context.NearManyAllies:
+                output = bpi.alliesInMelee.Count > 1;
+                break;
+            case Action.Context.NearManyEnemies:
+                output = bpi.enemiesInMelee.Count > 1;
+                break;
+            case Action.Context.NearAlliesAndEnemies:
+                output = bpi.enemiesInMelee.Count > 0 && bpi.alliesInMelee.Count > 0;
                 break;
             case Action.Context.Alone:
                 output = bpi.alliesInMelee.Count == 0 && bpi.enemiesInMelee.Count == 0;
