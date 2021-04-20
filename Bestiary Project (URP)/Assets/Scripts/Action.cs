@@ -87,7 +87,7 @@ public class Action : ScriptableObject
 
     public bool isPass = false;
     public enum Condition { Acid, Armor, Bleeding, Burning, DisorientMonster, DisorientMerc, Dodge, FearMonster, FearMerc, 
-        Haste, Poison, Regeneration, RootMonster, RootMerc, SlowMonster, SlowMerc, StrengthenSelf, StrengthenOther, Stun, TauntMonster, TauntMerc, Vulnerable, Weaken }
+        Haste, Poison, Regeneration, RootMonster, RootMerc, SlowMonster, SlowMerc, StrengthenSelf, StrengthenOther, Stun, TauntMonster, TauntMerc, Vulnerable, Weaken, None }
     public static readonly Dictionary<Condition, bool> ConditionIsBuff = new Dictionary<Condition, bool>()
     {
         { Condition.Acid, false },
@@ -157,6 +157,7 @@ public class Action : ScriptableObject
         { Context.NearOneEnemy, new List<Context>(){Context.NotNearEnemy, Context.Alone, Context.NearManyEnemies} },
         { Context.NearManyEnemies, new List<Context>(){Context.NotNearEnemy, Context.Alone} },
         { Context.NearOneAlly, new List<Context>(){Context.NotNearAlly, Context.Alone, Context.NearManyAllies} },
+        { Context.NearManyAllies, new List<Context>(){Context.NotNearAlly, Context.NearOneAlly, Context.Alone} },
         { Context.NotNearEnemy, new List<Context>(){Context.NearOneEnemy, Context.NearManyEnemies, Context.Alone} },
         { Context.NotNearAlly, new List<Context>(){Context.NearOneAlly, Context.NearManyAllies, Context.Alone} },
         { Context.TookDamage, new List<Context>(){Context.TookNoDamage} },
@@ -1032,9 +1033,39 @@ public class ContextInfo
     [HideInInspector] public Character actor;
     public Action.Context context;
     public int value;
-    public Action.Condition condition;
-    public Character.DamageTypes damageType;
+    public Action.Condition condition = Action.Condition.None;
+    public Character.DamageTypes damageType = Character.DamageTypes.None;
     [HideInInspector]public Entry.Difficulty difficulty;
+
+    public bool Match(ContextInfo comparison)
+    {
+        bool flag = false;
+        if (context == comparison.context)
+        {
+            switch (context)
+            {
+                default:
+                    flag = true;
+                    break;
+                case Action.Context.AllyHasSpecificCondition:
+                case Action.Context.EnemyHasSpecificCondition:
+                case Action.Context.ReceivedSpecificCondition:
+                case Action.Context.SelfHasSpecificCondition:
+                    if (condition == comparison.condition) flag = true;
+                    break;
+                case Action.Context.TookDamageOfType:
+                    if (damageType == comparison.damageType) flag = true;
+                    break;
+            }
+        }
+        return flag;
+    }
+    public void ResetInformation()
+    {
+        value = 0;
+        condition = Action.Condition.None;
+        damageType = Character.DamageTypes.None;
+    }
 
     public bool ContextValid(BattlefieldPositionInfo bpi)
     {
@@ -1142,12 +1173,45 @@ public class OutputInfo
     [Tooltip("The number of condition stacks, spaces moved, or the healing value.")]
     public int value;
     [Tooltip("The condition applied, if any.")]
-    public Action.Condition condition;
+    public Action.Condition condition = Action.Condition.None;
     [Tooltip("The damage dealt by the attack is critical. Does not apply to healing or conditions")]
     public bool critical;
     [Tooltip("The damage type associated with the attack, not the condition. Set to healing if healing.")]
-    public Character.DamageTypes damageType;
+    public Character.DamageTypes damageType = Character.DamageTypes.None;
     [Tooltip("Whether movement moves the character towards or away from the target/user.")]
     public bool towards;
     [HideInInspector]public Entry.Difficulty difficulty;
+
+    public bool Match(OutputInfo comparison)
+    {
+        bool flag = false;
+        if (comparison.output == output)
+        {
+            switch (output)
+            {
+                case Action.Output.Damage:
+                    if (damageType == comparison.damageType && critical == comparison.critical) flag = true;
+                    break;
+                case Action.Output.Healing:
+                    if (value == comparison.value) flag = true;
+                    break;
+                case Action.Output.Condition:
+                    if (condition == comparison.condition && value == comparison.value) flag = true;
+                    break;
+                case Action.Output.Movement:
+                    if (value == comparison.value && towards == comparison.towards) flag = true;
+                    break;
+            }
+        }
+        return flag;
+    }
+
+    public void ResetInformation()
+    {
+        value = 0;
+        condition = Action.Condition.None;
+        critical = false;
+        damageType = Character.DamageTypes.None;
+        towards = false;
+    }
 }

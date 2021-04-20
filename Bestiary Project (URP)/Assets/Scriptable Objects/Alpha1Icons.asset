@@ -12,33 +12,161 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fb4e6687e6894647bc6bd1a24132d90, type: 3}
   m_Name: Alpha1Icons
   m_EditorClassIdentifier: 
-  cutting: {fileID: 21300000, guid: 143fd7492fcc0f74fa149445a747bbda, type: 3}
-  crushing: {fileID: 21300000, guid: f64d81efd939e434ab4cf42f711c3ce1, type: 3}
-  piercing: {fileID: 21300000, guid: 21592b3de4cfe344a80849e28aa25cd5, type: 3}
-  fire: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
-  acid: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
-  cold: {fileID: 21300000, guid: d0ee5cb8f7048fa498dfc6fd12bf2d24, type: 3}
-  poison: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
-  healing: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
-  self: {fileID: 21300000, guid: 5783e03fd8559c54a92232c621c4d103, type: 3}
-  ranged: {fileID: 21300000, guid: 4d446ac1d2dc2504aaf6d5e4714a9be8, type: 3}
-  meleeDia: {fileID: 21300000, guid: 1c9f49c12f4957343bb2c8cbd6a85fe2, type: 3}
-  meleeVert: {fileID: 21300000, guid: dcefbc256f137464eb29e67aa6f10dce, type: 3}
-  arcDia: {fileID: 21300000, guid: 85e126c87f793964396752c9a8aa5320, type: 3}
-  arcVert: {fileID: 21300000, guid: 6a7cbf853464f2e4eba6084b762eb71e, type: 3}
-  coneDia: {fileID: 21300000, guid: aa9d3281b0407994c9b3dd61ce422d1d, type: 3}
-  coneVert: {fileID: 21300000, guid: 18734afbe0b9a55469c3ce96a8f45d23, type: 3}
-  lineDia: {fileID: 21300000, guid: 8372607f2998045499593661bdc38d42, type: 3}
-  lineVert: {fileID: 21300000, guid: a10663f5f8ed93540bc5910eeef35641, type: 3}
-  box: {fileID: 21300000, guid: eec07c9645b008a41b615aba512ede64, type: 3}
-  selfBox: {fileID: 21300000, guid: b9c893e68c38363499c07668c573ff4f, type: 3}
-  all: {fileID: 21300000, guid: f2f27785fb659ea498673091e4a30e62, type: 3}
-  dodge: {fileID: 21300000, guid: b45ab7e73521dac4d92e2b939e84480f, type: 3}
-  regeneration: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
-  armor: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
-  burning: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
-  acidDebuff: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
-  poisonDebuff: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
-  root: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
-  slow: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
-  blind: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
+  damageTypes:
+  - icon: {fileID: 21300000, guid: 143fd7492fcc0f74fa149445a747bbda, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: f64d81efd939e434ab4cf42f711c3ce1, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 2
+    shape: 0
+  - icon: {fileID: 21300000, guid: 21592b3de4cfe344a80849e28aa25cd5, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 1
+    shape: 0
+  - icon: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 3
+    shape: 0
+  - icon: {fileID: 21300000, guid: d0ee5cb8f7048fa498dfc6fd12bf2d24, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 5
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 4
+    shape: 0
+  - icon: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 6
+    shape: 0
+  - icon: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 7
+    shape: 0
+  conditions:
+  - icon: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 0
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
+    iconColor: {r: 1, g: 0.57161915, b: 0, a: 1}
+    condition: 1
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6be134b70141d144998154c3c55e2f1f, type: 3}
+    iconColor: {r: 1, g: 0, b: 0, a: 1}
+    condition: 2
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 3
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
+    iconColor: {r: 0.97646475, g: 0, b: 1, a: 1}
+    condition: 4
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
+    iconColor: {r: 0.97647065, g: 0, b: 1, a: 1}
+    condition: 5
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: b45ab7e73521dac4d92e2b939e84480f, type: 3}
+    iconColor: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
+    condition: 6
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
+    iconColor: {r: 0.99260664, g: 0, b: 1, a: 1}
+    condition: 7
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
+    iconColor: {r: 0.9921569, g: 0, b: 1, a: 1}
+    condition: 8
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 50a4ca767cffdcd4a83bb5f4b621fcd9, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 9
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
+    iconColor: {r: 1, g: 1, b: 1, a: 1}
+    condition: 10
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
+    iconColor: {r: 0.09112701, g: 0.7735849, b: 0, a: 1}
+    condition: 11
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
+    iconColor: {r: 0, g: 1, b: 0.31401587, a: 1}
+    condition: 12
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
+    iconColor: {r: 0, g: 1, b: 0.3137255, a: 1}
+    condition: 13
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
+    iconColor: {r: 0, g: 0.821769, b: 1, a: 1}
+    condition: 14
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
+    iconColor: {r: 0, g: 0.8235295, b: 1, a: 1}
+    condition: 15
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: a1b1d324e3b5d024697bcca775eee114, type: 3}
+    iconColor: {r: 0.3295524, g: 1, b: 0, a: 1}
+    condition: 16
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: a1b1d324e3b5d024697bcca775eee114, type: 3}
+    iconColor: {r: 0.32941177, g: 1, b: 0, a: 1}
+    condition: 0
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: ee4d5b265845dbc46ae256d02330602c, type: 3}
+    iconColor: {r: 1, g: 0, b: 0, a: 1}
+    condition: 18
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
+    iconColor: {r: 1, g: 0, b: 0, a: 1}
+    condition: 19
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
+    iconColor: {r: 1, g: 0, b: 0, a: 1}
+    condition: 20
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
+    iconColor: {r: 1, g: 0, b: 0.15690327, a: 1}
+    condition: 21
+    damageType: 0
+    shape: 0
+  - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
+    iconColor: {r: 0, g: 0.74711776, b: 1, a: 1}
+    condition: 22
+    damageType: 0
+    shape: 0
+  shapes: []

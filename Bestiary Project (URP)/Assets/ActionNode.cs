@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
 {
@@ -14,12 +15,27 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private Transform window;
     private bool dragging = false;
     public Transform nodeConnectRight, nodeConnectLeft;
+    public GameObject attn;
+    private SimpleTooltipSpawner attnTooltip;
     private Animator animator;
 
-    public enum NodeType { Context, Output }
+    public string nodeName;
+    public string nodeDescription;
+
+    public enum NodeType { Context, Output, Shape }
     public NodeType nodeType = NodeType.Context;
     public OutputInfo actionOutput;
     public ContextInfo actionContext;
+
+    public bool requiresEditing;
+    public bool hasBeenEdited;
+    private bool error;
+
+    public GameObject contextEditPrefab, outputEditPrefab;
+
+    public static event System.Action NodeChanged;
+
+    public Color bgShape, bgContext, bgOutput;
 
     public Animator Animator
     {
@@ -39,15 +55,33 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     {
         get
         {
-            return transform.parent.parent.name.Contains("Edit");
+            Transform output = null;
+            if (!selected) output = transform.parent.parent.parent.parent;
+            else if (originalWindow) return originalWindow.parent.parent.name.Contains("Edit");
+            if (output) return output.name.Contains("Edit");
+            else if (originalWindow) return originalWindow.parent.parent.name.Contains("Edit");
+            else return false;
         }
     }
 
     private void Awake()
     {
         canvas = GetComponentInParent<Canvas>().transform;
-        
-        
+        Color c = Color.white;
+        switch (nodeType)
+        {
+            case NodeType.Context:
+                c = bgContext;
+                break;
+            case NodeType.Shape:
+                c = bgShape;
+                break;
+            case NodeType.Output:
+                c = bgOutput;
+                break;
+        }
+        transform.Find("Background").GetComponent<Image>().color = c;
+        attnTooltip = attn.GetComponent<SimpleTooltipSpawner>();
     }    
 
     // Update is called once per frame
@@ -55,6 +89,12 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     {
         if (selected) Selected();
         Animator.SetFloat("Blend", blend);
+        if (InEditor && !error)
+        {
+            attn.SetActive(requiresEditing && !hasBeenEdited);
+        }
+        else if (InEditor && error) attn.SetActive(true);
+        else attn.SetActive(false);
     }
 
     private void Selected()
@@ -73,7 +113,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         {
             if (hit.gameObject.CompareTag("Window"))
             {
-                return hit.gameObject.transform.Find("Node Holder");
+                return hit.gameObject.transform.Find("Node Holder").Find("Viewport").Find("Content");
             }
         }
         return null;
@@ -108,6 +148,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private void OnSelect()
     {
         selected = true;
+        GetComponent<Image>().raycastTarget = false;
         originalLocation = transform.position;
         originalWindow = transform.parent;
         transform.parent = canvas;
@@ -118,6 +159,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private void OnDeselect()
     {
         selected = false;
+        GetComponent<Image>().raycastTarget = true;
         if (window == null)
         {
             transform.parent = originalWindow;
@@ -129,8 +171,16 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         window = null;
         LineManager.Instance.MovingNode = false;
-        StartCoroutine(MoveConnectors(!InEditor));
-        if (!InEditor) LineManager.Instance.SeverConnections(this);
+        // REWRITE THIS TO UPDATE THE ICON INSTEAD / OTHER JUICE
+        // StartCoroutine(MoveConnectors(!InEditor));
+        if (!InEditor)
+        {
+            LineManager.Instance.SeverConnections(this);
+            actionContext.ResetInformation();
+            actionOutput.ResetInformation();
+            hasBeenEdited = false;
+        }
+        else NodeChanged.Invoke();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -189,6 +239,55 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private void EditNode()
     {
         print("Open editing");
+        GameObject newWindow;
+        switch (nodeType)
+        {
+            case NodeType.Context:
+                newWindow = Instantiate(contextEditPrefab, canvas);
+                ContextEdit cEdit = newWindow.GetComponent<ContextEdit>();
+                cEdit.node = this;
+                cEdit.ShowEditing();
+                break;
+            case NodeType.Output:
+                newWindow = Instantiate(outputEditPrefab, canvas);
+                OutputEdit oEdit = newWindow.GetComponent<OutputEdit>();
+                oEdit.node = this;
+                oEdit.ShowEditing();
+                break;
+        }
+    }
+    public void EndEdit(bool changesMade)
+    {
+        if (!hasBeenEdited)
+            hasBeenEdited = changesMade;
+        NodeChanged.Invoke();
+    }
+
+    public void Incompatible(List<Action.Context> contexts)
+    {
+        error = true;
+        attnTooltip.type = Tooltips.TooltipType.Custom;
+        attnTooltip.tooltipString = $"This node is in conflict with: ";
+        for (int i = 0; i < contexts.Count; i++)
+        {
+            if (contexts.Count == 1)
+            {
+                attnTooltip.tooltipString += $"{contexts[i]}.";
+                break;
+            }
+            if (i == contexts.Count - 1)
+            {
+                attnTooltip.tooltipString += $"and {contexts[i]}.";
+            }
+            else
+            {
+                attnTooltip.tooltipString += $"{contexts[i]}, ";
+            }
+        }
+    }
+    public void EndError()
+    {
+        error = false;
     }
 }
 

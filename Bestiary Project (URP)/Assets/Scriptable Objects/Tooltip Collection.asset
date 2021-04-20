@@ -22,12 +22,36 @@ MonoBehaviour:
   - Poison damage.
   - Healing.
   shapes:
-  - <b>All:</b> This action hits all characters within the same target group.
-  - <b>Arc:</b> This action hits three adjacent spaces within melee range.
-  - <b>Cone:</b> This action hits an expanding cone shape originating from the character.
-  - <b>Line:</b> This action hits each space in a straight line from the user.
-  - <b>Melee:</b> This action hits a character on an adjacent space.
-  - <b>Self:</b> This action hits the user.
-  - <b>Ranged:</b> This action hits another character at range.
-  - <b>Pulse:</b> This action hits all adjacent spaces.
-  - <b>Box:</b> This action hits all spaces in a 3x3 field.
+  - <b>Melee:</b>
+  - <b>Ranged:</b>
+  - <b>Self:</b>
+  - <b>Arc:</b>
+  - <b>Cone:</b>
+  - <b>Line:</b>
+  - <b>Area:</b>
+  - <b>Pulse:</b>
+  - <b>All:</b>
+  conditions:
+  - <b>Acid:</b>
+  - <b>Armor:</b>
+  - <b>Bleeding:</b>
+  - <b>Burning:</b>
+  - <b>Disorient:</b>
+  - <b>Disorient:</b>
+  - <b>Dodge:</b>
+  - <b>Fear:</b>
+  - <b>Fear:</b>
+  - <b>Haste:</b>
+  - <b>Poison:</b>
+  - <b>Regeneration:</b>
+  - <b>Root:</b>
+  - <b>Root:</b>
+  - <b>Slow:</b>
+  - <b>Slow:</b>
+  - <b>Strengthen:</b>
+  - <b>Strengthen:</b>
+  - <b>Stun:</b>
+  - <b>Taunt:</b>
+  - <b>Taunt:</b>
+  - <b>Vulnerable:</b>
+  - <b>Weaken:</b>

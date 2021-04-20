@@ -132,14 +132,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (!combatStartSequence) CombatStartSequence();
-        else
-        {
-            if (!debugMode) GameStateCheck();
-        }
-        if (enemiesWon || alliesWon) GameOver();
+       // if (!combatStartSequence) CombatStartSequence();
+       // else
+       // {
+       //     if (!debugMode) GameStateCheck();
+       // }
+       // if (enemiesWon || alliesWon) GameOver();
 
-        GameStateMachine();
+       // GameStateMachine();
         UpdateWindowsList();
     }
 
@@ -235,6 +235,7 @@ public class GameManager : MonoBehaviour
 
     public void CloseFocusedWindow()
     {
+        focusedWindow.SendMessage("CloseWindow");
         focusedWindow.SetActive(false);
         openWindows.Remove(focusedWindow);
         if (openWindows.Count > 0) focusedWindow = openWindows[openWindows.Count-1];
@@ -342,33 +343,9 @@ public class GameManager : MonoBehaviour
     public static Sprite Icon(Character.DamageTypes damageType)
     {
         Sprite icon = null;
-        switch (damageType)
-        {
-            case Character.DamageTypes.Cutting:
-                icon = instance.currentIconCollection.cutting;
-                break;
-            case Character.DamageTypes.Piercing:
-                icon = instance.currentIconCollection.piercing;
-                break;
-            case Character.DamageTypes.Crushing:
-                icon = instance.currentIconCollection.crushing;
-                break;
-            case Character.DamageTypes.Fire:
-                icon = instance.currentIconCollection.fire;
-                break;
-            case Character.DamageTypes.Cold:
-                icon = instance.currentIconCollection.cold;
-                break;
-            case Character.DamageTypes.Acid:
-                icon = instance.currentIconCollection.acid;
-                break;
-            case Character.DamageTypes.Poison:
-                icon = instance.currentIconCollection.cutting;
-                break;
-            case Character.DamageTypes.Healing:
-                icon = instance.currentIconCollection.healing;
-                break;
-        }
+
+        icon = instance.currentIconCollection.GetIcon(damageType).icon;
+
         return icon;
     }
 }

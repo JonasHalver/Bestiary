@@ -11,8 +11,39 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
     public string tooltipString;
     private GameObject tooltip;
 
+    public Tooltips.TooltipType type = Tooltips.TooltipType.Custom;
+
+    public Character.DamageTypes damageType;
+    public Action.Condition condition;
+    public Action.Shape shape;
+
+    private ActionNode node;
+    private void Awake()
+    {
+        node = GetComponent<ActionNode>();
+        if (node)
+        {
+            type = Tooltips.TooltipType.Custom;
+            tooltipString = $"<b>{node.nodeName}:</b> {node.nodeDescription}";
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
+        switch (type)
+        {
+            case Tooltips.TooltipType.Custom:
+                break;
+            case Tooltips.TooltipType.DamageType:
+                tooltipString = GameManager.instance.currentTooltipCollection.GetString(damageType);
+                break;
+            case Tooltips.TooltipType.Shape:
+                tooltipString = GameManager.instance.currentTooltipCollection.GetString(shape);
+                break;
+            case Tooltips.TooltipType.Condition:
+                tooltipString = GameManager.instance.currentTooltipCollection.GetString(condition);
+                break;
+        }
         tooltip = Instantiate(tooltipPrefab);
         SimpleTooltip stt = tooltip.GetComponent<SimpleTooltip>();
         stt.tooltipString = tooltipString;

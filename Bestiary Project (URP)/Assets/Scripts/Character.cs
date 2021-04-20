@@ -10,7 +10,7 @@ using UnityEngine.EventSystems;
 [RequireComponent(typeof(ConditionManager))]
 public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    public enum DamageTypes { Cutting, Piercing, Crushing, Fire, Acid, Cold, Poison, Healing }
+    public enum DamageTypes { Cutting, Piercing, Crushing, Fire, Acid, Cold, Poison, Healing, None }
     public CharacterStats stats;
     public float damageTaken = 0;
     public float currentHitpoints;
