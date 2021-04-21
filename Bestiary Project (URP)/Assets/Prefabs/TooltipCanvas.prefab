@@ -101,6 +101,7 @@ MonoBehaviour:
   modifier: {x: 0, y: 0}
   tooltipText: {fileID: 4946799869097981199}
   mousepos: {x: 0, y: 0}
+  spawn: {fileID: 0}
 --- !u!1 &4946799869097981201
 GameObject:
   m_ObjectHideFlags: 0

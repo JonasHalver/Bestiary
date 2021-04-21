@@ -40,8 +40,8 @@ MonoBehaviour:
     condition: 21
     damageType: 0
     difficulty: 0
-  primaryTargeting: 0
-  primaryShape: 0
+  primaryTargeting: 1
+  primaryShape: 4
   primaryTargetGroup: 0
   primaryOutput:
   - output: 0
@@ -54,4 +54,11 @@ MonoBehaviour:
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
-  secondaryOutput: []
+  secondaryOutput:
+  - output: 1
+    value: 2
+    condition: 0
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0

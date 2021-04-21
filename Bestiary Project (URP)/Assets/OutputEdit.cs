@@ -63,6 +63,7 @@ public class OutputEdit : MonoBehaviour
                         if (b.GetComponent<SimpleTooltipSpawner>() && b.GetComponent<SimpleTooltipSpawner>().damageType == node.actionOutput.damageType)
                         {
                             b.interactable = false;
+                            damageType = node.actionOutput.damageType;
                         }
                     }
                 }
@@ -82,6 +83,7 @@ public class OutputEdit : MonoBehaviour
                         if (b.GetComponent<SimpleTooltipSpawner>() && b.GetComponent<SimpleTooltipSpawner>().condition == node.actionOutput.condition)
                         {
                             b.interactable = false;
+                            condition = node.actionOutput.condition;
                         }
                     }
                 }

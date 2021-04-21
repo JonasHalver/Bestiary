@@ -24,7 +24,7 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
         if (node)
         {
             type = Tooltips.TooltipType.Custom;
-            tooltipString = $"<b>{node.nodeName}:</b> {node.nodeDescription}";
+            tooltipString = $"<b><i>{node.nodeType}</i></b>" + System.Environment.NewLine + $"<b>{node.nodeName}:</b> {node.nodeDescription}";
         }
     }
 
@@ -60,5 +60,11 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         if (tooltip != null)
             Destroy(tooltip);
+    }
+
+    public void RefreshTooltip()
+    {
+        Destroy(tooltip);
+        OnPointerEnter(new PointerEventData(EventSystem.current));
     }
 }

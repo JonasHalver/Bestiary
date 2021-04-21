@@ -12,7 +12,7 @@ public class SecondaryWindowExpansion : MonoBehaviour, IPointerEnterHandler, IPo
     public bool height = true;
     public bool onClick = true;
     private bool stop = false;
-    public GameObject minimize;
+    public List<GameObject> objectsToActivateOnExpand = new List<GameObject>();
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -66,8 +66,10 @@ public class SecondaryWindowExpansion : MonoBehaviour, IPointerEnterHandler, IPo
     IEnumerator FullExpandHeight(bool expand)
     {
         stop = true;
-        minimize.SetActive(expand);
-
+        for (int i = 0; i < objectsToActivateOnExpand.Count; i++)
+        {
+            objectsToActivateOnExpand[i].SetActive(expand);
+        }
         yield return null;
         stop = false;
         fullyExpanded = expand;
@@ -98,7 +100,10 @@ public class SecondaryWindowExpansion : MonoBehaviour, IPointerEnterHandler, IPo
     IEnumerator FullExpandWidth(bool expand)
     {
         stop = true;
-        minimize.SetActive(expand);
+        for (int i = 0; i < objectsToActivateOnExpand.Count; i++)
+        {
+            objectsToActivateOnExpand[i].SetActive(expand);
+        }
         yield return null;
         stop = false;
         fullyExpanded = expand;

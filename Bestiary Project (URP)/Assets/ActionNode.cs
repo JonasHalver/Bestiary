@@ -24,8 +24,10 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
 
     public enum NodeType { Context, Output, Shape }
     public NodeType nodeType = NodeType.Context;
+    public enum ToggleType { Targeting, TargetGroup, Cooldown }
     public OutputInfo actionOutput;
     public ContextInfo actionContext;
+    public Action.Shape actionShape;
 
     public bool requiresEditing;
     public bool hasBeenEdited;
@@ -88,6 +90,10 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     void Update()
     {
         if (selected) Selected();
+        else
+        {
+            if (transform.parent.name != "Content") transform.parent = originalWindow;
+        }
         Animator.SetFloat("Blend", blend);
         if (InEditor && !error)
         {
@@ -158,17 +164,67 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     }
     private void OnDeselect()
     {
-        selected = false;
-        GetComponent<Image>().raycastTarget = true;
-        if (window == null)
+        if (nodeType == NodeType.Output || nodeType == NodeType.Shape)
         {
-            transform.parent = originalWindow;
-            transform.position = originalLocation;
+            if (window != null)
+            {
+                if (window.parent.parent.parent.name.Contains("Edit"))
+                {
+                    if (originalWindow.parent.parent.parent.name.Contains("Collection"))
+                    {
+                        GameObject clone = Instantiate(gameObject, transform.position, Quaternion.identity, window);
+                        clone.GetComponent<Image>().raycastTarget = true;
+                        transform.parent = originalWindow;
+                        transform.position = originalLocation;
+                    }
+                    else if (originalWindow.parent.parent.parent.name.Contains("Discard"))
+                    {
+                        transform.parent = window;
+                    }
+                    else
+                    {
+                        transform.parent = window;
+                    }
+                }
+                else if (window.parent.parent.parent.name.Contains("Discard"))
+                {
+                    transform.parent = window;
+                }
+                else if (window.parent.parent.parent.name.Contains("Collection"))
+                {
+                    if (originalWindow.parent.parent.parent.name.Contains("Edit"))
+                    {
+                        NodeChanged.Invoke();
+                        Destroy(gameObject);
+                        return;
+                    }
+                    else
+                    {
+                        transform.parent = window;
+                    }
+                }
+            }
+            else
+            {
+                transform.parent = originalWindow;
+                transform.position = originalLocation;
+            }
         }
         else
         {
-            transform.parent = window;
+            if (window == null)
+            {
+                transform.parent = originalWindow;
+                transform.position = originalLocation;
+            }
+            else
+            {
+                transform.parent = window;
+            }
         }
+        selected = false;
+        GetComponent<Image>().raycastTarget = true;
+        
         window = null;
         LineManager.Instance.MovingNode = false;
         // REWRITE THIS TO UPDATE THE ICON INSTEAD / OTHER JUICE
@@ -180,7 +236,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             actionOutput.ResetInformation();
             hasBeenEdited = false;
         }
-        else NodeChanged.Invoke();
+        NodeChanged.Invoke();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {
@@ -242,6 +298,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         GameObject newWindow;
         switch (nodeType)
         {
+            case NodeType.Shape:
             case NodeType.Context:
                 newWindow = Instantiate(contextEditPrefab, canvas);
                 ContextEdit cEdit = newWindow.GetComponent<ContextEdit>();
@@ -285,9 +342,17 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             }
         }
     }
+    public void Error (string errorMessage)
+    {
+        error = true;
+        attnTooltip.type = Tooltips.TooltipType.Custom;
+        attnTooltip.tooltipString = $"ERROR: {errorMessage}";
+
+    }
     public void EndError()
     {
         error = false;
+        attnTooltip.tooltipString = "Click to add more information to this node.";
     }
 }
 

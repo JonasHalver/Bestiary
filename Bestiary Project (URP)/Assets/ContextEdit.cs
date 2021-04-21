@@ -22,6 +22,9 @@ public class ContextEdit : MonoBehaviour
     public void ShowEditing()
     {
         instance = this;
+        title.text = node.nodeName;
+        description.text = node.nodeDescription;
+        if (node.nodeType == ActionNode.NodeType.Shape) return;
         for (int i = 0; i < conditionButtons.Count; i++)
         {
             SimpleTooltipSpawner sts = conditionButtons[i].GetComponent<SimpleTooltipSpawner>();
@@ -42,8 +45,6 @@ public class ContextEdit : MonoBehaviour
                 damageButtons[i].transform.GetChild(0).GetComponent<Image>().color = ip.iconColor;
             }
         }
-        title.text = node.nodeName;
-        description.text = node.nodeDescription;
         switch (node.actionContext.context)
         {
             default: break;
@@ -59,11 +60,11 @@ public class ContextEdit : MonoBehaviour
                         if (b.GetComponent<SimpleTooltipSpawner>() && b.GetComponent<SimpleTooltipSpawner>().condition == node.actionContext.condition) 
                         {
                             b.interactable = false;
+                            condition = node.actionContext.condition;
                         }
                     }
                 }
                 break;
-            case Action.Context.TookDamage:
             case Action.Context.TookDamageOfType:
                 damageTypeGrid.SetActive(true);
                 if (node.actionContext.damageType != Character.DamageTypes.None)
@@ -73,6 +74,7 @@ public class ContextEdit : MonoBehaviour
                         if (b.GetComponent<SimpleTooltipSpawner>() && b.GetComponent<SimpleTooltipSpawner>().damageType == node.actionContext.damageType)
                         {
                             b.interactable = false;
+                            damageType = node.actionContext.damageType;
                         }
                     }
                 }
