@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LineManager : MonoBehaviour
-{
+{/*
     private static LineManager instance;
     public static LineManager Instance
     {
@@ -152,5 +152,5 @@ public class LineManager : MonoBehaviour
             }
             connectionLookup.Remove(node);
         }
-    }
+    }*/
 }

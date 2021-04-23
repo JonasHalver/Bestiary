@@ -50,6 +50,11 @@ public class OutputEdit : MonoBehaviour
         }
         title.text = node.nodeName;
         description.text = node.nodeDescription;
+        value = node.actionOutput.value;
+        critical = node.actionOutput.critical;
+        towards = node.actionOutput.towards;
+        damageType = node.actionOutput.damageType;
+        condition = node.actionOutput.condition;
         switch (node.actionOutput.output)
         {
             case Action.Output.Damage:

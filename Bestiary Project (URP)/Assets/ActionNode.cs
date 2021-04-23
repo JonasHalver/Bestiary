@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
 {
@@ -14,10 +15,14 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private Transform originalWindow;
     private Transform window;
     private bool dragging = false;
-    public Transform nodeConnectRight, nodeConnectLeft;
     public GameObject attn;
     private SimpleTooltipSpawner attnTooltip;
     private Animator animator;
+    public Image icon1, icon2;
+    public GameObject crit;
+    private GameObject secondaryIcon;
+    public TextMeshProUGUI valueDisplay;
+    public Sprite questionMark;
 
     public string nodeName;
     public string nodeDescription;
@@ -28,12 +33,17 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public OutputInfo actionOutput;
     public ContextInfo actionContext;
     public Action.Shape actionShape;
+    public Action.TargetPriority priority;
 
     public bool requiresEditing;
     public bool hasBeenEdited;
     private bool error;
 
-    public GameObject contextEditPrefab, outputEditPrefab;
+    public enum WindowType { Edit, Collection, Discard }
+    public WindowType windowType;
+    private WindowType wt = WindowType.Collection;
+
+    public GameObject contextEditPrefab, outputEditPrefab, shapeEditPrefab;
 
     public static event System.Action NodeChanged;
 
@@ -49,10 +59,6 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     }
     private float blend = 0;
 
-    public Transform Connection
-    {
-        get => NodeConnection();
-    }
     public bool InEditor
     {
         get
@@ -84,8 +90,52 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         transform.Find("Background").GetComponent<Image>().color = c;
         attnTooltip = attn.GetComponent<SimpleTooltipSpawner>();
-    }    
+        Animator.SetBool("Normal", !requiresEditing);        
+    }
+    private void Start()
+    {
+        ResetIcons();
+    }
 
+    private void ResetIcons()
+    {
+        if (nodeType == NodeType.Context)
+        {
+            icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.context).icon;
+            icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.context).iconColor;
+            secondaryIcon = icon2.gameObject;
+            icon2.sprite = questionMark;
+            icon2.color = Color.white;
+        }
+        else if (nodeType == NodeType.Shape)
+        {
+            icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionShape).icon;
+            icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionShape).iconColor;
+            secondaryIcon = icon2.gameObject;
+            icon2.sprite = questionMark;
+            icon2.color = Color.white;
+        }
+        else
+        {
+            icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.output).icon;
+            icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.output).iconColor;
+            switch (actionOutput.output)
+            {
+                case Action.Output.Condition:
+                case Action.Output.Healing:
+                case Action.Output.Movement:
+                    secondaryIcon = valueDisplay.gameObject;
+                    valueDisplay.text = "0";
+                    break;
+                case Action.Output.Damage:
+                    secondaryIcon = icon2.gameObject;
+                    icon2.sprite = questionMark;
+                    icon2.color = Color.white;
+                    break;
+            }
+        }
+        secondaryIcon.SetActive(true);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -93,6 +143,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         else
         {
             if (transform.parent.name != "Content") transform.parent = originalWindow;
+            if (!InEditor) blend = 0;
         }
         Animator.SetFloat("Blend", blend);
         if (InEditor && !error)
@@ -107,6 +158,23 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     {
         //transform.position = (Vector2)Input.mousePosition + offset;
         window = HoverWindow();
+        if (windowType != wt)
+        {
+
+            switch (windowType)
+            {
+                case WindowType.Collection:
+                case WindowType.Discard:
+                    StartCoroutine(Expand(false));
+                    secondaryIcon.SetActive(true);
+                    break;
+                case WindowType.Edit:
+                    secondaryIcon.SetActive(requiresEditing);
+                    StartCoroutine(Expand(true));
+                    break;
+            }
+        }
+        wt = windowType;
     }
 
     private Transform HoverWindow()
@@ -119,37 +187,16 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         {
             if (hit.gameObject.CompareTag("Window"))
             {
+                if (hit.gameObject.name.Contains("Edit")) windowType = WindowType.Edit;
+                else if (hit.gameObject.name.Contains("Discard")) windowType = WindowType.Discard;
+                else windowType = WindowType.Collection;
                 return hit.gameObject.transform.Find("Node Holder").Find("Viewport").Find("Content");
             }
         }
+        
         return null;
     }
 
-    private Transform NodeConnection()
-    {
-        PointerEventData ped = new PointerEventData(EventSystem.current);
-        ped.position = Input.mousePosition;
-        hits.Clear();
-        ActionEditor.graphicRaycaster.Raycast(ped, hits);
-        foreach(RaycastResult hit in hits)
-        {
-            if (hit.gameObject.CompareTag("Node"))
-            {
-                if (hit.gameObject.GetComponent<ActionNode>())
-                {
-                    if (hit.gameObject.GetComponent<ActionNode>().InEditor)
-                    {
-                        return hit.gameObject.GetComponent<ActionNode>().nodeConnectLeft;
-                    }
-                }
-                else if (hit.gameObject.transform.parent.GetComponent<ActionNode>().InEditor)
-                {
-                    return hit.gameObject.transform.parent.GetComponent<ActionNode>().nodeConnectLeft;
-                }
-            }
-        }
-        return null;
-    }
 
     private void OnSelect()
     {
@@ -159,12 +206,14 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         originalWindow = transform.parent;
         transform.parent = canvas;
         offset = transform.position - Input.mousePosition;
-        LineManager.Instance.MovingNode = true;
-        LineManager.Instance.NodeMoving = this;
+        //LineManager.Instance.MovingNode = true;
+        //LineManager.Instance.NodeMoving = this;
     }
     private void OnDeselect()
     {
-        if (nodeType == NodeType.Output || nodeType == NodeType.Shape)
+        selected = false;
+
+        if (nodeType == NodeType.Output)// || nodeType == NodeType.Shape)
         {
             if (window != null)
             {
@@ -174,8 +223,12 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     {
                         GameObject clone = Instantiate(gameObject, transform.position, Quaternion.identity, window);
                         clone.GetComponent<Image>().raycastTarget = true;
+                        clone.GetComponent<ActionNode>().blend = 1;
                         transform.parent = originalWindow;
                         transform.position = originalLocation;
+                        blend = 0;
+                        secondaryIcon.SetActive(true);
+
                     }
                     else if (originalWindow.parent.parent.parent.name.Contains("Discard"))
                     {
@@ -222,19 +275,19 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                 transform.parent = window;
             }
         }
-        selected = false;
         GetComponent<Image>().raycastTarget = true;
         
         window = null;
-        LineManager.Instance.MovingNode = false;
+        //LineManager.Instance.MovingNode = false;
         // REWRITE THIS TO UPDATE THE ICON INSTEAD / OTHER JUICE
         // StartCoroutine(MoveConnectors(!InEditor));
         if (!InEditor)
         {
-            LineManager.Instance.SeverConnections(this);
+            //LineManager.Instance.SeverConnections(this);
             actionContext.ResetInformation();
             actionOutput.ResetInformation();
             hasBeenEdited = false;
+            ResetIcons();
         }
         NodeChanged.Invoke();
     }
@@ -274,20 +327,14 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
     }
 
-    public void AddLine()
+    IEnumerator Expand(bool expand)
     {
-        if (InEditor)
-            LineManager.Instance.NewConnection(nodeConnectRight.position, this);
-    }
-
-    IEnumerator MoveConnectors(bool retract)
-    {
-        float goal = retract ? 0 : 1;
+        float goal = expand ? 1 : 0;
         float t = 0;
         while (t < 1)
         {
             blend = Mathf.Lerp(blend, goal, t);
-            t += Time.deltaTime;
+            t += Time.deltaTime * 2;
             yield return null;
         }
     }
@@ -299,6 +346,11 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         switch (nodeType)
         {
             case NodeType.Shape:
+                newWindow = Instantiate(shapeEditPrefab, canvas);
+                ShapeEdit sEdit = newWindow.GetComponent<ShapeEdit>();
+                sEdit.node = this;
+                sEdit.ShowEditing();
+                break;
             case NodeType.Context:
                 newWindow = Instantiate(contextEditPrefab, canvas);
                 ContextEdit cEdit = newWindow.GetComponent<ContextEdit>();
@@ -317,6 +369,54 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     {
         if (!hasBeenEdited)
             hasBeenEdited = changesMade;
+
+        if (hasBeenEdited)
+        {
+            switch (nodeType)
+            {
+                case NodeType.Context:
+                    switch (actionContext.context)
+                    {
+                        default: break;
+                        case Action.Context.TookDamageOfType:
+                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).icon;
+                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).iconColor;
+                            break;
+                        case Action.Context.AllyHasSpecificCondition:
+                        case Action.Context.EnemyHasSpecificCondition:
+                        case Action.Context.ReceivedSpecificCondition:
+                        case Action.Context.SelfHasSpecificCondition:
+                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).icon;
+                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).iconColor;
+                            break;
+                    }
+                    break;
+                case NodeType.Output:
+                    switch (actionOutput.output)
+                    {
+                        case Action.Output.Damage:
+                            crit.SetActive(actionOutput.critical);
+                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).icon;
+                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).iconColor;
+                            break;
+                        case Action.Output.Healing:
+                            valueDisplay.text = actionOutput.value.ToString();
+                            break;
+                        case Action.Output.Condition:
+                            icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).icon;
+                            icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).iconColor;
+                            valueDisplay.text = actionOutput.value.ToString();
+                            break;
+                        case Action.Output.Movement:
+                            valueDisplay.text = actionOutput.value.ToString();
+                            break;
+                    }
+                    break;
+                case NodeType.Shape:
+                    // Add functionality for target priority
+                    break;
+            }
+        }
         NodeChanged.Invoke();
     }
 

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   actionName: 
   actionCode: 
-  description: 
+  description: wiggles its butt
   monsterAI: {fileID: 0}
   actionDescription: 
   descriptionIndex: -1

@@ -1,0 +1,157 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acfe186497d8380478ebc944bb483cbc, type: 3}
+  m_Name: Log Elements
+  m_EditorClassIdentifier: 
+  contextEntries:
+  - text: is near a single ally
+    context: 0
+    output: 0
+    shape: 0
+  - text: is near multiple allies
+    context: 1
+    output: 0
+    shape: 0
+  - text: is not near any allies
+    context: 2
+    output: 0
+    shape: 0
+  - text: is near a single enemy
+    context: 3
+    output: 0
+    shape: 0
+  - text: is near multiple enemies
+    context: 4
+    output: 0
+    shape: 0
+  - text: is not near any enemies
+    context: 5
+    output: 0
+    shape: 0
+  - text: is near both allies and enemies
+    context: 6
+    output: 0
+    shape: 0
+  - text: is alone
+    context: 7
+    output: 0
+    shape: 0
+  - text: took damage last round
+    context: 8
+    output: 0
+    shape: 0
+  - text: took * damage last round
+    context: 9
+    output: 0
+    shape: 0
+  - text: didn't take damage last round
+    context: 10
+    output: 0
+    shape: 0
+  - text: dealt damage last round
+    context: 11
+    output: 0
+    shape: 0
+  - text: was healed last round
+    context: 12
+    output: 0
+    shape: 0
+  - text: gained the * condition last round
+    context: 13
+    output: 0
+    shape: 0
+  - text: is very hurt
+    context: 16
+    output: 0
+    shape: 0
+  - text: sees an enemy, who is very hurt
+    context: 17
+    output: 0
+    shape: 0
+  - text: sees that an ally is very hurt
+    context: 18
+    output: 0
+    shape: 0
+  - text: has the * condition
+    context: 19
+    output: 0
+    shape: 0
+  - text: sees an enemy with the * condition
+    context: 20
+    output: 0
+    shape: 0
+  - text: sees an ally with the * condition
+    context: 21
+    output: 0
+    shape: 0
+  - text: is being attacked
+    context: 22
+    output: 0
+    shape: 0
+  - text: is not being attacked
+    context: 23
+    output: 0
+    shape: 0
+  outputEntries:
+  - text: deal ^* damage to
+    context: 0
+    output: 0
+    shape: 0
+  - text: apply ^ stacks of * to
+    context: 0
+    output: 2
+    shape: 0
+  - text: restore * hit points to
+    context: 0
+    output: 1
+    shape: 0
+  - text: force * move% ^ for
+    context: 0
+    output: 3
+    shape: 0
+  shapeEntries:
+  - text: '*^ within melee range'
+    context: 0
+    output: 0
+    shape: 0
+  - text: '*^ anywhere'
+    context: 0
+    output: 0
+    shape: 1
+  - text: itself
+    context: 0
+    output: 0
+    shape: 2
+  - text: '*^ in an arc in front of it'
+    context: 0
+    output: 0
+    shape: 3
+  - text: '*^ in a cone in front of it'
+    context: 0
+    output: 0
+    shape: 4
+  - text: '*^ in a straight line from it'
+    context: 0
+    output: 0
+    shape: 5
+  - text: '*^ in an area anywhere'
+    context: 0
+    output: 0
+    shape: 6
+  - text: '*^ near it'
+    context: 0
+    output: 0
+    shape: 7
+  - text: all *
+    context: 0
+    output: 0
+    shape: 8

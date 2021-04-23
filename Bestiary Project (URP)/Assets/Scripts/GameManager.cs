@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
     public Icons currentIconCollection;
     public Tooltips currentTooltipCollection;
+    public Log logElementCollection;
 
     public static List<int> seed;
 
@@ -132,14 +133,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-       // if (!combatStartSequence) CombatStartSequence();
-       // else
-       // {
-       //     if (!debugMode) GameStateCheck();
-       // }
-       // if (enemiesWon || alliesWon) GameOver();
+        if (!combatStartSequence) CombatStartSequence();
+        else
+        {
+            if (!debugMode) GameStateCheck();
+        }
+        if (enemiesWon || alliesWon) GameOver();
 
-       // GameStateMachine();
+        GameStateMachine();
         UpdateWindowsList();
     }
 

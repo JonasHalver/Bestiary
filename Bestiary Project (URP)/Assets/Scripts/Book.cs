@@ -22,6 +22,7 @@ public class Book : MonoBehaviour
     public List<Page> mercPages = new List<Page>();
     public GameObject actionCanvas;
     public GameObject statCanvas;
+    public GameObject editWindowPrefab;
 
     public static event System.Action StatsUpdated;
     public static bool openOnMerc = false;
@@ -124,6 +125,12 @@ public class Book : MonoBehaviour
         instance.actionCanvas.SetActive(true);
         instance.actionCanvas.transform.GetChild(0).gameObject.SetActive(true);
         instance.actionCanvas.transform.GetChild(1).gameObject.SetActive(true);
+
+        GameObject newEditWindow = Instantiate(instance.editWindowPrefab);
+        ActionEditor ae = newEditWindow.GetComponent<ActionEditor>();
+        ae.action = currentEntry.activeAction.originalAction;
+        ae.guessAction = currentEntry.activeAction.guessAction;
+
         GameManager.openWindows.Add(instance.actionCanvas);
         GameManager.focusedWindow = instance.actionCanvas;
     }

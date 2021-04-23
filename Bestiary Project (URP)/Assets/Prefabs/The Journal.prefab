@@ -91,6 +91,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 3</b>: This information requires much experimentation
     to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &330762875832036420
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +261,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 2</b>: This information may require a few rounds
     of observation to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &2076810488933463439
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +487,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &4026335463877195138
 GameObject:
   m_ObjectHideFlags: 0
@@ -568,6 +583,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 2</b>: This information may require a few rounds
     of observation to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &4278053393289549891
 GameObject:
   m_ObjectHideFlags: 0
@@ -794,6 +814,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &5426105639272955300
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,6 +910,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &5773579392549115709
 GameObject:
   m_ObjectHideFlags: 0
@@ -1236,6 +1266,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &6286266102428623710
 GameObject:
   m_ObjectHideFlags: 0
@@ -1327,6 +1362,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &6523021793780203500
 GameObject:
   m_ObjectHideFlags: 0
@@ -1551,6 +1591,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 2</b>: This information may require a few rounds
     of observation to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &6913435426920224598
 GameObject:
   m_ObjectHideFlags: 0
@@ -1815,6 +1860,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &8487685985996174853
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,6 +1956,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 2</b>: This information may require a few rounds
     of observation to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &8570973468038480335
 GameObject:
   m_ObjectHideFlags: 0
@@ -1997,6 +2052,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 1</b>: This information can be discovered after observing
     the action.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &8917804886624506189
 GameObject:
   m_ObjectHideFlags: 0
@@ -2120,6 +2180,11 @@ MonoBehaviour:
     type: 3}
   tooltipString: '<b>Difficulty 2</b>: This information may require a few rounds
     of observation to figure out.'
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &9188723633737887615
 GameObject:
   m_ObjectHideFlags: 0
@@ -20671,6 +20736,8 @@ MonoBehaviour:
   mercPages: []
   actionCanvas: {fileID: 9188723635758429435}
   statCanvas: {fileID: 9188723634684197459}
+  editWindowPrefab: {fileID: 7822652727728524937, guid: 58551c8722a85dd4ebbe30fbda4c7ed8,
+    type: 3}
 --- !u!1 &9188723634763014885
 GameObject:
   m_ObjectHideFlags: 0

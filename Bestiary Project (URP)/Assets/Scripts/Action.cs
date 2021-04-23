@@ -7,6 +7,7 @@ using System;
 [CreateAssetMenu(fileName = "New Action", menuName = "Action")]
 public class Action : ScriptableObject
 {
+    [HideInInspector] public GameObject editWindow;
     public string actionName;
     public string actionCode;
     public string description;

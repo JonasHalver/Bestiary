@@ -62,6 +62,8 @@ MonoBehaviour:
     type: 2}
   currentTooltipCollection: {fileID: 11400000, guid: 2e20d6bf6c0f9cc4896ac3400a8e9f0e,
     type: 2}
+  logElementCollection: {fileID: 11400000, guid: 3e59819d643635a4eae1899e789ba75b,
+    type: 2}
   journal: {fileID: 0}
   combatStartSequence: 0
 --- !u!114 &5615254646155214213

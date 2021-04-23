@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -3611,6 +3611,7 @@ MonoBehaviour:
   damageType: 0
   condition: 0
   shape: 0
+  priority: 0
 --- !u!114 &363141618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5526,6 +5527,7 @@ MonoBehaviour:
   damageType: 0
   condition: 0
   shape: 0
+  priority: 0
 --- !u!1 &633499765
 GameObject:
   m_ObjectHideFlags: 0
@@ -15195,6 +15197,7 @@ MonoBehaviour:
   damageType: 0
   condition: 0
   shape: 0
+  priority: 0
 --- !u!1 &2144316266
 GameObject:
   m_ObjectHideFlags: 0
@@ -15336,6 +15339,11 @@ PrefabInstance:
       propertyPath: journal
       value: 
       objectReference: {fileID: 1244769499}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: debugMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: menuCanvas

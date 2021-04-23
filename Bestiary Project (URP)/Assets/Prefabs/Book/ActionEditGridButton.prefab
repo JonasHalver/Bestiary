@@ -246,6 +246,7 @@ MonoBehaviour:
   damageType: 0
   condition: 0
   shape: 0
+  priority: 0
 --- !u!114 &701060624879465009
 MonoBehaviour:
   m_ObjectHideFlags: 0

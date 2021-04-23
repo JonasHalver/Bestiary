@@ -16,6 +16,7 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
     public Character.DamageTypes damageType;
     public Action.Condition condition;
     public Action.Shape shape;
+    public Action.TargetPriority priority;
 
     private ActionNode node;
     private void Awake()
