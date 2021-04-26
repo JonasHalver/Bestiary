@@ -118,21 +118,21 @@ public class Book : MonoBehaviour
 
     public static void OpenActionEditing()
     {
-        for (int i = 0; i < instance.actionCanvas.transform.childCount; i++)
-        {
-            instance.actionCanvas.transform.GetChild(i).gameObject.SetActive(false);
-        }
-        instance.actionCanvas.SetActive(true);
-        instance.actionCanvas.transform.GetChild(0).gameObject.SetActive(true);
-        instance.actionCanvas.transform.GetChild(1).gameObject.SetActive(true);
+        //for (int i = 0; i < instance.actionCanvas.transform.childCount; i++)
+        //{
+        //    instance.actionCanvas.transform.GetChild(i).gameObject.SetActive(false);
+        //}
+        //instance.actionCanvas.SetActive(true);
+        //instance.actionCanvas.transform.GetChild(0).gameObject.SetActive(true);
+        //instance.actionCanvas.transform.GetChild(1).gameObject.SetActive(true);
 
         GameObject newEditWindow = Instantiate(instance.editWindowPrefab);
         ActionEditor ae = newEditWindow.GetComponent<ActionEditor>();
         ae.action = currentEntry.activeAction.originalAction;
         ae.guessAction = currentEntry.activeAction.guessAction;
 
-        GameManager.openWindows.Add(instance.actionCanvas);
-        GameManager.focusedWindow = instance.actionCanvas;
+        GameManager.openWindows.Add(newEditWindow);
+        GameManager.focusedWindow = newEditWindow;
     }
     public static void OpenStatEditing(Entry.StatEntries stat)
     {

@@ -39,7 +39,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public bool hasBeenEdited;
     private bool error;
 
-    public enum WindowType { Edit, Collection, Discard }
+    public enum WindowType { Edit1, Edit2, Collection, Discard }
     public WindowType windowType;
     private WindowType wt = WindowType.Collection;
 
@@ -57,7 +57,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             return animator;
         }
     }
-    private float blend = 0;
+    public float blend = 0;
 
     public bool InEditor
     {
@@ -91,6 +91,11 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         transform.Find("Background").GetComponent<Image>().color = c;
         attnTooltip = attn.GetComponent<SimpleTooltipSpawner>();
         Animator.SetBool("Normal", !requiresEditing);        
+    }
+    public void AddToLists()
+    {
+        if (!Book.currentEntry.activeAction.nodeParents.ContainsKey(this)) Book.currentEntry.activeAction.nodeParents.Add(this, WindowType.Collection);
+        if (!Book.currentEntry.activeAction.nodePositions.ContainsKey(this)) Book.currentEntry.activeAction.nodePositions.Add(this, transform.position);
     }
     private void Start()
     {
@@ -166,10 +171,11 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                 case WindowType.Collection:
                 case WindowType.Discard:
                     StartCoroutine(Expand(false));
-                    secondaryIcon.SetActive(true);
+                    //secondaryIcon.SetActive(true);
                     break;
-                case WindowType.Edit:
-                    secondaryIcon.SetActive(requiresEditing);
+                case WindowType.Edit1:
+                case WindowType.Edit2:
+                    
                     StartCoroutine(Expand(true));
                     break;
             }
@@ -187,7 +193,8 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         {
             if (hit.gameObject.CompareTag("Window"))
             {
-                if (hit.gameObject.name.Contains("Edit")) windowType = WindowType.Edit;
+                if (hit.gameObject.name.Contains("Edit1")) windowType = WindowType.Edit1;
+                else if (hit.gameObject.name.Contains("Edit2")) windowType = WindowType.Edit2;
                 else if (hit.gameObject.name.Contains("Discard")) windowType = WindowType.Discard;
                 else windowType = WindowType.Collection;
                 return hit.gameObject.transform.Find("Node Holder").Find("Viewport").Find("Content");
@@ -221,30 +228,50 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                 {
                     if (originalWindow.parent.parent.parent.name.Contains("Collection"))
                     {
-                        GameObject clone = Instantiate(gameObject, transform.position, Quaternion.identity, window);
-                        clone.GetComponent<Image>().raycastTarget = true;
-                        clone.GetComponent<ActionNode>().blend = 1;
+                        Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                        Book.currentEntry.activeAction.nodePositions[this] = transform.position;
+                        Clone(transform.position, window,actionOutput);
                         transform.parent = originalWindow;
                         transform.position = originalLocation;
                         blend = 0;
-                        secondaryIcon.SetActive(true);
-
+                        secondaryIcon.SetActive(true);                        
                     }
                     else if (originalWindow.parent.parent.parent.name.Contains("Discard"))
                     {
                         transform.parent = window;
+                        Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                        Book.currentEntry.activeAction.nodePositions[this] = transform.position;
                     }
                     else
                     {
                         transform.parent = window;
+                        Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                        Book.currentEntry.activeAction.nodePositions[this] = transform.position;
                     }
+                    if (windowType == WindowType.Edit1 && originalWindow.parent.parent.parent.name.Contains("Edit2"))
+                    {
+                        Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+                        Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                    }
+                    else if (windowType == WindowType.Edit1 && !originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                    if (windowType == WindowType.Edit2 && originalWindow.parent.parent.parent.name.Contains("Edit1"))
+                    {
+                        Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
+                        Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                    }
+                    else if (windowType == WindowType.Edit2 && !originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
                 }
                 else if (window.parent.parent.parent.name.Contains("Discard"))
                 {
                     transform.parent = window;
+                    if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                    else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
                 }
                 else if (window.parent.parent.parent.name.Contains("Collection"))
                 {
+                    if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                    else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+
                     if (originalWindow.parent.parent.parent.name.Contains("Edit"))
                     {
                         NodeChanged.Invoke();
@@ -254,6 +281,9 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     else
                     {
                         transform.parent = window;
+                        Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                        Book.currentEntry.activeAction.nodePositions[this] = transform.position;
+
                     }
                 }
             }
@@ -262,17 +292,49 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                 transform.parent = originalWindow;
                 transform.position = originalLocation;
             }
+            
         }
         else
         {
             if (window == null)
             {
+                
                 transform.parent = originalWindow;
                 transform.position = originalLocation;
             }
             else
             {
+                if (window.parent.parent.parent.name.Contains("Edit"))
+                {
+                    switch (nodeType)
+                    {
+                        case NodeType.Context:
+                            if (windowType == WindowType.Edit1 && !originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryContext.Add(actionContext);
+                            print($"Guess action has {Book.currentEntry.activeAction.guessAction.primaryContext.Count} contexts");
+                            break;
+                        case NodeType.Shape:
+                            if (windowType == WindowType.Edit1) Book.currentEntry.activeAction.guessAction.primaryShape = actionShape;
+                            else if (windowType == WindowType.Edit2) Book.currentEntry.activeAction.guessAction.secondaryShape = actionShape;
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (nodeType)
+                    {
+                        case NodeType.Context:
+                            if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryContext.Remove(actionContext);
+                            break;
+                        case NodeType.Shape:
+                            if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryShape = Action.Shape.Melee;
+                            else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryShape = Action.Shape.Melee;
+                            break;
+                    }
+                }
                 transform.parent = window;
+                Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                Book.currentEntry.activeAction.nodePositions[this] = transform.position;
+
             }
         }
         GetComponent<Image>().raycastTarget = true;
@@ -291,12 +353,21 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         NodeChanged.Invoke();
     }
+    public void Clone(Vector3 position, Transform parent, OutputInfo oi)
+    {
+        GameObject clone = Instantiate(gameObject, position, Quaternion.identity, parent);
+        clone.GetComponent<Image>().raycastTarget = true;
+        clone.GetComponent<ActionNode>().blend = 1;
+        if (oi != null)
+        {
+            clone.GetComponent<ActionNode>().actionOutput = oi;
+        }
+    }
     public void OnBeginDrag(PointerEventData eventData)
     {
         OnSelect();
         dragging = true;
     }
-
     public void OnDrag(PointerEventData eventData)
     {
         if (!selected) OnSelect();
@@ -308,7 +379,6 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         OnDeselect();
         dragging = false;
     }
-
     public void OnPointerDown(PointerEventData eventData)
     {
         StartCoroutine(ClickDelay());
@@ -326,9 +396,13 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             yield return null;
         }
     }
-
+    public void ExternalExpand()
+    {
+        StartCoroutine(Expand(true));
+    }
     IEnumerator Expand(bool expand)
     {
+        secondaryIcon.SetActive(requiresEditing && expand);
         float goal = expand ? 1 : 0;
         float t = 0;
         while (t < 1)
@@ -337,8 +411,9 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             t += Time.deltaTime * 2;
             yield return null;
         }
+        //Canvas.ForceUpdateCanvases();
+        //LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
     }
-
     private void EditNode()
     {
         print("Open editing");
@@ -372,54 +447,103 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
 
         if (hasBeenEdited)
         {
+            SetIcons();
             switch (nodeType)
             {
                 case NodeType.Context:
-                    switch (actionContext.context)
+                    for (int i = 0; i < Book.currentEntry.activeAction.guessAction.primaryContext.Count; i++)
                     {
-                        default: break;
-                        case Action.Context.TookDamageOfType:
-                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).icon;
-                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).iconColor;
-                            break;
-                        case Action.Context.AllyHasSpecificCondition:
-                        case Action.Context.EnemyHasSpecificCondition:
-                        case Action.Context.ReceivedSpecificCondition:
-                        case Action.Context.SelfHasSpecificCondition:
-                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).icon;
-                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).iconColor;
-                            break;
+                        if (Book.currentEntry.activeAction.guessAction.primaryContext[i].context == actionContext.context)
+                        {
+                            Book.currentEntry.activeAction.guessAction.primaryContext[i].damageType = actionContext.damageType;
+                            Book.currentEntry.activeAction.guessAction.primaryContext[i].condition = actionContext.condition;
+                        }
                     }
                     break;
                 case NodeType.Output:
-                    switch (actionOutput.output)
+                    if (windowType == WindowType.Edit1)
                     {
-                        case Action.Output.Damage:
-                            crit.SetActive(actionOutput.critical);
-                            icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).icon;
-                            icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).iconColor;
-                            break;
-                        case Action.Output.Healing:
-                            valueDisplay.text = actionOutput.value.ToString();
-                            break;
-                        case Action.Output.Condition:
-                            icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).icon;
-                            icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).iconColor;
-                            valueDisplay.text = actionOutput.value.ToString();
-                            break;
-                        case Action.Output.Movement:
-                            valueDisplay.text = actionOutput.value.ToString();
-                            break;
+                        for (int i = 0; i < Book.currentEntry.activeAction.guessAction.primaryOutput.Count; i++)
+                        {
+                            if (Book.currentEntry.activeAction.guessAction.primaryOutput[i].output== actionOutput.output)
+                            {
+                                Book.currentEntry.activeAction.guessAction.primaryOutput[i].damageType = actionOutput.damageType;
+                                Book.currentEntry.activeAction.guessAction.primaryOutput[i].condition = actionOutput.condition;
+                                Book.currentEntry.activeAction.guessAction.primaryOutput[i].value = actionOutput.value;
+                                Book.currentEntry.activeAction.guessAction.primaryOutput[i].towards = actionOutput.towards;
+                                Book.currentEntry.activeAction.guessAction.primaryOutput[i].critical = actionOutput.critical;
+                            }
+                        }
+                    }
+                    else if (windowType == WindowType.Edit2)
+                    {
+                        for (int i = 0; i < Book.currentEntry.activeAction.guessAction.secondaryOutput.Count; i++)
+                        {
+                            if (Book.currentEntry.activeAction.guessAction.secondaryOutput[i].output == actionOutput.output)
+                            {
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput[i].damageType = actionOutput.damageType;
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput[i].condition = actionOutput.condition;
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput[i].value = actionOutput.value;
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput[i].towards = actionOutput.towards;
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput[i].critical = actionOutput.critical;
+                            }
+                        }
                     }
                     break;
-                case NodeType.Shape:
+                case NodeType.Shape:                    
                     // Add functionality for target priority
                     break;
             }
         }
         NodeChanged.Invoke();
     }
-
+    public void SetIcons()
+    {
+        switch (nodeType)
+        {
+            case NodeType.Context:                
+                switch (actionContext.context)
+                {
+                    default: break;
+                    case Action.Context.TookDamageOfType:
+                        icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).icon;
+                        icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.damageType).iconColor;
+                        break;
+                    case Action.Context.AllyHasSpecificCondition:
+                    case Action.Context.EnemyHasSpecificCondition:
+                    case Action.Context.ReceivedSpecificCondition:
+                    case Action.Context.SelfHasSpecificCondition:
+                        icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).icon;
+                        icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionContext.condition).iconColor;
+                        break;
+                }
+                break;
+            case NodeType.Output:
+                switch (actionOutput.output)
+                {
+                    case Action.Output.Damage:
+                        crit.SetActive(actionOutput.critical);
+                        icon2.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).icon;
+                        icon2.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.damageType).iconColor;
+                        break;
+                    case Action.Output.Healing:
+                        valueDisplay.text = actionOutput.value.ToString();
+                        break;
+                    case Action.Output.Condition:
+                        icon1.sprite = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).icon;
+                        icon1.color = GameManager.instance.currentIconCollection.GetIcon(actionOutput.condition).iconColor;
+                        valueDisplay.text = actionOutput.value.ToString();
+                        break;
+                    case Action.Output.Movement:
+                        valueDisplay.text = actionOutput.value.ToString();
+                        break;
+                }
+                break;
+            case NodeType.Shape:
+                break;
+        }
+        hasBeenEdited = true;
+    }
     public void Incompatible(List<Action.Context> contexts)
     {
         error = true;

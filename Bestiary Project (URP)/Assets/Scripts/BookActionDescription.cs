@@ -81,6 +81,8 @@ public class BookActionDescription : MonoBehaviour
         //BookActionCard.CardUpdate();
         buttonText.text = $"{(currentEntry.guess.characterName != null ? currentEntry.guess.characterName : "The Monster")} {Book.instance.descriptionsList.descriptions[index]}";
         gameObject.SetActive(false);
+        Book.currentEntry.activeAction.SetComparison();
+        ActionEditor.instance.CompareActionInformation();
         //Book.currentEntry.activeAction.CalculateValidity();
     }
     

@@ -192,6 +192,9 @@ public class ActionCheck
     public Entry entry;
     public Color panelColor;
 
+    public Dictionary<ActionNode, Vector3> nodePositions = new Dictionary<ActionNode, Vector3>();
+    public Dictionary<ActionNode, ActionNode.WindowType> nodeParents = new Dictionary<ActionNode, ActionNode.WindowType>(); 
+
     int priority;
    // Action.ActionType type;
     Debuff debuff; // Only count 1 for percentage
