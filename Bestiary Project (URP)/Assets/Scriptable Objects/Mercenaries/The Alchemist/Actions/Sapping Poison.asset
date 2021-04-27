@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Sapping Poison
+  m_EditorClassIdentifier: 
+  editWindow: {fileID: 0}
+  actionName: Sapping Poison
+  actionCode: sappingpoisonrangedpoisonandweaken
+  description: If I am not near enemies, and I see a poisoned enemy, I will deal
+    poison damage to them and make them weak.
+  monsterAI: {fileID: 0}
+  actionDescription: 
+  descriptionIndex: -1
+  cooldown: 1
+  minimumHits: 1
+  targetPriority: 3
+  priorityConditionComparison: 10
+  actionPriority: 2
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 5
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  - actor: {fileID: 0}
+    context: 20
+    value: 0
+    condition: 10
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 0
+  primaryShape: 1
+  primaryTargetGroup: 0
+  primaryOutput:
+  - output: 0
+    value: 0
+    condition: 0
+    critical: 0
+    damageType: 6
+    towards: 0
+    difficulty: 0
+  - output: 2
+    value: 1
+    condition: 22
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

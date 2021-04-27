@@ -138,7 +138,7 @@ public class Log : ScriptableObject
     public string GetString(Action.Output output, int value, bool towards)
     {
         string s = "";
-        string t = towards ? "closer" : "further away";
+        string t = towards ? "towards" : "away from";
         string v = value.ToString();
         string p = value > 1 ? "s" : "";
         for (int i = 0; i < outputEntries.Count; i++)

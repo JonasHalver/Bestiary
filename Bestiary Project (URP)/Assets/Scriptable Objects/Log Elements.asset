@@ -102,19 +102,19 @@ MonoBehaviour:
     output: 0
     shape: 0
   outputEntries:
-  - text: deal ^* damage to
+  - text: deal ^* damage
     context: 0
     output: 0
     shape: 0
-  - text: apply ^ stacks of * to
+  - text: apply ^ stacks of *
     context: 0
     output: 2
     shape: 0
-  - text: restore * hit points to
+  - text: restore * hit points
     context: 0
     output: 1
     shape: 0
-  - text: force * move% ^ for
+  - text: and force them to move * spaces ^ them
     context: 0
     output: 3
     shape: 0

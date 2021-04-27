@@ -15342,13 +15342,42 @@ PrefabInstance:
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: debugMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: menuCanvas
       value: 
       objectReference: {fileID: 1949529733}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: mercenaries.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: mercenaries.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 5235ac5ff054f5944bd7fd2ca5c90eb7,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: mercenaries.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: d0aac4b3217d25a45b2a5cef7819dc68,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: mercenaries.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: 4b5c2ea7d91a4594e89fec58f4ad9364,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: mercenaries.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 9acaf5b5ab40a1f44add0fb369f58cad,
+        type: 2}
     - target: {fileID: 5615254646155214232, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: m_Name

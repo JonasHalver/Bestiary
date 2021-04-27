@@ -35,6 +35,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public Action.Shape actionShape;
     public Action.TargetPriority priority;
 
+    public bool isBig = false;
     public bool requiresEditing;
     public bool hasBeenEdited;
     private bool error;
@@ -139,7 +140,10 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     break;
             }
         }
-        secondaryIcon.SetActive(true);
+        if (!isBig)
+            secondaryIcon.SetActive(true);
+        else
+            secondaryIcon.SetActive(requiresEditing);
     }
     // Update is called once per frame
     void Update()
@@ -220,7 +224,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     {
         selected = false;
 
-        if (nodeType == NodeType.Output)// || nodeType == NodeType.Shape)
+        if (nodeType == NodeType.Output || nodeType == NodeType.Shape)
         {
             if (window != null)
             {
@@ -230,7 +234,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     {
                         Book.currentEntry.activeAction.nodeParents[this] = windowType;
                         Book.currentEntry.activeAction.nodePositions[this] = transform.position;
-                        Clone(transform.position, window,actionOutput);
+                        Clone(transform.position, window, nodeType == NodeType.Output ? actionOutput : null);
                         transform.parent = originalWindow;
                         transform.position = originalLocation;
                         blend = 0;
@@ -250,28 +254,79 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     }
                     if (windowType == WindowType.Edit1 && originalWindow.parent.parent.parent.name.Contains("Edit2"))
                     {
-                        Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
-                        Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                        switch (nodeType)
+                        {
+                            case NodeType.Output:
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+                                Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                                break;
+                            case NodeType.Shape:
+                                Book.currentEntry.activeAction.guessAction.primaryShape = actionShape;
+                                break;
+                        }
                     }
-                    else if (windowType == WindowType.Edit1 && !originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                    else if (windowType == WindowType.Edit1 && !originalWindow.parent.parent.parent.name.Contains("Edit1"))
+                    {
+                        switch (nodeType)
+                        {
+                            case NodeType.Output:
+                                Book.currentEntry.activeAction.guessAction.primaryOutput.Add(actionOutput);
+                                break;
+                            case NodeType.Shape:
+                                Book.currentEntry.activeAction.guessAction.primaryShape = actionShape;
+                                break;
+                        }                        
+                    }
                     if (windowType == WindowType.Edit2 && originalWindow.parent.parent.parent.name.Contains("Edit1"))
                     {
-                        Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
-                        Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                        switch (nodeType)
+                        {
+                            case NodeType.Output:
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
+                                Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                                break;
+                            case NodeType.Shape:
+                                Book.currentEntry.activeAction.guessAction.secondaryShape = actionShape;
+                                break;
+                        }
                     }
-                    else if (windowType == WindowType.Edit2 && !originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
+                    else if (windowType == WindowType.Edit2 && !originalWindow.parent.parent.parent.name.Contains("Edit2"))
+                    {
+                        switch (nodeType)
+                        {
+                            case NodeType.Output:
+                                Book.currentEntry.activeAction.guessAction.secondaryOutput.Add(actionOutput);
+                                break;
+                            case NodeType.Shape:
+                                Book.currentEntry.activeAction.guessAction.secondaryShape = actionShape;
+                                break;
+                        }
+                    }
                 }
                 else if (window.parent.parent.parent.name.Contains("Discard"))
                 {
                     transform.parent = window;
-                    if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
-                    else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+                    switch (nodeType)
+                    {
+                        case NodeType.Output:
+                            if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                            else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+                            break;
+                        case NodeType.Shape:
+                            break;
+                    }
                 }
                 else if (window.parent.parent.parent.name.Contains("Collection"))
                 {
-                    if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
-                    else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
-
+                    switch (nodeType)
+                    {
+                        case NodeType.Output:
+                            if (originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryOutput.Remove(actionOutput);
+                            else if (originalWindow.parent.parent.parent.name.Contains("Edit2")) Book.currentEntry.activeAction.guessAction.secondaryOutput.Remove(actionOutput);
+                            break;
+                        case NodeType.Shape:
+                            break;
+                    }
                     if (originalWindow.parent.parent.parent.name.Contains("Edit"))
                     {
                         NodeChanged.Invoke();
@@ -283,7 +338,6 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                         transform.parent = window;
                         Book.currentEntry.activeAction.nodeParents[this] = windowType;
                         Book.currentEntry.activeAction.nodePositions[this] = transform.position;
-
                     }
                 }
             }
@@ -358,6 +412,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         GameObject clone = Instantiate(gameObject, position, Quaternion.identity, parent);
         clone.GetComponent<Image>().raycastTarget = true;
         clone.GetComponent<ActionNode>().blend = 1;
+        clone.GetComponent<ActionNode>().isBig = true;
         if (oi != null)
         {
             clone.GetComponent<ActionNode>().actionOutput = oi;

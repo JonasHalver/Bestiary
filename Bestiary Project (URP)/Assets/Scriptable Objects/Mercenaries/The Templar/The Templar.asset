@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
+  m_Name: The Templar
+  m_EditorClassIdentifier: 
+  characterName: The Templar
+  characterCode: knightmerc
+  characterType: 1
+  personality: 0
+  characterIcon: {fileID: 21300000, guid: c8d735a990ef49b48b400d673f837751, type: 3}
+  characterIconColor: {r: 0.042452812, g: 0.9902184, b: 1, a: 1}
+  hitPoints: 8
+  armored: 0
+  resistances: 0000000001000000
+  weaknesses: 0200000005000000
+  speed: 5
+  movement: 2
+  actions:
+  - {fileID: 11400000, guid: 032983bdcd600384c8d17305db5e7fad, type: 2}
+  - {fileID: 11400000, guid: fbf34e18b03a231448e5935bf96f7e58, type: 2}
+  - {fileID: 11400000, guid: 81062ca7a1e3cb547891aa0cf8ec9939, type: 2}
+  - {fileID: 11400000, guid: 793cc5529536ca24a9dbbb2b3dbea1e8, type: 2}
+  pageNumber: 0
+  entry: {fileID: 0}

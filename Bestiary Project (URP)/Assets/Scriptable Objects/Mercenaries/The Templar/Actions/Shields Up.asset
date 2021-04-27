@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Shields Up
+  m_EditorClassIdentifier: 
+  editWindow: {fileID: 0}
+  actionName: Shields Up
+  actionCode: shieldsupselfarmor
+  description: If I took damage last round, I will grant myself armor and taunt all
+    adjacent enemies.
+  monsterAI: {fileID: 0}
+  actionDescription: 
+  descriptionIndex: -1
+  cooldown: 2
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 1
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 8
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 0
+  primaryShape: 2
+  primaryTargetGroup: 1
+  primaryOutput:
+  - output: 2
+    value: 2
+    condition: 1
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 1
+  secondaryShape: 7
+  secondaryTargetGroup: 0
+  secondaryOutput:
+  - output: 2
+    value: 1
+    condition: 19
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0

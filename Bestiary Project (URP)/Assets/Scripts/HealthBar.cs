@@ -40,17 +40,17 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         bgColor = background.color;
         maxWidth = bar.GetComponent<RectTransform>().rect.width;
         //nameText.text = character.stats.characterName;
-        character.AcquiredDebuff += DisplayEffect;
-        character.AcquiredBuff += DisplayEffect;
-        character.LostDebuff += RemoveEffect;
-        character.LostBuff += RemoveEffect;
+        character.conditions.GainedCondition += DisplayEffect;
+        character.conditions.LostCondition += RemoveEffect;
         character.Healed += Healed;
         character.TookDamage += TookDamage;
     }
     private void OnDisable()
     {
-        character.AcquiredDebuff -= DisplayEffect;
-        character.LostDebuff -= RemoveEffect;
+        character.conditions.GainedCondition -= DisplayEffect;
+        character.conditions.LostCondition -= RemoveEffect;
+        character.Healed -= Healed;
+        character.TookDamage -= TookDamage;
     }
 
     void Update()
@@ -68,9 +68,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         DisplayHitPoints();
         foreach(HealthBarEffects effect in effects)
         {
-            effect.durationText.text = effect.debuff != null ?
-                effect.debuff.durationRemaining.ToString()
-                : (effect.buff.durationRemaining).ToString();
+            effect.durationText.text = character.Conditions[effect.condition].ToString();
         }
     }
     
@@ -139,26 +137,27 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>(), buff));
     }
 
-    public void DisplayEffect(Debuff debuff)
+    public void DisplayEffect(Action.Condition condition)
     {
         GameObject newEffect = Instantiate(effectPrefab, effectsDisplay);
         Image img = newEffect.transform.GetChild(0).GetComponent<Image>();
-        img.sprite = debuff.icon;
-        img.color = debuff.iconColor;
+        Icons.Properties icons = GameManager.instance.currentIconCollection.GetIcon(condition);
+        string tooltip = GameManager.instance.currentTooltipCollection.GetString(condition);
+        img.sprite = icons.icon;
+        img.color = icons.iconColor;
         Image bg = newEffect.GetComponent<Image>();
         bg.color = d;
-        newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = debuff.tooltipString;
+        newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = tooltip;
 
-        newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text =
-            debuff.debuffType == Debuff.DebuffType.DamageOverTime ? debuff.durationRemaining.ToString() : (debuff.durationRemaining + 1).ToString();
-        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>(), debuff));
+        newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = character.Conditions[condition].ToString();
+        effects.Add(new HealthBarEffects(newEffect, newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>(), condition));
     }
 
-    public void RemoveEffect(Debuff debuff)
+    public void RemoveEffect(Action.Condition condition)
     {
         for (int i = 0; i < effects.Count; i++)
         {
-            if (effects[i].debuff == debuff)
+            if (effects[i].condition == condition)
             {
                 Destroy(effects[i].effect);
                 effects.RemoveAt(i);
@@ -193,6 +192,7 @@ public class HealthBarEffects
 {
     public GameObject effect;
     public TextMeshProUGUI durationText;
+    public Action.Condition condition;
     public Buff buff;
     public Debuff debuff;
 
@@ -207,5 +207,11 @@ public class HealthBarEffects
         effect = _effect;
         durationText = _text;
         debuff = _debuff;
+    }
+    public HealthBarEffects(GameObject _effect, TextMeshProUGUI _text, Action.Condition _condition)
+    {
+        effect = _effect;
+        durationText = _text;
+        condition = _condition;
     }
 }

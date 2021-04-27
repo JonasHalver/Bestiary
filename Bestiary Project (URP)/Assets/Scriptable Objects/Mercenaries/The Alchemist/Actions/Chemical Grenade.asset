@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Chemical Grenade
+  m_EditorClassIdentifier: 
+  editWindow: {fileID: 0}
+  actionName: Alchemical Grenade
+  actionCode: alchemicalgrenadehealpoison
+  description: If I am alone and took no damage last round, I will throw a grenade
+    that poisons enemies and grants allies regeneration
+  monsterAI: {fileID: 0}
+  actionDescription: 
+  descriptionIndex: -1
+  cooldown: 1
+  minimumHits: 1
+  targetPriority: 1
+  priorityConditionComparison: 0
+  actionPriority: 1
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 7
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  - actor: {fileID: 0}
+    context: 10
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 1
+  primaryShape: 6
+  primaryTargetGroup: 0
+  primaryOutput:
+  - output: 2
+    value: 3
+    condition: 10
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+    affectedGroup: 0
+  secondaryTargeting: 1
+  secondaryShape: 6
+  secondaryTargetGroup: 1
+  secondaryOutput:
+  - output: 2
+    value: 3
+    condition: 11
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+    affectedGroup: 1

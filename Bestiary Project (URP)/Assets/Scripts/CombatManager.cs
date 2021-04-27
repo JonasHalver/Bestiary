@@ -899,7 +899,7 @@ public class CombatAction : Action
                 {
                     secondaryTarget.AffectedCharacters[j].Interaction(new Interaction(action.secondaryOutput[i], origin, action, primaryTarget));
                 }
-                switch (action.primaryOutput[i].output)
+                switch (action.secondaryOutput[i].output)
                 {
                     case Output.Damage:
                         threatValue++;

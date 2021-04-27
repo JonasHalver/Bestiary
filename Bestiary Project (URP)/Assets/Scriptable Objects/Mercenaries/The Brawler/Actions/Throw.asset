@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
+  m_Name: Throw
+  m_EditorClassIdentifier: 
+  editWindow: {fileID: 0}
+  actionName: Throw
+  actionCode: throwmoveenemy
+  description: If I am near one enemy, I will throw them to the other side of me
+    and slow them.
+  monsterAI: {fileID: 0}
+  actionDescription: 
+  descriptionIndex: -1
+  cooldown: 1
+  minimumHits: 1
+  targetPriority: 0
+  priorityConditionComparison: 0
+  actionPriority: 2
+  descriptionSet: 0
+  targetingSet: 0
+  outcomeSet: 0
+  isPass: 0
+  primaryContext:
+  - actor: {fileID: 0}
+    context: 3
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 0
+  primaryShape: 0
+  primaryTargetGroup: 0
+  primaryOutput:
+  - output: 3
+    value: 2
+    condition: 0
+    critical: 0
+    damageType: 0
+    towards: 1
+    difficulty: 0
+  - output: 2
+    value: 1
+    condition: 14
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+  secondaryTargeting: 0
+  secondaryShape: 2
+  secondaryTargetGroup: 1
+  secondaryOutput: []

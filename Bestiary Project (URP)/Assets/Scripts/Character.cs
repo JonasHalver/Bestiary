@@ -371,7 +371,17 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         */
         #endregion
-
+        switch (interaction.effect.affectedGroup)
+        {
+            case Action.TargetGroup.All:
+                break;
+            case Action.TargetGroup.Allies:
+                if (!AllyOrEnemy(this, interaction.origin)) return;
+                break;
+            case Action.TargetGroup.Enemies:
+                if (AllyOrEnemy(this, interaction.origin)) return;
+                break;
+        }
         switch (interaction.effect.output)
         {
             case Action.Output.Damage:
@@ -382,7 +392,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 ReceiveHealing(interaction.effect);
                 break;
             case Action.Output.Condition:
-
+                ReceiveCondition(interaction.effect);
                 break;
             case Action.Output.Movement:
                 MoveByAction(interaction);
@@ -443,7 +453,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         damageTaken -= healing;
         Healed.Invoke();
     }
-
+    public void ReceiveCondition(OutputInfo info)
+    {
+        conditions.ApplyCondition(info.condition, info.value);
+    }
 
     public void MoveByAction(Interaction interaction)
     {
@@ -460,42 +473,145 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         dir = new Vector2(Mathf.Round(dir.x), Mathf.Round(dir.y)) * (interaction.effect.towards ? 1 : -1);
         Vector2 move = Vector2.zero, destination = Vector2.zero;
         Node checkNode = movement.currentNode, destinationNode = movement.currentNode;
-        Character lastImpact = null;
-        bool flag = false;
+        Node lastValidNode = movement.currentNode;
+        bool impactWall = false;
+        bool impactCharacter = false;
+        /*
         for (int i = interaction.effect.value; i > -1; i--)
         {
             move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
             destination = movement.currentNode.coordinate + move;
+            // Check the path
             if (destination.x < 5 && destination.x > -1)
             {
                 if (destination.y < 5 && destination.y > -1)
                 {
                     checkNode = CombatGrid.grid[(int)destination.x, (int)destination.y];
-                    if (checkNode.occupant != null)
-                    {
-                        flag = false;
-                        if (checkNode.occupant == this) 
-                        { 
+                    if (checkNode.occupant != null && checkNode.occupant != interaction.origin)
+                    {                        
+                        if (checkNode.occupant == this)
+                        {
                             break;
                         }
-                        destinationNode = movement.currentNode;
-                        lastImpact = checkNode.occupant;
+                        if (checkNode.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(checkNode.coordinate + dir)))
+                        {
+                            impactCharacter = true;
+                            lastValidNode = checkNode;
+                        }
+                    }
+                    else if (checkNode.occupant != null && checkNode.occupant == interaction.origin)
+                    {
+
                     }
                     else
                     {
-                        flag = true;
-                        destinationNode = checkNode;
+                        if (!impactCharacter)
+                            lastValidNode = checkNode;
                     }
                 }
+                else impactWall = true;
             }
-        }        
-        movement.MoveByAction(destinationNode);
-        if (lastImpact != null)
+            else impactWall = true;
+        }
+        */
+        for (int i = 1; i < interaction.effect.value+1; i++)
         {
-            print($"{stats.characterName} impacted {lastImpact.stats.characterName}");
-            lastImpact.ReceiveHit(DamageTypes.Crushing);
+            move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
+            destination = movement.currentNode.coordinate + move;
+            // Check the path
+            if (destination.x < 5 && destination.x > -1)
+            {
+                if (destination.y < 5 && destination.y > -1)
+                {
+                    checkNode = CombatGrid.grid[(int)destination.x, (int)destination.y];
+                    if (checkNode.occupant != null && checkNode.occupant != interaction.origin && !AllyOrEnemy(checkNode.occupant, this))
+                    {
+                        if (checkNode.occupant == this)
+                        {
+                            break;
+                        }
+                        if (checkNode.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(checkNode.coordinate + dir)))
+                        {
+                            impactCharacter = true;
+                            lastValidNode = checkNode;
+                            break;
+                        }
+                    }
+                    else if (checkNode.occupant != null && checkNode.occupant == interaction.origin)
+                    {
+
+                    }
+                    else
+                    {
+                        if (!impactCharacter)
+                            lastValidNode = checkNode;
+                    }
+                }
+                else impactWall = true;
+            }
+            else impactWall = true;
+        }
+
+        if (impactCharacter)
+        {
+            MoveByCollision(lastValidNode);
+        }
+        else
+        {
+            movement.MoveByAction(lastValidNode);
+
+            if (impactWall)
+            {
+                ReceiveHit(DamageTypes.Crushing);
+            }
+        }
+    }
+    public bool CanBeMovedToNode(Node destination)
+    {
+        bool flag = false;
+
+        Vector2Int dirToNode;
+        dirToNode = Vector2Int.RoundToInt((destination.coordinate - position).normalized);
+
+        if (destination.occupant != null)
+        {
+            Vector2Int newCoord = Vector2Int.RoundToInt(destination.coordinate) + dirToNode;
+            if (CombatGrid.NodeIsOnGrid(newCoord))
+            {
+                if (destination.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(newCoord)))
+                {
+                    flag = true;
+                }
+            }
+        }
+        else flag = true;
+
+        return flag;
+    }
+    public void MoveByCollision(Node destination)
+    {
+        Vector2Int dirToNode;
+        dirToNode = Vector2Int.RoundToInt((destination.coordinate - position).normalized);
+        Vector2Int newCoord = Vector2Int.RoundToInt(destination.coordinate) + dirToNode;
+        if (destination.occupant != null)
+        {                        
+            if (destination.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(newCoord)))
+            {
+                movement.MoveByAction(destination);
+                destination.occupant.MoveByCollision(CombatGrid.NodeFromPosition(newCoord));
+            }
+            else
+            {
+                destination.occupant.ReceiveHit(DamageTypes.Crushing);
+                movement.MoveByAction(CombatGrid.NodeFromPosition(destination.coordinate - dirToNode));
+            }
             ReceiveHit(DamageTypes.Crushing);
         }
+        else
+        {
+            movement.MoveByAction(destination);
+        }
+        
     }
     
 

@@ -254,7 +254,7 @@ public class Action : ScriptableObject
                     Target t = BestTarget(secondaryTest.potentialTargets);
                     output.secondaryTarget = t;
                 }
-                else
+                else if (secondaryTest.potentialTargets.Count == 1)
                 {
                     output.secondaryTarget = new Target();
                     output.secondaryTarget.Character = secondaryTest.potentialTargets[0].targetCharacter;
@@ -1125,10 +1125,33 @@ public class ContextInfo
                 break;
             // Status
             case Action.Context.SelfHasSpecificCondition:
+                output = actor.Conditions.ContainsKey(condition);
                 break;
             case Action.Context.EnemyHasSpecificCondition:
+                for (int i = 0; i < CombatManager.actors.Count; i++)
+                {
+                    if (!Character.AllyOrEnemy(actor, CombatManager.actors[i]))
+                    {
+                        if (CombatManager.actors[i].Conditions.ContainsKey(condition))
+                        {
+                            output = true;
+                            break;
+                        }
+                    }
+                }
                 break;
             case Action.Context.AllyHasSpecificCondition:
+                for (int i = 0; i < CombatManager.actors.Count; i++)
+                {
+                    if (Character.AllyOrEnemy(actor, CombatManager.actors[i]))
+                    {
+                        if (CombatManager.actors[i].Conditions.ContainsKey(condition))
+                        {
+                            output = true;
+                            break;
+                        }
+                    }
+                }
                 break;
             case Action.Context.SelfHurt:
                 output = actor.damageTaken > (actor.stats.hitPoints / 2);
@@ -1162,6 +1185,12 @@ public class ContextInfo
                     }
                 }
                 break;
+            case Action.Context.SelfBeingAttacked:
+                output = CombatManager.CharacterIsBeingAttacked(actor);
+                break;
+            case Action.Context.SelfNotBeingAttacked:
+                output = !CombatManager.CharacterIsBeingAttacked(actor);
+                break;
         }
         return output;
     }
@@ -1182,6 +1211,8 @@ public class OutputInfo
     [Tooltip("Whether movement moves the character towards or away from the target/user.")]
     public bool towards;
     [HideInInspector]public Entry.Difficulty difficulty;
+    [Tooltip("Who is affected by this action? Separate from targeting.")]
+    public Action.TargetGroup affectedGroup = Action.TargetGroup.All;
 
     public bool Match(OutputInfo comparison)
     {
