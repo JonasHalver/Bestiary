@@ -12,9 +12,9 @@ public class CustomToggle : MonoBehaviour, IPointerClickHandler
     public List<Sprite> sprites = new List<Sprite>();
     public List<string> tooltips = new List<string>();
     private SimpleTooltipSpawner sts;
-    private int activeIndex = 0;
+    [SerializeField]private int activeIndex = 0;
     public ActionNode.ToggleType type;
-    public bool primary;
+    public bool primary; 
 
     public void OnPointerClick(PointerEventData eventData)
     {

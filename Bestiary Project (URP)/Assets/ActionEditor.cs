@@ -24,6 +24,8 @@ public class ActionEditor : MonoBehaviour
     public static GraphicRaycaster graphicRaycaster;
     [SerializeField] private TextMeshProUGUI logTest;
 
+    private Action.TargetGroup primaryTargetGroup = Action.TargetGroup.Enemies;
+    private Action.TargetGroup secondaryTargetGroup = Action.TargetGroup.Allies;
 
     private Dictionary<Action.Context, ActionNode> contextNodes = new Dictionary<Action.Context, ActionNode>();
     private void Awake()
@@ -175,6 +177,10 @@ public class ActionEditor : MonoBehaviour
         if (nameInput.text != null) Book.currentEntry.activeAction.guessAction.actionName = nameInput.text;
         else Book.currentEntry.activeAction.guessAction.actionName = "Unnamed Action";
     }
+    public void EditingName(bool editing)
+    {
+        Book.instance.EditingText(editing);
+    }
     public void SetTargetGroup(int index, bool primary)
     {
         Action.TargetGroup tg = Action.TargetGroup.Enemies;
@@ -190,8 +196,8 @@ public class ActionEditor : MonoBehaviour
                 tg = Action.TargetGroup.All;
                 break;
         }
-        if (primary) guessAction.primaryTargetGroup = tg;
-        else guessAction.secondaryTargetGroup = tg;
+        if (primary) primaryTargetGroup = tg;
+        else secondaryTargetGroup = tg;
         CompareActionInformation();
     }
     public void SetTargeting(int index, bool primary)
@@ -236,6 +242,7 @@ public class ActionEditor : MonoBehaviour
                     {
                         node.Error("Each effect can only have one of each type of output, except for conditions.");
                     }
+                    outputGuessesPrimary[j].affectedGroup = primaryTargetGroup;
                 }
             }
         }
@@ -245,32 +252,33 @@ public class ActionEditor : MonoBehaviour
         // Secondary effect
         //if (Book.currentEntry.activeAction.guessAction.secondaryOutput.Count != 0)
         //{
-            outputGuessesSecondary.Clear();
-            secondaryShapes.Clear();
-            for (int i = 0; i < secondEditHolder.childCount; i++)
+        outputGuessesSecondary.Clear();
+        secondaryShapes.Clear();
+        for (int i = 0; i < secondEditHolder.childCount; i++)
+        {
+            ActionNode node = secondEditHolder.GetChild(i).GetComponent<ActionNode>();
+            if (node.nodeType == ActionNode.NodeType.Context) node.Error("The secondary effect uses the context of the primary effect. Only place Shape and Output nodes here.");
+            else if (node.nodeType == ActionNode.NodeType.Shape)
             {
-                ActionNode node = secondEditHolder.GetChild(i).GetComponent<ActionNode>();
-                if (node.nodeType == ActionNode.NodeType.Context) node.Error("The secondary effect uses the context of the primary effect. Only place Shape and Output nodes here.");
-                else if (node.nodeType == ActionNode.NodeType.Shape)
+                secondaryShapes.Add(node.actionShape);
+                if (secondaryShapes.Count > 1)
                 {
-                    secondaryShapes.Add(node.actionShape);
-                    if (secondaryShapes.Count > 1)
-                    {
-                        node.Error("Each effect can only have one shape.");
-                    }
-                }
-                else
-                {
-                    outputGuessesSecondary.Add(node.actionOutput);
-                    for (int j = 0; j < outputGuessesSecondary.Count - 1; j++)
-                    {
-                        if (outputGuessesSecondary[j].output == node.actionOutput.output && outputGuessesSecondary[j].output != Action.Output.Condition)
-                        {
-                            node.Error("Each effect can only have one of each type of output, except for conditions.");
-                        }
-                    }
+                    node.Error("Each effect can only have one shape.");
                 }
             }
+            else
+            {
+                outputGuessesSecondary.Add(node.actionOutput);
+                for (int j = 0; j < outputGuessesSecondary.Count - 1; j++)
+                {
+                    if (outputGuessesSecondary[j].output == node.actionOutput.output && outputGuessesSecondary[j].output != Action.Output.Condition)
+                    {
+                        node.Error("Each effect can only have one of each type of output, except for conditions.");
+                    }
+                    outputGuessesSecondary[j].affectedGroup = secondaryTargetGroup;
+                }
+            }
+        }
         //}
 
         LogBuilder();
@@ -350,6 +358,18 @@ public class ActionEditor : MonoBehaviour
         OutputInfo primaryMove = null, secondaryMove = null;
         bool flag1 = false, flag2 = false;
         Log elements = GameManager.instance.logElementCollection;
+
+        if (outputGuessesPrimary.Count == 0 || contextGuessesPrimary.Count == 0 || primaryShapes.Count == 0 || guessAction.descriptionIndex == -1)
+        {
+            log.Append($"Add at least 1 <b><color={(contextGuessesPrimary.Count > 0 ? "#015400" : "red")}>Context</color></b>, 1 " +
+                $"<b><color={(primaryShapes.Count > 0 ? "#015400" : "red")}>Shape</color></b>, " +
+                $"and 1 <b><color={(outputGuessesPrimary.Count > 0 ? "#015400" : "red")}>Output</color></b>, " +
+                $"and set the <b><color={(guessAction.descriptionIndex > -1 ? "#015400" : "red")}>Warning Movement</color></b> for this action to be valid.");
+            logTest.text = log.ToString();
+            Book.currentEntry.activeAction.guessAction.description = "This action lacks information. Click here to add it.";
+            return;
+        }
+
         log.Append("If the monster ");
         if (outputGuessesPrimary.Count> 0)
         {

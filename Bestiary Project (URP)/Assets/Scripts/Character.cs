@@ -569,7 +569,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public bool CanBeMovedToNode(Node destination)
     {
         bool flag = false;
-
+        if (destination == null) return false;
         Vector2Int dirToNode;
         dirToNode = Vector2Int.RoundToInt((destination.coordinate - position).normalized);
 

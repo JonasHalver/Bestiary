@@ -9,11 +9,14 @@ public class Page : MonoBehaviour
     public Entry entry;
     public Transform actionCardHolder;
     public TMP_InputField nameInput;
+    public GameObject actionCardPrefab;
     public List<CardRearrangement> actionCards = new List<CardRearrangement>();
+    public GameObject addCard;
     public Image icon;
     public StatsEditor editor;
     public PageUI pageUI;
-
+    public GameObject warningPrefab;
+    public bool deletionConfirmed = false, cancelConfirmed = false;
 
     private void Start()
     {
@@ -30,20 +33,27 @@ public class Page : MonoBehaviour
 
     public void ConnectActions()
     {
-        if (actionCards.Count == 0)
+        if (entry.origin.characterType == CharacterStats.CharacterTypes.Adventurer)
         {
-            for (int i = 0; i < actionCardHolder.childCount; i++)
+            for (int i = 0; i < entry.origin.actions.Count; i++)
             {
-                actionCards.Add(actionCardHolder.GetChild(i).GetComponent<CardRearrangement>());
-                actionCardHolder.GetChild(i).GetComponent<CardRearrangement>().page = this;
-            }
-            for (int i = 0; i < actionCards.Count; i++)
-            {
-                actionCards[i].actionCheck = entry.actionChecks[i];
-                actionCards[i].panelColor = actionCards[i].panelColors[i];
-                entry.actionChecks[i].panelColor = actionCards[i].panelColor;
+                NewActionCard();
             }
         }
+        //if (actionCards.Count == 0)
+        //{
+        //    for (int i = 0; i < actionCardHolder.childCount; i++)
+        //    {
+        //        actionCards.Add(actionCardHolder.GetChild(i).GetComponent<CardRearrangement>());
+        //        actionCardHolder.GetChild(i).GetComponent<CardRearrangement>().page = this;
+        //    }
+        //    for (int i = 0; i < actionCards.Count; i++)
+        //    {
+        //        actionCards[i].actionCheck = entry.actionChecks[i];
+        //        actionCards[i].panelColor = actionCards[i].panelColors[i];
+        //        entry.actionChecks[i].panelColor = actionCards[i].panelColor;
+        //    }
+        //}
     }
 
     public void MonsterNameChanged()
@@ -57,10 +67,51 @@ public class Page : MonoBehaviour
         for (int i = 0; i < actionCards.Count; i++)
         {
             actionCards[i].actionCheck.guessAction.actionPriority = actionCards[i].transform.GetSiblingIndex() + 1;
-
         }
     }
-
+    public void NewActionCard()
+    {
+        if (actionCards.Count > 2) addCard.SetActive(false);
+        GameObject newCard = Instantiate(actionCardPrefab, actionCardHolder);
+        CardRearrangement card = newCard.GetComponent<CardRearrangement>();
+        actionCards.Add(card);
+        card.page = this;
+        card.entry = entry;
+        if (entry.actionChecks.Count >= actionCards.Count) card.actionCheck = entry.actionChecks[actionCards.Count - 1];        
+        if (card.panelColors.Count >= actionCards.Count) card.panelColor = card.panelColors[actionCards.Count - 1];
+        if (card.actionCheck != null) card.actionCheck.panelColor = card.panelColor;
+        addCard.transform.SetAsLastSibling();
+    }
+    public void RemoveCard(CardRearrangement card)
+    {
+        GameObject newWarning = Instantiate(warningPrefab, transform);
+        newWarning.GetComponent<WarningPopup>().page = this;
+        StartCoroutine(WaitingForDeletionConfirmation(card));
+    }
+    IEnumerator WaitingForDeletionConfirmation(CardRearrangement card)
+    {
+        while (true)
+        {
+            if (cancelConfirmed)
+            {
+                cancelConfirmed = false;
+                break;
+            }
+            if (deletionConfirmed)
+            {
+                deletionConfirmed = false;
+                if (card.entry.activeDescriptionIndices.Contains(card.actionCheck.guessAction.descriptionIndex))
+                    card.entry.activeDescriptionIndices.Remove(card.actionCheck.guessAction.descriptionIndex);
+                card.actionCheck.guessAction.ResetAction();
+                card.actionCheck.originalAction = null;                
+                actionCards.Remove(card);
+                Destroy(card.gameObject);
+                if (actionCards.Count < 4) addCard.SetActive(true);
+                break;
+            }
+            yield return null;
+        }
+    }
     public void CloseBook()
     {
         GameManager.instance.OpenJournal();

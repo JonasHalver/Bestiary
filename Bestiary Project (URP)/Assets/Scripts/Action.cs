@@ -42,7 +42,7 @@ public class Action : ScriptableObject
     [Tooltip("Number of targets needed for position to be valid. Default 1.")]
     public int nearTargetCount = 1;
     
-    */public enum Shape { Melee, Ranged, Self, Arc, Cone, Line, Area, Pulse, All }/*
+    */public enum Shape { Melee, Ranged, Self, Arc, Cone, Line, Area, Pulse, All, None }/*
     //[Tooltip("When targeting ALL, use Single")]
     */public enum Status { Below50, Above50, InMelee, NotInMelee, Irrelevant }/*
     [Tooltip("Needs to be true for the action to be chosen")]
@@ -216,6 +216,23 @@ public class Action : ScriptableObject
             }
         }
     }  
+
+    public void ResetAction()
+    {
+        primaryContext.Clear();
+        primaryOutput.Clear();
+        secondaryOutput.Clear();
+        actionName = null;
+        primaryShape = Shape.None;
+        secondaryShape = Shape.None;
+        descriptionIndex = -1;
+        actionDescription = null;
+        priorityConditionComparison = Condition.None;
+        targetPriority = TargetPriority.MostHurt;
+        descriptionSet = false;
+        outcomeSet = false;
+        targetingSet = false;
+    }
 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
     {

@@ -3221,10 +3221,32 @@ MonoBehaviour:
       m_Calls: []
   m_OnSelect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7822652727728524942}
+        m_MethodName: EditingName
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   m_OnDeselect:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7822652727728524942}
+        m_MethodName: EditingName
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_OnTextSelection:
     m_PersistentCalls:
       m_Calls: []
@@ -3501,6 +3523,7 @@ MonoBehaviour:
   tooltips:
   - The action targets characters.
   - The action targets spaces.
+  activeIndex: 0
   type: 0
   primary: 0
 --- !u!114 &7822652726982198370
@@ -4999,6 +5022,7 @@ MonoBehaviour:
   - The action has 1 round of cooldown.
   - The action has 2 rounds of cooldown.
   - The action has 3 rounds of cooldown.
+  activeIndex: 0
   type: 2
   primary: 1
 --- !u!114 &7822652727665574080
@@ -5818,6 +5842,7 @@ MonoBehaviour:
   - The action can only hit enemies.
   - The action can only hit allies.
   - The action can hit all characters.
+  activeIndex: 1
   type: 1
   primary: 0
 --- !u!114 &7822652727877656013
@@ -8211,6 +8236,7 @@ MonoBehaviour:
   - The action can only hit enemies.
   - The action can only hit allies.
   - The action can hit all characters.
+  activeIndex: 0
   type: 1
   primary: 1
 --- !u!114 &7822652729090585062
@@ -8352,6 +8378,7 @@ MonoBehaviour:
   tooltips:
   - The action targets characters.
   - The action targets spaces.
+  activeIndex: 0
   type: 0
   primary: 1
 --- !u!114 &7822652729103079334

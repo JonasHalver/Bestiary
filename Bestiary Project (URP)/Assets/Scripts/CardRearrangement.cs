@@ -15,6 +15,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private List<RaycastResult> hits = new List<RaycastResult>();
     public TextMeshProUGUI priorityNumber;
     public Page page;
+    public Entry entry;
     public ActionCheck actionCheck;
     private bool dragging = false;
     public int priorityIndex = 0;
@@ -30,6 +31,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     public TextMeshProUGUI description;
     public TextMeshProUGUI actionName;
     private bool editable = true;
+    public GameObject delete;
 
     int frameCount = 0;
 
@@ -55,6 +57,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
         if (Book.currentEntry.isMerc)
         {
             editable = false;
+            delete.SetActive(false);
         }
         else editable = true;
 
@@ -69,7 +72,10 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
         priorityIndex = Mathf.Clamp(priorityIndex, 1,4);
         priorityNumber.text = priorityIndex.ToString();
     }
-
+    public void RemoveCard()
+    {
+        page.RemoveCard(this);
+    }
     public void UpdateIcons(bool merc)
     {
         if(!merc)
