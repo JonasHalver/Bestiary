@@ -6,14 +6,14 @@ public class GeneralUI : MonoBehaviour
 {
     public void Glossary()
     {
-        GameManager.instance.OpenGlossary();
+        GameManager.ChangeState(GameManager.GameState.Glossary);
     }
     public void PauseMenu()
     {
-        GameManager.instance.Pause();
+        GameManager.ChangeState(GameManager.GameState.PauseMenu);
     }
     public void Journal()
     {
-        GameManager.instance.OpenJournal();
+        GameManager.ChangeState(GameManager.GameState.Bestiary);
     }
 }

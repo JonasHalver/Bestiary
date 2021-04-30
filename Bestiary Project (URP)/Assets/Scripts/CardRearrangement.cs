@@ -306,6 +306,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
             {
                 Book.currentEntry.activeAction = actionCheck;
                 Book.OpenActionEditing();
+                if (GameManager.tutorial) TutorialManager.instance.ForceContinue(true);
                 break;
             }
             yield return null;
