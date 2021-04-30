@@ -60,7 +60,7 @@ public class CharacterSheet : MonoBehaviour
         Book.openOnMerc = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer;
 
         Book.instance.pageNumber = character == null ? currentCharacter.stats.pageNumber : character.stats.pageNumber;
-        GameManager.ChangeState(GameManager.GameState.Journal);
+        GameManager.ChangeState(GameManager.GameState.Bestiary);
         HideSheet();
     }
     public void ShowEntry(Entry entry)
@@ -68,7 +68,7 @@ public class CharacterSheet : MonoBehaviour
         Book.openOnMerc = entry.isMerc;
 
         Book.instance.pageNumber = entry == null ? currentCharacter.stats.pageNumber : entry.origin.pageNumber;
-        GameManager.ChangeState(GameManager.GameState.Journal);
+        GameManager.ChangeState(GameManager.GameState.Bestiary);
         HideSheet();
     }
 

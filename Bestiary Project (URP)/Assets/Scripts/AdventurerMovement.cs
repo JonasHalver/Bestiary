@@ -88,7 +88,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 !CombatLogCard.displayingPast &&
                 !selected && !moving)
             {
-                if (transform.position != currentNode.tile.transform.position) transform.position = currentNode.tile.transform.position;
+                //if (transform.position != currentNode.tile.transform.position) transform.position = currentNode.tile.transform.position;
             }
         }
         if (selected)
@@ -104,7 +104,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             (GameManager.instance.debugMode ? true : character.stats.characterType != CharacterStats.CharacterTypes.NPC);
     }
 
-    IEnumerator MoveToNewLocation(bool ai)
+    IEnumerator MoveToNewLocation(bool ai, bool slow)
     {
         moving = true;
         if (targetNode != null)
@@ -129,7 +129,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             t = 0;
             while (t < 1)
             {
-                t += Time.deltaTime * 2;
+                t += Time.deltaTime * (slow ? 0.1f : 2);
                 transform.position = Vector3.Lerp(transform.position, targetNode.tile.transform.position, t);
                 yield return null;
             }
@@ -292,13 +292,13 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         destinations.Clear();
         if (!character.Conditions.ContainsKey(Action.Condition.RootMonster)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;
-        StartCoroutine(MoveToNewLocation(true));
+        StartCoroutine(MoveToNewLocation(true, character.Conditions.ContainsKey(Action.Condition.SlowMonster)));
     }
 
-    public void MoveByAction(Node end)
+    public void MoveByAction(Node end, bool slow)
     {
         targetNode = end;
-        StartCoroutine(MoveToNewLocation(false));
+        StartCoroutine(MoveToNewLocation(false, slow));
     }
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -353,18 +353,18 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         unitSelected = false;
         if (!canceled && targetNode != null && !illegalMove)
         {
-            StartCoroutine(MoveToNewLocation(false));
+            StartCoroutine(MoveToNewLocation(false, character.Conditions.ContainsKey(Action.Condition.SlowMerc)));
             previousNode = currentNode;
         }
         else if (!canceled && illegalMove)
         {
             targetNode = currentNode;
-            StartCoroutine(MoveToNewLocation(false));
+            StartCoroutine(MoveToNewLocation(false, false));
         }
         else  if (canceled)
         {
             targetNode = currentNode;
-            StartCoroutine(MoveToNewLocation(false));
+            StartCoroutine(MoveToNewLocation(false, false));
         }
     }
 

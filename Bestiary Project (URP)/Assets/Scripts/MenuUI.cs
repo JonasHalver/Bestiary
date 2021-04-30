@@ -1,14 +1,29 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuUI : MonoBehaviour
 {
     public static MenuUI instance;
+    private Animator uiAnim;
+    public Animator UIAnim
+    {
+        get 
+        { 
+            if (uiAnim == null) uiAnim = GetComponent<Animator>(); 
+            return uiAnim; 
+        }
+    }
 
     [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject glossary;
     [SerializeField] private GameObject gameover;
+    [SerializeField] private GameObject generalUI;
+
+    [SerializeField] private Button bestiaryButton;
+    [SerializeField] private Button glossaryButton;
+    [SerializeField] private Button settingsButton;
 
     public static GameObject PauseMenu
     {
@@ -33,22 +48,36 @@ public class MenuUI : MonoBehaviour
     {
         instance = this;
     }
+    private void OnEnable()
+    {
+        TutorialManager.ShowBestiary += ShowBestiary;
+    }
+    private void OnDisable()
+    {
+        TutorialManager.ShowBestiary -= ShowBestiary;
+    }
 
     public void OpenGlossary()
     {
-        GameManager.instance.OpenGlossary();
+        GameManager.ChangeState(GameManager.GameState.Glossary);
     }
     public void OpenPauseMenu()
     {
-        GameManager.instance.Pause();
+        GameManager.ChangeState(GameManager.GameState.PauseMenu);
     }
     public void OpenJournal()
     {
-        GameManager.instance.OpenJournal();
+        GameManager.ChangeState(GameManager.GameState.Bestiary);
     }
 
     public void Exit()
     {
         GameManager.instance.Exit();
+    }
+
+    private void ShowBestiary()
+    {
+        UIAnim.SetTrigger("FadeIn");
+        bestiaryButton.enabled = true;
     }
 }

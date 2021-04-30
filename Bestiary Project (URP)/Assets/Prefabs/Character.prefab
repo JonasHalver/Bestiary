@@ -330,7 +330,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selected: 0
   character: {fileID: 0}
-  movementLeft: 0
   movementCost: 0
   canMove: 0
 --- !u!114 &329833077950276860

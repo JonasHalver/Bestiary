@@ -153,6 +153,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             AI = gameObject.AddComponent<MonsterAI>();
             AI.character = this;
         }
+        anim.SetTrigger("FadeIn");
+        movement.MoveByAction(movement.currentNode, true);
     }
 
     void UpdatePosition()
@@ -558,7 +560,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         else
         {
-            movement.MoveByAction(lastValidNode);
+            movement.MoveByAction(lastValidNode, false);
 
             if (impactWall)
             {
@@ -597,19 +599,19 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         {                        
             if (destination.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(newCoord)))
             {
-                movement.MoveByAction(destination);
+                movement.MoveByAction(destination, false);
                 destination.occupant.MoveByCollision(CombatGrid.NodeFromPosition(newCoord));
             }
             else
             {
                 destination.occupant.ReceiveHit(DamageTypes.Crushing);
-                movement.MoveByAction(CombatGrid.NodeFromPosition(destination.coordinate - dirToNode));
+                movement.MoveByAction(CombatGrid.NodeFromPosition(destination.coordinate - dirToNode), false);
             }
             ReceiveHit(DamageTypes.Crushing);
         }
         else
         {
-            movement.MoveByAction(destination);
+            movement.MoveByAction(destination, false);
         }
         
     }

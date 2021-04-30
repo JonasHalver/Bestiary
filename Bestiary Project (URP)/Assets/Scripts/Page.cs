@@ -81,6 +81,7 @@ public class Page : MonoBehaviour
         if (card.panelColors.Count >= actionCards.Count) card.panelColor = card.panelColors[actionCards.Count - 1];
         if (card.actionCheck != null) card.actionCheck.panelColor = card.panelColor;
         addCard.transform.SetAsLastSibling();
+        if (GameManager.tutorial && TutorialManager.instance.tutorialIndex == 23) TutorialManager.instance.ForceContinue(true);
     }
     public void RemoveCard(CardRearrangement card)
     {
@@ -114,7 +115,7 @@ public class Page : MonoBehaviour
     }
     public void CloseBook()
     {
-        GameManager.instance.OpenJournal();
+        GameManager.ChangeState(GameManager.GameState.Normal);
     }
 
     public void EditingText(bool editing)

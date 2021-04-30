@@ -30,8 +30,9 @@ public class GameManager : MonoBehaviour
 
     public static List<int> seed;
 
-    public enum GameState { Normal, PauseMenu, Journal, Glossary}
+    public enum GameState { Normal, PauseMenu, PauseCombat, Bestiary, Glossary}
     public static GameState gameState = GameState.Normal;
+    private bool combatPaused = false;
     public GameObject journal;
     private bool flag = false;
     public bool combatStartSequence = false;
@@ -41,6 +42,7 @@ public class GameManager : MonoBehaviour
     public static List<GameObject> openWindows = new List<GameObject>();
 
     public static bool textInput;
+    public static bool tutorial = true;
 
     private void Awake()
     {
@@ -62,14 +64,16 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded += OnNewSceneLoad;
         InputManager.Escape += Escape;
         InputManager.OpenGlossary += OpenGlossary;
-        InputManager.OpenJournal += OpenJournal;
+        InputManager.OpenJournal += OpenBestiary;
+        InputManager.Commit += PauseCombat;
     }
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= OnNewSceneLoad;
         InputManager.Escape -= Escape;
         InputManager.OpenGlossary -= OpenGlossary;
-        InputManager.OpenJournal -= OpenJournal;
+        InputManager.OpenJournal -= OpenBestiary;
+        InputManager.Commit -= PauseCombat;
     }
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
     {
@@ -120,7 +124,9 @@ public class GameManager : MonoBehaviour
         {
             if (!actorsSpawned)
             {
-                CombatManager.instance.StartCombat(0);
+                CombatManager.instance.SpawnAllies();
+                CombatManager.instance.SpawnEnemies();
+                CombatManager.instance.SetInitiative();
             }
             else
                 combatStartSequence = true;
@@ -133,14 +139,16 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (!combatStartSequence) CombatStartSequence();
-        else
+        if (!tutorial || (tutorial && TutorialManager.allowCombat))
         {
-            if (!debugMode) GameStateCheck();
-        }
-        if (enemiesWon || alliesWon) GameOver();
-
-        GameStateMachine();
+            if (!combatStartSequence) CombatStartSequence();
+            else
+            {
+                if (!debugMode) GameStateCheck();
+            }
+            if (enemiesWon || alliesWon) GameOver();
+            GameStateMachine();
+        }   
         UpdateWindowsList();
     }
 
@@ -166,11 +174,34 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-
+    public void PauseCombat()
+    {
+        if (tutorial) return;
+        if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup)
+        {
+            if (gameState == GameState.Normal)
+            {
+                combatPaused = true;
+                ChangeState(GameState.PauseCombat);
+            }
+            else if (gameState == GameState.PauseCombat)
+            {
+                combatPaused = false;
+                ChangeState(GameState.Normal);
+            }
+        }
+    }
     public static void ChangeState(GameState newState)
     {
         instance.flag = false;
+        if (newState == GameState.Normal && instance.combatPaused) newState = GameState.PauseCombat;
+        if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup && newState != GameState.Normal) instance.combatPaused = true;
         gameState = newState;
+        if (tutorial && TutorialManager.allowBestiary && newState == GameState.Bestiary)
+        {
+            TutorialManager.instance.ForceContinue(true);
+            instance.GameStateMachine();
+        }
     }
 
     public void GameStateMachine()
@@ -195,7 +226,16 @@ public class GameManager : MonoBehaviour
                     flag = true;
                 }
                 break;
-            case GameState.Journal:
+            case GameState.PauseCombat:
+                if (!flag)
+                {
+                    Book.instance.OpenPages(false, Book.instance.pageNumber);
+                    MenuUI.PauseMenu.SetActive(false);
+                    MenuUI.Glossary.SetActive(false);
+                    flag = true;
+                }
+                break;
+            case GameState.Bestiary:
                 if (!flag)
                 {
                     Book.instance.OpenPages(true, Book.instance.pageNumber);
@@ -218,7 +258,7 @@ public class GameManager : MonoBehaviour
 
     public void Escape()
     {
-
+        if (tutorial) return;
         if(focusedWindow == null)
         {
             if (gameState != GameState.Normal)
@@ -256,7 +296,7 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    public void OpenPauseMenu()
+    private void OpenPauseMenu()
     {
 
         if (gameState != GameState.PauseMenu)
@@ -270,11 +310,11 @@ public class GameManager : MonoBehaviour
         CloseAllWindows();
 
     }
-    public void OpenJournal()
+    private void OpenBestiary()
     {
-        if (gameState != GameState.Journal)
+        if (gameState != GameState.Bestiary)
         {
-            ChangeState(GameState.Journal);
+            ChangeState(GameState.Bestiary);
         }
         else
         {
@@ -282,7 +322,7 @@ public class GameManager : MonoBehaviour
         }
         CloseAllWindows();
     }
-    public void OpenGlossary()
+    private void OpenGlossary()
     {
         if (gameState != GameState.Glossary) ChangeState(GameState.Glossary);
         else ChangeState(GameState.Normal);
@@ -316,7 +356,7 @@ public class GameManager : MonoBehaviour
         else if (enemiesAlive > 0 && alliesAlive == 0) enemiesWon = true;
     }
 
-    public void Pause()
+    private void Pause()
     {
         if (gameState != GameState.PauseMenu)
             ChangeState(GameState.PauseMenu);

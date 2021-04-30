@@ -236,12 +236,24 @@ public class ActionEditor : MonoBehaviour
             else
             {
                 outputGuessesPrimary.Add(node.actionOutput);
+                bool damage = false, healing = false;
                 for (int j = 0; j < outputGuessesPrimary.Count-1; j++)
                 {
                     if (outputGuessesPrimary[j].output == node.actionOutput.output && outputGuessesPrimary[j].output != Action.Output.Condition)
                     {
                         node.Error("Each effect can only have one of each type of output, except for conditions.");
                     }
+                    damage = outputGuessesPrimary[j].output == Action.Output.Damage;
+                    healing = outputGuessesPrimary[j].output == Action.Output.Healing;
+
+                    if (healing && damage)
+                    {
+                        if (outputGuessesPrimary[j].output == Action.Output.Healing || outputGuessesPrimary[j].output == Action.Output.Damage)
+                        {
+                            node.Error("An effect cannot heal and deal damage. Consider using splitting them into the primary and secondary effect.");
+                        }
+                    }
+
                     outputGuessesPrimary[j].affectedGroup = primaryTargetGroup;
                 }
             }
@@ -268,6 +280,8 @@ public class ActionEditor : MonoBehaviour
             }
             else
             {
+                bool damage = false, healing = false;
+
                 outputGuessesSecondary.Add(node.actionOutput);
                 for (int j = 0; j < outputGuessesSecondary.Count - 1; j++)
                 {
@@ -276,6 +290,16 @@ public class ActionEditor : MonoBehaviour
                         node.Error("Each effect can only have one of each type of output, except for conditions.");
                     }
                     outputGuessesSecondary[j].affectedGroup = secondaryTargetGroup;
+                    damage = outputGuessesSecondary[j].output == Action.Output.Damage;
+                    healing = outputGuessesSecondary[j].output == Action.Output.Healing;
+
+                    if (healing && damage)
+                    {
+                        if (outputGuessesSecondary[j].output == Action.Output.Healing || outputGuessesSecondary[j].output == Action.Output.Damage)
+                        {
+                            node.Error("An effect cannot both heal and deal damage. Consider using splitting them into the primary and secondary effect.");
+                        }
+                    }
                 }
             }
         }
