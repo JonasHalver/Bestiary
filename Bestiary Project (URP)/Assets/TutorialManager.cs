@@ -139,6 +139,7 @@ public class TutorialManager : MonoBehaviour
                 allowBestiary = true;
                 ShowBestiary.Invoke();
                 break;
+                // Bestiary
             case 16:
                 NextTutorial(tutorialParts[tutorialIndex], false, true);
                 break;
@@ -165,6 +166,43 @@ public class TutorialManager : MonoBehaviour
                 break;
             case 24:
                 NextTutorial(tutorialParts[tutorialIndex], true, false);
+                break;
+                // Action Editor
+            case 25:
+                NextTutorial(tutorialParts[tutorialIndex], false, true);
+                break;
+            case 26:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 27:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 28:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 29:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 30:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 31:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 32:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 33:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 34:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 35:
+                NextTutorial(tutorialParts[tutorialIndex], true, true);
+                break;
+            case 36:
+                NextTutorial(tutorialParts[tutorialIndex], false, false);
                 break;
         }
     }

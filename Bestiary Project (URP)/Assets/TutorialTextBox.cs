@@ -84,6 +84,7 @@ public class TutorialTextBox : MonoBehaviour
         while (t < 1)
         {
             rt.localPosition = Vector3.Lerp(rt.localPosition, destination.localPosition, t);
+            rt.sizeDelta = Vector3.Lerp(rt.sizeDelta, destination.sizeDelta, t); 
             if (interrupt) break;
             t += Time.deltaTime;
             yield return null;
@@ -94,8 +95,10 @@ public class TutorialTextBox : MonoBehaviour
     {
         yield return null;
         interrupt = false;
+        bool fast = false;
         string output = "";
         string m = tutorialMessages[messages[tutorial]].Remove(0, tutorial.Length + 1);
+        fast = m.Length > 30;
         for (int i = 0; i < m.Length; i++)
         {
             if (interrupt) break;
@@ -107,7 +110,8 @@ public class TutorialTextBox : MonoBehaviour
                 i = endIndex;
                 continue;
             }
-            yield return null;
+            if (!fast)
+                yield return null;
             if (interrupt) break;
             if (m[i] == '*') output += System.Environment.NewLine;
             else output += m[i];
