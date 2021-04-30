@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/TextMesh Pro/Scenes/Combat Scene v1.unity
+    path: Assets/Scenes/Combat Scene v1.unity
     guid: 3de34cb8c93a83c4bb8704d4190558e8
   m_configObjects: {}
