@@ -95,13 +95,10 @@ public class TutorialTextBox : MonoBehaviour
     {
         yield return null;
         interrupt = false;
-        bool fast = false;
         string output = "";
         string m = tutorialMessages[messages[tutorial]].Remove(0, tutorial.Length + 1);
-        fast = m.Length > 30;
         for (int i = 0; i < m.Length; i++)
         {
-            if (interrupt) break;
             if (m[i] == '<')
             {
                 int endIndex = m.IndexOf('>', i);
@@ -110,8 +107,6 @@ public class TutorialTextBox : MonoBehaviour
                 i = endIndex;
                 continue;
             }
-            if (!fast)
-                yield return null;
             if (interrupt) break;
             if (m[i] == '*') output += System.Environment.NewLine;
             else output += m[i];

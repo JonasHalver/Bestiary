@@ -30,7 +30,25 @@ public class TutorialManager : MonoBehaviour
     }
     private void Start()
     {
-        TutorialStateMachine();
+        if (GameManager.tutorial)
+            TutorialStateMachine();
+        else StartCoroutine(ShowEverything());
+    }
+    IEnumerator ShowEverything()
+    {
+        yield return null;
+        ShowGrid.Invoke();
+        yield return new WaitForSeconds(0.5f);
+        ShowAlly.Invoke();
+        yield return new WaitForSeconds(0.1f);
+        ShowEnemy.Invoke();
+        yield return new WaitForSeconds(0.1f);
+        StartCombat.Invoke();
+        yield return new WaitForSeconds(0.5f);
+        ShowBestiary.Invoke();
+        yield return new WaitForSeconds(0.5f);
+        ShowLogAndInitiative.Invoke();
+        gameObject.SetActive(false);
     }
     private void OnEnable()
     {

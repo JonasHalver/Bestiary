@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     public static bool textInput;
     public static bool tutorial = true;
 
+    public bool startInTutorial = true;
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -66,6 +68,7 @@ public class GameManager : MonoBehaviour
         InputManager.OpenGlossary += OpenGlossary;
         InputManager.OpenJournal += OpenBestiary;
         InputManager.Commit += PauseCombat;
+        TutorialManager.StartCombat += CombatStartSequence;
     }
     private void OnDisable()
     {
@@ -74,6 +77,7 @@ public class GameManager : MonoBehaviour
         InputManager.OpenGlossary -= OpenGlossary;
         InputManager.OpenJournal -= OpenBestiary;
         InputManager.Commit -= PauseCombat;
+        TutorialManager.StartCombat -= CombatStartSequence;
     }
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
     {
@@ -88,37 +92,7 @@ public class GameManager : MonoBehaviour
 
         if (!bookFilled)
         {
-            for (int i = 0; i < enemies.Count; i++)
-            {
-                bool flag = false;
-                foreach (Entry entry in Book.monsterEntries)
-                {
-                    if (entry.origin == enemies[i]) flag = true;
-                }
-                if (!flag)
-                {
-                    Entry n = new Entry(enemies[i]);
-                    Book.monsterEntries.Add(n);
-                    enemies[i].entry = n;
-                }
-            }
-            for (int i = 0; i < mercenaries.Count; i++)
-            {
-                bool flag = false;
-                foreach(Entry entry in Book.mercEntries)
-                {
-                    if (entry.origin == mercenaries[i]) flag = true;
-                }
-                if (!flag)
-                {
-                    Entry n = new Entry(mercenaries[i]);
-                    Book.mercEntries.Add(n);
-
-                    mercenaries[i].entry = n;
-                    n.isMerc = true;
-                }
-            }
-            Book.instance.FillBook();   
+              
         }
         else
         {
@@ -134,21 +108,55 @@ public class GameManager : MonoBehaviour
     }
     private void FirstActions()
     {
+        tutorial = startInTutorial;
 
+        for (int i = 0; i < combatEncounters[0].enemies.Count; i++)
+        {
+            enemies.Add(combatEncounters[0].enemies[i]);
+        }
+
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            bool flag = false;
+            foreach (Entry entry in Book.monsterEntries)
+            {
+                if (entry.origin == enemies[i]) flag = true;
+            }
+            if (!flag)
+            {
+                Entry n = new Entry(enemies[i]);
+                Book.monsterEntries.Add(n);
+                enemies[i].entry = n;
+            }
+        }
+        for (int i = 0; i < mercenaries.Count; i++)
+        {
+            bool flag = false;
+            foreach (Entry entry in Book.mercEntries)
+            {
+                if (entry.origin == mercenaries[i]) flag = true;
+            }
+            if (!flag)
+            {
+                Entry n = new Entry(mercenaries[i]);
+                Book.mercEntries.Add(n);
+
+                mercenaries[i].entry = n;
+                n.isMerc = true;
+            }
+        }
+        Book.instance.FillBook();
     }
 
     private void Update()
     {
-        if (!tutorial || (tutorial && TutorialManager.allowCombat))
+        if (combatStartSequence)
         {
-            if (!combatStartSequence) CombatStartSequence();
-            else
-            {
-                if (!debugMode) GameStateCheck();
-            }
+            if (!debugMode) GameStateCheck();
             if (enemiesWon || alliesWon) GameOver();
             GameStateMachine();
-        }   
+        }           
+           
         UpdateWindowsList();
     }
 

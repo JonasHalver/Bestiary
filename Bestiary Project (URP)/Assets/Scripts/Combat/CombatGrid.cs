@@ -30,7 +30,26 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         instance = this;
         gRaycaster = canvas.GetComponent<GraphicRaycaster>();
     }
-
+    private void OnEnable()
+    {
+        TutorialManager.ShowGrid += ShowGrid;
+    }
+    private void OnDisable()
+    {
+        TutorialManager.ShowGrid -= ShowGrid;
+    }
+    public void ShowGrid()
+    {
+        StartCoroutine(SequentialFadeIn());
+    }
+    IEnumerator SequentialFadeIn()
+    {
+        foreach (Node n in grid)
+        {
+            n.tile.GetComponent<TileFadeIn>().FadeIn();
+            yield return new WaitForSeconds(1 / 25);
+        }
+    }
     void Start()
     {
         int index = 0;
@@ -58,7 +77,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 {
                     if (n.tile == eventData.pointerEnter)
                     {
-                        SelectNode(n);
+                        //SelectNode(n);
                     }
                 }
             }
@@ -904,7 +923,7 @@ public class Node
         y = _y;
         coordinate = new Vector2(x, y);
         img = tile.GetComponent<Image>();
-        originalColor = img.color;
+        originalColor = new Color(img.color.r, img.color.g, img.color.b, 1);
     }
 
     public void FindNeighbors()
