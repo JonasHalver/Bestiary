@@ -18,6 +18,7 @@ public class TutorialTextBox : MonoBehaviour
     public TextMeshProUGUI clickToContinue;
     public bool interrupt = false;
     public static bool mouseOverText = false;
+    public bool active = false;
 
 
     // Start is called before the first frame update
@@ -54,6 +55,7 @@ public class TutorialTextBox : MonoBehaviour
     public void Fade(bool fadeIn)
     {
         interrupt = true;
+        active = fadeIn;
         textBox.text = "";
         clickToContinue.enabled = false;
         StartCoroutine(FadeLerp(fadeIn));

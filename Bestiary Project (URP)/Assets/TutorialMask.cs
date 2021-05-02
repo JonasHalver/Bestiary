@@ -14,7 +14,7 @@ public class TutorialMask : MonoBehaviour
     private int locationIndex = 0;
     public bool interrupt = false;
     public static bool mouseOverMask = false;
-    public static bool active;
+    public static bool active; 
 
     // Start is called before the first frame update
     void Start()

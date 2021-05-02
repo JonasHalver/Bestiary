@@ -1094,6 +1094,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 90920080}
   m_CullTransparentMesh: 0
+--- !u!1 &93373855
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 93373856}
+  - component: {fileID: 93373857}
+  m_Layer: 5
+  m_Name: EnemyMovement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &93373856
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93373855}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 39
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 593, y: 312}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &93373857
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 93373855}
+  m_CullTransparentMesh: 0
 --- !u!1 &134593203
 GameObject:
   m_ObjectHideFlags: 0
@@ -2399,9 +2443,42 @@ MonoBehaviour:
     took! **You can click and drag to relocate both this window and the Bestiary
     behind it. **Once you\u2019re happy with your work, let's get back to the monster
     entry."
+  - "HitPoints The number of hit points a character has shows how many hits they
+    can survive. **Critical hits deal 2 hits of damage. Collisions and damage over
+    time conditions deal \xBD. **This number is set to 1 for any new monster you
+    encounter, but monsters rarely have only 1 hit point. **Tip: Setting this to
+    something high allows you to more easily track how much the monster heals."
+  - "Movement The number of spaces a character can move from the space where they
+    started their turn. **How far a character can move as part of an action is not
+    affected by this stat. **Tip: Setting this to a low value makes it easier to
+    see if you\u2019re wrong about a guess."
+  - 'Speed The speed of a character determines when it gets to act during combat.
+    **Tip: Your Initiative list shows the order based on the numbers entered in the
+    Bestiary, not the actual values, but you can see the actions that were taken
+    in the correct order in the Combat Log.'
+  - "Resistances Damage types that a character takes less damage from. **Resistance
+    reduces the damage taken to half, and if the damage taken would have been \xBD,
+    then it is 0 instead. **Tip: All monsters are resistant to at least one damage
+    type, so try to damage them with each of them to figure out what they are resistant
+    to."
+  - 'Weaknesses Damage types that a character takes extra damage from. **Damage from
+    damage dealing actions deal 2 hits of damage (3 if it is a critical hit), and
+    collisions and damage over time conditions deal 1.**Tip: All monsters are weak
+    to at least one damage type, so try to damage them with each of them to figure
+    out what they are weak to.'
+  - "BestiaryWrapup So you have added an action to the list. If you think it\u2019s
+    wrong, you can always click it to edit it again, or delete it entirely. **If
+    the monster uses that action again, and all the information you have entered
+    is correct, it will lock and turn green. **A monster can have up to 4 different
+    actions, depending on how difficult and complex that monster is. This one probably
+    only has 1 action."
+  - "EnemyMovement After everyone has acted, the monster will move to a new position.
+    Some will be aggressive, and move to fight your mercenaries. **This one appears
+    to be afraid of you. Interesting\u2026"
   textBox: {fileID: 850079288}
   clickToContinue: {fileID: 419664944}
   interrupt: 0
+  active: 0
 --- !u!1 &261197149
 GameObject:
   m_ObjectHideFlags: 0
@@ -2868,6 +2945,13 @@ RectTransform:
   - {fileID: 1223242041}
   - {fileID: 1864991668}
   - {fileID: 692217854}
+  - {fileID: 1620295015}
+  - {fileID: 546685253}
+  - {fileID: 2114986677}
+  - {fileID: 1990495870}
+  - {fileID: 1301809025}
+  - {fileID: 978429994}
+  - {fileID: 93373856}
   m_Father: {fileID: 500803426}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6797,24 +6881,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTextBox: {fileID: 258898327}
   tutorialMask: {fileID: 796220762}
-  tutorialIndex: 0
-  tutorialParts:
+  tutMain1Index: 0
+  tutMain2Index: 0
+  tutMain3Index: 0
+  tutMain4Index: 0
+  tutBestiaryIndex: 0
+  tutActionIndex: 0
+  tutorialMain1:
   - Intro1
   - Intro2
-  - Intro3
   - Notext1
   - Notext2
   - Templar1
-  - Templar2
   - Notext3
   - Enemy1
   - Context
   - Commit
   - Combat
-  - Notext3
+  - Notext4
   - CombatLog1
   - CombatLog2
   - BestiaryOpen
+  - EnemyMovement
+  unskippableMain1: 02000000030000000500000008000000090000000b0000000d000000
+  tutorialMain2: []
+  unskippableMain2: 
+  tutorialMain3: []
+  unskippableMain3: 
+  tutorialMain4: []
+  unskippableMain4: 
+  tutorialBestiary:
   - BestiaryIntro1
   - BestiaryIntro2
   - BestiaryName
@@ -6824,6 +6920,9 @@ MonoBehaviour:
   - BestiaryRW
   - BestiaryActions1
   - BestiaryActions2
+  - BestiaryWrapup
+  unskippableBestiary: 0700000008000000
+  tutorialAction:
   - ActionEditorIntro
   - ActionEditorName
   - ActionEditorWM
@@ -6836,6 +6935,8 @@ MonoBehaviour:
   - ActionEditorDiscard
   - ActionEditorDescription
   - ActionEditorFinish
+  unskippableAction: 
+  currentSequence: 0
   clickBlocker: {fileID: 450707516}
 --- !u!1 &510316394
 GameObject:
@@ -7100,6 +7201,50 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 521649926}
+  m_CullTransparentMesh: 0
+--- !u!1 &546685252
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 546685253}
+  - component: {fileID: 546685254}
+  m_Layer: 5
+  m_Name: Movement
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &546685253
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546685252}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 34
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 629, y: 376}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &546685254
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 546685252}
   m_CullTransparentMesh: 0
 --- !u!1 &561696231
 GameObject:
@@ -7396,7 +7541,7 @@ GameObject:
   - component: {fileID: 608115849}
   - component: {fileID: 608115852}
   m_Layer: 5
-  m_Name: Journal
+  m_Name: Bestiary
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10072,6 +10217,50 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 969083248}
+  m_CullTransparentMesh: 0
+--- !u!1 &978429993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 978429994}
+  - component: {fileID: 978429995}
+  m_Layer: 5
+  m_Name: BestiaryWrapup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &978429994
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978429993}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 38
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -359, y: 434}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &978429995
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 978429993}
   m_CullTransparentMesh: 0
 --- !u!1001 &991252427
 PrefabInstance:
@@ -13567,6 +13756,50 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1298788249}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1301809024
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1301809025}
+  - component: {fileID: 1301809026}
+  m_Layer: 5
+  m_Name: Weaknesses
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1301809025
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301809024}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 37
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 629, y: 479}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1301809026
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1301809024}
+  m_CullTransparentMesh: 0
 --- !u!224 &1321555488 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4733649891532412910, guid: 0858a446b6bcdd449879f168d1b357f7,
@@ -15990,6 +16223,50 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1617547375}
+  m_CullTransparentMesh: 0
+--- !u!1 &1620295014
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1620295015}
+  - component: {fileID: 1620295016}
+  m_Layer: 5
+  m_Name: HitPoints
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1620295015
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620295014}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 33
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 629, y: 479}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1620295016
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1620295014}
   m_CullTransparentMesh: 0
 --- !u!1001 &1620834969
 PrefabInstance:
@@ -18857,6 +19134,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1958051558}
   m_CullTransparentMesh: 0
+--- !u!1 &1990495869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1990495870}
+  - component: {fileID: 1990495871}
+  m_Layer: 5
+  m_Name: Resistances
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1990495870
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1990495869}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 36
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 629, y: 479}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1990495871
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1990495869}
+  m_CullTransparentMesh: 0
 --- !u!1 &2004990305
 GameObject:
   m_ObjectHideFlags: 0
@@ -20191,6 +20512,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2114143748}
   m_CullTransparentMesh: 0
+--- !u!1 &2114986676
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2114986677}
+  - component: {fileID: 2114986678}
+  m_Layer: 5
+  m_Name: Speed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2114986677
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114986676}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 35
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 629, y: 479}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &2114986678
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2114986676}
+  m_CullTransparentMesh: 0
 --- !u!1 &2116976700
 GameObject:
   m_ObjectHideFlags: 0
@@ -20708,7 +21073,7 @@ PrefabInstance:
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: startInTutorial
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}

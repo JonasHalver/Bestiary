@@ -233,5 +233,6 @@ public class StatsEditor : MonoBehaviour
         if (!editable) return;
 
         Book.OpenStatEditing((Entry.StatEntries)stat);
+        TutorialManager.instance.StandaloneTutorial(((Entry.StatEntries)stat).ToString());
     }
 }

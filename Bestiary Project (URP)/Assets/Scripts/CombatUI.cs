@@ -43,7 +43,7 @@ public class CombatUI : MonoBehaviour
     {
         if (GameManager.tutorial)
         {
-            TutorialManager.instance.Continue();
+            TutorialManager.instance.ForceContinue(true);
         }
     }
 

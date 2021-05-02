@@ -45,6 +45,8 @@ public class GameManager : MonoBehaviour
     public static bool tutorial = true;
 
     public bool startInTutorial = true;
+    public static event System.Action OpenedBestiary;
+    public static event System.Action ClosedBestiary;
 
     private void Awake()
     {
@@ -204,12 +206,17 @@ public class GameManager : MonoBehaviour
         instance.flag = false;
         if (newState == GameState.Normal && instance.combatPaused) newState = GameState.PauseCombat;
         if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup && newState != GameState.Normal) instance.combatPaused = true;
+        if (tutorial && gameState == GameState.Bestiary)
+        {
+            ClosedBestiary.Invoke();
+        }
         gameState = newState;
         if (tutorial && TutorialManager.allowBestiary && newState == GameState.Bestiary)
         {
-            TutorialManager.instance.ForceContinue(true);
+            //TutorialManager.instance.ForceContinue(true);
             instance.GameStateMachine();
         }
+        
     }
 
     public void GameStateMachine()
@@ -246,6 +253,7 @@ public class GameManager : MonoBehaviour
             case GameState.Bestiary:
                 if (!flag)
                 {
+                    OpenedBestiary.Invoke();
                     Book.instance.OpenPages(true, Book.instance.pageNumber);
                     MenuUI.PauseMenu.SetActive(false);
                     MenuUI.Glossary.SetActive(false);

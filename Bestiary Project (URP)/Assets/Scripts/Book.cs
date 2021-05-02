@@ -148,6 +148,11 @@ public class Book : MonoBehaviour
         GameManager.openWindows.Add(s);
         GameManager.focusedWindow = s;
     }
+    public void CloseEditingWindow()
+    {
+        statCanvas.SetActive(false);
+        TutorialManager.instance.EndStandalone();
+    }
     public void EditingText(bool editing)
     {
         GameManager.textInput = editing;
