@@ -54,7 +54,28 @@ public class TutorialManager : MonoBehaviour
     private void Start()
     {
         if (GameManager.tutorial)
+        {
+            switch (GameManager.instance.tutorialProgress)
+            {
+                case 0:
+                    currentSequence = TutorialSequence.Main1;
+                    activeSequence = TutorialSequence.Main1;
+                    break;
+                case 1:
+                    currentSequence = TutorialSequence.Main2;
+                    activeSequence = TutorialSequence.Main2;
+                    break;
+                case 2:
+                    currentSequence = TutorialSequence.Main3;
+                    activeSequence = TutorialSequence.Main3;
+                    break;
+                case 3:
+                    currentSequence = TutorialSequence.Main4;
+                    activeSequence = TutorialSequence.Main4;
+                    break;
+            }
             TutorialStateMachine();
+        }
         else StartCoroutine(ShowEverything());
     }
     IEnumerator ShowEverything()
@@ -80,6 +101,8 @@ public class TutorialManager : MonoBehaviour
         GameManager.ClosedBestiary += ClosedBestiary;
         ActionEditor.ActionEditorOpened += OpenedActionEditor;
         ActionEditor.ActionEditorClosed += ClosedActionEditor;
+        GameManager.Victory += Victory;
+        GameManager.Defeat += Defeat;
     }
     private void OnDisable()
     {
@@ -88,6 +111,8 @@ public class TutorialManager : MonoBehaviour
         GameManager.ClosedBestiary -= ClosedBestiary;
         ActionEditor.ActionEditorOpened -= OpenedActionEditor;
         ActionEditor.ActionEditorClosed -= ClosedActionEditor;
+        GameManager.Victory -= Victory;
+        GameManager.Defeat -= Defeat;
     }
     private void Update()
     {
@@ -240,7 +265,14 @@ public class TutorialManager : MonoBehaviour
         activeSequence = TutorialSequence.BestiaryMonster;
         ForceContinue(true);
     }
-
+    public void Victory()
+    {
+        StandaloneTutorial("Victory");
+    }
+    public void Defeat()
+    {
+        StandaloneTutorial("Defeat");
+    }
     public void TutorialStateMachine()
     {
         if (!GameManager.tutorial) return;
@@ -457,8 +489,21 @@ public class TutorialManager : MonoBehaviour
                 ShowBestiary.Invoke();
                 break;
             case 14:
+                GameManager.combatPaused = false;
                 GameManager.ChangeState(GameManager.GameState.Normal);
-                NextTutorial(tutorialMain1[index], false, false);
+                NextTutorial(tutorialMain1[index], false, true);
+                break;
+            case 15:
+                NextTutorial(tutorialMain1[index], false, true);
+                break;
+            case 16:
+                HideTutorial();
+                break;
+            case 17:
+                NextTutorial(tutorialMain1[index], false, true);
+                break;
+            case 18:
+                HideTutorial();
                 break;
         }
     }
@@ -495,6 +540,9 @@ public class TutorialManager : MonoBehaviour
                 break;
             case 9:
                 NextTutorial(tutorialBestiary[index], false, false);
+                break;
+            case 10:
+                HideTutorial();
                 break;
         }
     }
@@ -537,6 +585,9 @@ public class TutorialManager : MonoBehaviour
                 break;
             case 11:
                 NextTutorial(tutorialAction[index], false, false);
+                break;
+            case 12:
+                HideTutorial();
                 break;
         }
     }

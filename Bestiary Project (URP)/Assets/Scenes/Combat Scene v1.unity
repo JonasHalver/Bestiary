@@ -2475,6 +2475,13 @@ MonoBehaviour:
   - "EnemyMovement After everyone has acted, the monster will move to a new position.
     Some will be aggressive, and move to fight your mercenaries. **This one appears
     to be afraid of you. Interesting\u2026"
+  - NewRound A new round has started. You can move the templar again. **Defeat the
+    enemy to continue.
+  - Victory You defeated the monster! But did you learn all you could about it? **Do
+    not worry, the forest is full of monsters, you will run into the same kind of
+    monster again if you keep going.
+  - Defeat Your team was defeated! **Thankfully, the monster never saw you, so you
+    get to escape with your book.
   textBox: {fileID: 850079288}
   clickToContinue: {fileID: 419664944}
   interrupt: 0
@@ -2952,6 +2959,9 @@ RectTransform:
   - {fileID: 1301809025}
   - {fileID: 978429994}
   - {fileID: 93373856}
+  - {fileID: 792479347}
+  - {fileID: 1872451827}
+  - {fileID: 516247533}
   m_Father: {fileID: 500803426}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -6903,6 +6913,7 @@ MonoBehaviour:
   - CombatLog2
   - BestiaryOpen
   - EnemyMovement
+  - NewRound
   unskippableMain1: 02000000030000000500000008000000090000000b0000000d000000
   tutorialMain2: []
   unskippableMain2: 
@@ -7033,6 +7044,50 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &516247532
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 516247533}
+  - component: {fileID: 516247534}
+  m_Layer: 5
+  m_Name: Defeat
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &516247533
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516247532}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 42
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -611, y: 312}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &516247534
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 516247532}
+  m_CullTransparentMesh: 0
 --- !u!1001 &520788789
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9104,6 +9159,50 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 785773912}
+  m_CullTransparentMesh: 0
+--- !u!1 &792479346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 792479347}
+  - component: {fileID: 792479348}
+  m_Layer: 5
+  m_Name: NewRound
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &792479347
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792479346}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 40
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 631, y: 396}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &792479348
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 792479346}
   m_CullTransparentMesh: 0
 --- !u!1 &796220757
 GameObject:
@@ -18036,6 +18135,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1864991667}
   m_CullTransparentMesh: 0
+--- !u!1 &1872451826
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1872451827}
+  - component: {fileID: 1872451828}
+  m_Layer: 5
+  m_Name: Victory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1872451827
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872451826}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 313176575}
+  m_RootOrder: 41
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -611, y: 312}
+  m_SizeDelta: {x: 500, y: 400}
+  m_Pivot: {x: 0.5, y: 1}
+--- !u!222 &1872451828
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872451826}
+  m_CullTransparentMesh: 0
 --- !u!1 &1874753339
 GameObject:
   m_ObjectHideFlags: 0
@@ -21062,6 +21205,11 @@ PrefabInstance:
       objectReference: {fileID: 1244769499}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
+      propertyPath: alliesWon
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
       propertyPath: debugMode
       value: 1
       objectReference: {fileID: 0}
@@ -21078,12 +21226,12 @@ PrefabInstance:
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: enemies.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: mercenaries.Array.size
-      value: 1
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
@@ -21095,19 +21243,42 @@ PrefabInstance:
         type: 3}
       propertyPath: mercenaries.Array.data[1]
       value: 
-      objectReference: {fileID: 11400000, guid: d0aac4b3217d25a45b2a5cef7819dc68,
+      objectReference: {fileID: 11400000, guid: 4b5c2ea7d91a4594e89fec58f4ad9364,
         type: 2}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: mercenaries.Array.data[2]
       value: 
-      objectReference: {fileID: 11400000, guid: 4b5c2ea7d91a4594e89fec58f4ad9364,
+      objectReference: {fileID: 11400000, guid: 9acaf5b5ab40a1f44add0fb369f58cad,
         type: 2}
     - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}
       propertyPath: mercenaries.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: 9acaf5b5ab40a1f44add0fb369f58cad,
+      objectReference: {fileID: 11400000, guid: d0aac4b3217d25a45b2a5cef7819dc68,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: tutorialEncounters.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: combatEncounters.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: ab732e18486af1e45b71fe2765d4f0ca,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: tutorialEncounters.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: ab732e18486af1e45b71fe2765d4f0ca,
+        type: 2}
+    - target: {fileID: 5615254646155214215, guid: f559ab8fc316eca49a150c5c67285b32,
+        type: 3}
+      propertyPath: tutorialEncounters.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 8eaed1133c959a344a6ef62e0c1335f0,
         type: 2}
     - target: {fileID: 5615254646155214232, guid: f559ab8fc316eca49a150c5c67285b32,
         type: 3}

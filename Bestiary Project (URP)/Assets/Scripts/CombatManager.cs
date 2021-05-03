@@ -136,11 +136,11 @@ public class CombatManager : MonoBehaviour
     }    
     public void SpawnAllies()
     {
-        for (int i = 0; i < GameManager.instance.mercenaries.Count; i++)
+        for (int i = 0; i < GameManager.instance.activeMercenaries.Count; i++)
         {
             GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
             Character c = newMerc.GetComponent<Character>();
-            c.stats = GameManager.instance.mercenaries[i];
+            c.stats = GameManager.instance.activeMercenaries[i];
             Node spawn = CombatGrid.CharacterSpawn(false);
             newMerc.transform.position = allySpawn.position;
             spawn.occupant = c;
@@ -364,7 +364,7 @@ public class CombatManager : MonoBehaviour
             TurnPhases.Invoke(CombatTiming.EndOfCharacterTurn, actors[i]);
             if (GameManager.tutorial)
             {
-                if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC) TutorialManager.instance.ForceContinue(false);
+                if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC && TutorialManager.instance.tutMain1Index < 12) TutorialManager.instance.ForceContinue(false);
             }
             for (int j = 0; j < 20; j++)
             {
