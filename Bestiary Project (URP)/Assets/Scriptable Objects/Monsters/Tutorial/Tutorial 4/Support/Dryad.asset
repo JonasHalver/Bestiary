@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
-  m_Name: Tutorial2Monster
+  m_Name: Dryad
   m_EditorClassIdentifier: 
-  characterName: Giant Spider
-  characterCode: giantspidertutorial
+  characterName: Dryad
+  characterCode: dryad
   characterType: 0
-  personality: 0
+  personality: 4
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterIconColor: {r: 0.64445686, g: 0, b: 1, a: 1}
-  hitPoints: 3
+  characterIconColor: {r: 0.38219258, g: 0.6132076, b: 0, a: 1}
+  hitPoints: 6
   armored: 0
-  resistances: 06000000
-  weaknesses: 02000000
+  resistances: 0400000006000000
+  weaknesses: 03000000
   speed: 6
-  movement: 3
+  movement: 2
   actions:
-  - {fileID: 11400000, guid: a570bcf0a711fce488a70457d915805c, type: 2}
-  - {fileID: 11400000, guid: 88ae4ae4af07c274483a1e7664976c68, type: 2}
-  pageNumber: 1
+  - {fileID: 11400000, guid: 3482b3859b694ad4aa2f4366382385d3, type: 2}
+  - {fileID: 11400000, guid: 4babc1e1fc7a3e342b7c782388cb23d5, type: 2}
+  - {fileID: 11400000, guid: 04aaef705a93de546b1565a4178ef5b5, type: 2}
+  - {fileID: 11400000, guid: c94d702594ee3524bbfbb47565f8de95, type: 2}
+  pageNumber: 0
   entry: {fileID: 0}

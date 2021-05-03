@@ -10,22 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
-  m_Name: Tutorial2Monster
+  m_Name: Scolopendra
   m_EditorClassIdentifier: 
-  characterName: Giant Spider
-  characterCode: giantspidertutorial
+  characterName: Scolopendra
+  characterCode: scolopendra
   characterType: 0
-  personality: 0
+  personality: 5
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterIconColor: {r: 0.64445686, g: 0, b: 1, a: 1}
-  hitPoints: 3
+  characterIconColor: {r: 1, g: 0, b: 0, a: 1}
+  hitPoints: 5
   armored: 0
-  resistances: 06000000
+  resistances: 0100000004000000
   weaknesses: 02000000
-  speed: 6
+  speed: 9
   movement: 3
   actions:
-  - {fileID: 11400000, guid: a570bcf0a711fce488a70457d915805c, type: 2}
-  - {fileID: 11400000, guid: 88ae4ae4af07c274483a1e7664976c68, type: 2}
-  pageNumber: 1
+  - {fileID: 11400000, guid: 79cad0a62d734804b9b0ff39a3c26824, type: 2}
+  - {fileID: 11400000, guid: abe0eddbff585cb43b9782d64e1fc014, type: 2}
+  - {fileID: 11400000, guid: aacd429111815d749837892b68d2115d, type: 2}
+  - {fileID: 11400000, guid: 36d4bbb34c4b54e4283a14e476dba3fb, type: 2}
+  pageNumber: 0
   entry: {fileID: 0}

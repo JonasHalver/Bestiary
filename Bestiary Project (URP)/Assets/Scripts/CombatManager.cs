@@ -93,6 +93,7 @@ public class CombatManager : MonoBehaviour
         combatActions.Clear();
         actors.Clear();
         characterPositions.Clear();
+        threat.Clear();
         combatUI = CombatUI.instance.transform;
         combatStarted = false;
     }
@@ -136,6 +137,7 @@ public class CombatManager : MonoBehaviour
     }    
     public void SpawnAllies()
     {
+        print("spawning allies");
         for (int i = 0; i < GameManager.instance.activeMercenaries.Count; i++)
         {
             GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
@@ -151,12 +153,12 @@ public class CombatManager : MonoBehaviour
     }
     public void SpawnEnemies()
     {
-        int encounterIndex = 0;
-        for (int i = 0; i < GameManager.instance.combatEncounters[encounterIndex].enemies.Count; i++)
+
+        for (int i = 0; i < GameManager.instance.enemies.Count; i++)
         {
             GameObject newMonster = Instantiate(characterPrefab, actorsContainer);
             Character c = newMonster.GetComponent<Character>();
-            c.stats = GameManager.instance.combatEncounters[encounterIndex].enemies[i];
+            c.stats = GameManager.instance.enemies[i];
             Node spawn = CombatGrid.CharacterSpawn(true);
             newMonster.transform.position = enemySpawn.position;
             spawn.occupant = c;

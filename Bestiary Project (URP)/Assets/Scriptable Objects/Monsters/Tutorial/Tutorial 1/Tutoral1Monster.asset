@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1901a52dfb45af64195ee098a3747d03, type: 3}
   m_Name: Tutoral1Monster
   m_EditorClassIdentifier: 
-  characterName: 
+  characterName: Giant Rat
   characterCode: giantrattutorial
   characterType: 0
   personality: 4

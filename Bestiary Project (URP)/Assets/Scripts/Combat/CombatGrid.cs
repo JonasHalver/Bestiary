@@ -146,6 +146,11 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
 
     public static Node CharacterSpawn(bool isMonster)
     {
+        if (GameManager.tutorial && TutorialManager.instance.currentSequence == TutorialManager.TutorialSequence.Main1)
+        {
+            if (isMonster) return grid[2, 3];
+            else return grid[2, 1];
+        }
         List<Node> possibleSpawns = new List<Node>();
         foreach(Node n in grid)
         {

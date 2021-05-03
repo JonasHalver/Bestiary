@@ -37,7 +37,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     public static event System.Action newPosition;
 
     private float t;
-    private bool moving = false;
+    [SerializeField] private bool moving = false;
     public bool canMove = false;
     public static bool unitSelected = false;
 
@@ -132,13 +132,15 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 t += Time.deltaTime * (slow ? 0.1f : 2);
                 transform.position = Vector3.Lerp(transform.position, targetNode.tile.transform.position, t);
                 yield return null;
+                if (selected) break;
             }
             if (previousNode != currentNode) previousNode = currentNode;
             currentNode = targetNode;
             targetNode = null;
         }
         if (previousNode != null && previousNode.occupant == character) previousNode.occupant = null;
-        if (currentNode.occupant != character) currentNode.occupant = character;
+        if (currentNode != null)
+            if (currentNode.occupant == null || currentNode.occupant != character) currentNode.occupant = character;
 
         CombatGrid.StopHighlight();
         ReportNewNode(currentNode);

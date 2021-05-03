@@ -50,7 +50,6 @@ public class HealthBarSpawner : MonoBehaviour
 
     private void MoveAllyBars()
     {
-        print("got here");
         allyBG.SetTrigger("MoveIn");
     }
 

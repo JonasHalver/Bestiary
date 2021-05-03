@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: WolfBite
+  m_Name: PackTactics
   m_EditorClassIdentifier: 
   editWindow: {fileID: 0}
-  actionName: Wolf Bite
-  actionCode: wolfbitetutorial
+  actionName: Pack Tactics
+  actionCode: packtacticstutorial
   description: 
   monsterAI: {fileID: 0}
   actionDescription: 
-  descriptionIndex: 2
-  cooldown: 0
+  descriptionIndex: 6
+  cooldown: 1
   minimumHits: 1
   targetPriority: 0
   priorityConditionComparison: 0
-  actionPriority: 3
+  actionPriority: 2
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
   isPass: 0
   primaryContext:
   - actor: {fileID: 0}
-    context: 3
+    context: 6
     value: 0
     condition: 0
     damageType: 0
@@ -38,7 +38,23 @@ MonoBehaviour:
   primaryTargeting: 0
   primaryShape: 0
   primaryTargetGroup: 0
-  primaryOutput: []
+  primaryOutput:
+  - output: 0
+    value: 0
+    condition: 0
+    critical: 0
+    damageType: 1
+    towards: 0
+    difficulty: 0
+    affectedGroup: 0
+  - output: 2
+    value: 1
+    condition: 2
+    critical: 0
+    damageType: 1
+    towards: 0
+    difficulty: 0
+    affectedGroup: 0
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
