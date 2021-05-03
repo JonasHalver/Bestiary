@@ -22,8 +22,11 @@ public class GameManager : MonoBehaviour
     public bool debugMode = false;
 
     public List<CharacterStats> enemies = new List<CharacterStats>();
+    public List<CharacterStats> activeMercenaries = new List<CharacterStats>();
     public List<CharacterStats> mercenaries = new List<CharacterStats>();
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
+    public List<CombatEncounter> tutorialEncounters = new List<CombatEncounter>();
+    public int tutorialProgress = 0;
     public Icons currentIconCollection;
     public Tooltips currentTooltipCollection;
     public Log logElementCollection;
@@ -32,7 +35,8 @@ public class GameManager : MonoBehaviour
 
     public enum GameState { Normal, PauseMenu, PauseCombat, Bestiary, Glossary}
     public static GameState gameState = GameState.Normal;
-    private bool combatPaused = false;
+    public GameState gamestateDisplay;
+    public static bool combatPaused = false;
     public GameObject journal;
     private bool flag = false;
     public bool combatStartSequence = false;
@@ -47,6 +51,8 @@ public class GameManager : MonoBehaviour
     public bool startInTutorial = true;
     public static event System.Action OpenedBestiary;
     public static event System.Action ClosedBestiary;
+    public static event System.Action Victory;
+    public static event System.Action Defeat;
 
     private void Awake()
     {
@@ -59,7 +65,7 @@ public class GameManager : MonoBehaviour
             seed.Add(Random.Range(0, 10));
         }
 
-        FirstActions();
+        //FirstActions();
         DontDestroyOnLoad(this);
     }
 
@@ -112,9 +118,25 @@ public class GameManager : MonoBehaviour
     {
         tutorial = startInTutorial;
 
-        for (int i = 0; i < combatEncounters[0].enemies.Count; i++)
+        if (tutorial)
         {
-            enemies.Add(combatEncounters[0].enemies[i]);
+            activeMercenaries.Add(mercenaries[tutorialProgress]);
+            for (int i = 0; i < tutorialEncounters[tutorialProgress].enemies.Count; i++)
+            {
+                enemies.Add(tutorialEncounters[tutorialProgress].enemies[i]);
+            }
+            tutorialProgress++;
+        }
+        else
+        {
+            if (activeMercenaries.Count < 4)
+            {
+                activeMercenaries = mercenaries;
+            }
+            for (int i = 0; i < combatEncounters[0].enemies.Count; i++)
+            {
+                enemies.Add(combatEncounters[0].enemies[i]);
+            }
         }
 
         for (int i = 0; i < enemies.Count; i++)
@@ -131,19 +153,19 @@ public class GameManager : MonoBehaviour
                 enemies[i].entry = n;
             }
         }
-        for (int i = 0; i < mercenaries.Count; i++)
+        for (int i = 0; i < activeMercenaries.Count; i++)
         {
             bool flag = false;
             foreach (Entry entry in Book.mercEntries)
             {
-                if (entry.origin == mercenaries[i]) flag = true;
+                if (entry.origin == activeMercenaries[i]) flag = true;
             }
             if (!flag)
             {
-                Entry n = new Entry(mercenaries[i]);
+                Entry n = new Entry(activeMercenaries[i]);
                 Book.mercEntries.Add(n);
 
-                mercenaries[i].entry = n;
+                activeMercenaries[i].entry = n;
                 n.isMerc = true;
             }
         }
@@ -157,8 +179,8 @@ public class GameManager : MonoBehaviour
             if (!debugMode) GameStateCheck();
             if (enemiesWon || alliesWon) GameOver();
             GameStateMachine();
-        }           
-           
+        }
+        gamestateDisplay = gameState;
         UpdateWindowsList();
     }
 
@@ -204,8 +226,8 @@ public class GameManager : MonoBehaviour
     public static void ChangeState(GameState newState)
     {
         instance.flag = false;
-        if (newState == GameState.Normal && instance.combatPaused) newState = GameState.PauseCombat;
-        if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup && newState != GameState.Normal) instance.combatPaused = true;
+        if (newState == GameState.Normal && combatPaused) newState = GameState.PauseCombat;
+        //if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup && newState != GameState.Normal) combatPaused = true;
         if (tutorial && gameState == GameState.Bestiary)
         {
             ClosedBestiary.Invoke();
@@ -389,6 +411,8 @@ public class GameManager : MonoBehaviour
         TextMeshProUGUI winText = MenuUI.GameOver.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         winText.text = alliesWon ? "You Win!" : "You Lose!";
         MenuUI.GameOver.SetActive(true);
+        if (alliesWon) Victory.Invoke();
+        else Defeat.Invoke();
     }
 
     public void Restart()

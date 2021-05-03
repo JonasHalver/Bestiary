@@ -9,7 +9,9 @@ public class Action : ScriptableObject
 {
     [HideInInspector] public GameObject editWindow;
     public string actionName;
+    [Tooltip("Must be random; used to identify this action.")]
     public string actionCode;
+    [Tooltip("The description that shows up in the Character Sheet or Action Card display.")]
     public string description;
 
     public Character Actor
@@ -17,11 +19,12 @@ public class Action : ScriptableObject
         get; set;
     }
     [HideInInspector] public MonsterAI monsterAI;
-
+    [Tooltip("The description generated from a list.")]
     public string actionDescription;
+    [Range(-1,11)]
     public int descriptionIndex = -1;
     [Tooltip("How many turns must elaps between each use of this action?")]
-    public int cooldown = 1;
+    [Range(0,2)]public int cooldown = 1;
     public bool OnCooldown
     {
         get

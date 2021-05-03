@@ -20,8 +20,8 @@ public class CharacterStats : ScriptableObject
     public bool armored;
     public List<Character.DamageTypes> resistances = new List<Character.DamageTypes>();
     public List<Character.DamageTypes> weaknesses = new List<Character.DamageTypes>();
-    public int speed = 5;
-    public int movement = 2;
+    [Range(1,10)]public int speed = 5;
+    [Range(1,4)]public int movement = 2;
     public List<Action> actions = new List<Action>();
     public int pageNumber;
     [HideInInspector]

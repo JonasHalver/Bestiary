@@ -10,20 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: Condemn
+  m_Name: Bite
   m_EditorClassIdentifier: 
   editWindow: {fileID: 0}
-  actionName: Condemn
-  actionCode: condemnsweepslow
-  description: If I am near multiple enemies, I will strike at them in an arc, damaging
-    and slowing those I hit.
+  actionName: Bite
+  actionCode: giantratbite
+  description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
-  descriptionIndex: -1
-  cooldown: 1
+  actionDescription: opens its mouth wide
+  descriptionIndex: 1
+  cooldown: 0
   minimumHits: 1
-  targetPriority: 1
-  priorityConditionComparison: 14
+  targetPriority: 0
+  priorityConditionComparison: 0
   actionPriority: 1
   descriptionSet: 0
   targetingSet: 0
@@ -31,28 +30,20 @@ MonoBehaviour:
   isPass: 0
   primaryContext:
   - actor: {fileID: 0}
-    context: 4
+    context: 3
     value: 0
     condition: 0
     damageType: 0
     difficulty: 0
-  primaryTargeting: 1
-  primaryShape: 3
+  primaryTargeting: 0
+  primaryShape: 0
   primaryTargetGroup: 0
   primaryOutput:
   - output: 0
     value: 0
     condition: 0
     critical: 0
-    damageType: 0
-    towards: 0
-    difficulty: 0
-    affectedGroup: 0
-  - output: 2
-    value: 1
-    condition: 14
-    critical: 0
-    damageType: 0
+    damageType: 1
     towards: 0
     difficulty: 0
     affectedGroup: 0

@@ -27,7 +27,7 @@ public class CustomToggle : MonoBehaviour, IPointerClickHandler
         switch (type)
         {
             case ActionNode.ToggleType.Cooldown:
-                ActionEditor.instance.SetCooldown(activeIndex + 1);
+                ActionEditor.instance.SetCooldown(activeIndex);
                 break;
             case ActionNode.ToggleType.TargetGroup:
                 ActionEditor.instance.SetTargetGroup(activeIndex, primary);
