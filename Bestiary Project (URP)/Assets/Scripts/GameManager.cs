@@ -132,7 +132,6 @@ public class GameManager : MonoBehaviour
             for (int i = 0; i < tutorialEncounters[tutorialProgress].enemies.Count; i++)
             {
                 enemies.Add(tutorialEncounters[tutorialProgress].enemies[i]);
-                print($"Adding {tutorialEncounters[tutorialProgress].enemies[i].characterName}");
             }            
         }
         else
