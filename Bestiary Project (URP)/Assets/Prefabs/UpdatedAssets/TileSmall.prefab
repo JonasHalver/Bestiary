@@ -2471,6 +2471,7 @@ GameObject:
   - component: {fileID: 4246819857825687494}
   - component: {fileID: 4246819857825687488}
   - component: {fileID: 4246819857825687489}
+  - component: {fileID: 2299810262990807727}
   m_Layer: 5
   m_Name: TileSmall
   m_TagString: Tile
@@ -2519,7 +2520,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 2100000, guid: 350835951d6830e4eb229d6027855135, type: 2}
-  m_Color: {r: 0.7372549, g: 1, b: 0.24705882, a: 1}
+  m_Color: {r: 0.7372549, g: 1, b: 0.24705882, a: 0}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -2535,3 +2536,15 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &2299810262990807727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4246819857825687495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4783ad1173bfd2b4696b7f1d6470839b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

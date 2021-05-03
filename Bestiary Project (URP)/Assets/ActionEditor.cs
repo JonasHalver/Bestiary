@@ -26,11 +26,14 @@ public class ActionEditor : MonoBehaviour
 
     private Action.TargetGroup primaryTargetGroup = Action.TargetGroup.Enemies;
     private Action.TargetGroup secondaryTargetGroup = Action.TargetGroup.Allies;
+    public static event System.Action ActionEditorOpened;
+    public static event System.Action ActionEditorClosed;
 
     private Dictionary<Action.Context, ActionNode> contextNodes = new Dictionary<Action.Context, ActionNode>();
     private void Awake()
     {
         instance = this;
+        ActionEditorOpened.Invoke();
         //guessAction = ScriptableObject.CreateInstance<Action>();
     }
     private void OnEnable()
@@ -40,6 +43,7 @@ public class ActionEditor : MonoBehaviour
     private void OnDisable()
     {
         ActionNode.NodeChanged -= CompareActionInformation;
+        ActionEditorClosed.Invoke();
     }
 
     // Start is called before the first frame update

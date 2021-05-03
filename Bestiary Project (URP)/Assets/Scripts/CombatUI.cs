@@ -22,13 +22,13 @@ public class CombatUI : MonoBehaviour
 
     private void OnEnable()
     {
-        TutorialManager.ShowGrid += ShowGrid;
+        //TutorialManager.ShowGrid += ShowGrid;
         TutorialManager.ShowLogAndInitiative += ShowLog;
         TutorialManager.StartCombat += ShowCommit;
     }
     private void OnDisable()
     {
-        TutorialManager.ShowGrid -= ShowGrid;
+       // TutorialManager.ShowGrid -= ShowGrid;
         TutorialManager.ShowLogAndInitiative -= ShowLog;
         TutorialManager.StartCombat -= ShowCommit;
     }
@@ -43,7 +43,7 @@ public class CombatUI : MonoBehaviour
     {
         if (GameManager.tutorial)
         {
-            TutorialManager.instance.Continue();
+            TutorialManager.instance.ForceContinue(true);
         }
     }
 

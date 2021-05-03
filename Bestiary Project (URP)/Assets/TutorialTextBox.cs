@@ -18,6 +18,7 @@ public class TutorialTextBox : MonoBehaviour
     public TextMeshProUGUI clickToContinue;
     public bool interrupt = false;
     public static bool mouseOverText = false;
+    public bool active = false;
 
 
     // Start is called before the first frame update
@@ -54,6 +55,7 @@ public class TutorialTextBox : MonoBehaviour
     public void Fade(bool fadeIn)
     {
         interrupt = true;
+        active = fadeIn;
         textBox.text = "";
         clickToContinue.enabled = false;
         StartCoroutine(FadeLerp(fadeIn));
@@ -84,6 +86,7 @@ public class TutorialTextBox : MonoBehaviour
         while (t < 1)
         {
             rt.localPosition = Vector3.Lerp(rt.localPosition, destination.localPosition, t);
+            rt.sizeDelta = Vector3.Lerp(rt.sizeDelta, destination.sizeDelta, t); 
             if (interrupt) break;
             t += Time.deltaTime;
             yield return null;
@@ -98,7 +101,6 @@ public class TutorialTextBox : MonoBehaviour
         string m = tutorialMessages[messages[tutorial]].Remove(0, tutorial.Length + 1);
         for (int i = 0; i < m.Length; i++)
         {
-            if (interrupt) break;
             if (m[i] == '<')
             {
                 int endIndex = m.IndexOf('>', i);
@@ -107,7 +109,6 @@ public class TutorialTextBox : MonoBehaviour
                 i = endIndex;
                 continue;
             }
-            yield return null;
             if (interrupt) break;
             if (m[i] == '*') output += System.Environment.NewLine;
             else output += m[i];
