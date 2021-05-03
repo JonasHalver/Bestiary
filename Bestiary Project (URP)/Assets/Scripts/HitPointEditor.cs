@@ -35,14 +35,14 @@ public class HitPointEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        value = Mathf.Clamp(value, 0, 22);
+        value = Mathf.Clamp(value, 0, 10);
         display.value = value;
     }
 
     public void Add()
     {
         value++;
-        value = Mathf.Clamp(value, 0, 22);
+        value = Mathf.Clamp(value, 0, 10);
 
         slider.value = value;
         input.text = value.ToString();
@@ -51,7 +51,7 @@ public class HitPointEditor : MonoBehaviour
     public void Subtract()
     {
         value--;
-        value = Mathf.Clamp(value, 0, 22);
+        value = Mathf.Clamp(value, 0, 10);
 
         slider.value = value;
         input.text = value.ToString();

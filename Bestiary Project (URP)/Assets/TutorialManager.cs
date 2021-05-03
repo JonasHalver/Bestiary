@@ -499,12 +499,6 @@ public class TutorialManager : MonoBehaviour
             case 16:
                 HideTutorial();
                 break;
-            case 17:
-                NextTutorial(tutorialMain1[index], false, true);
-                break;
-            case 18:
-                HideTutorial();
-                break;
         }
     }
     private void BestiarySequence(int index)

@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
     public List<CharacterStats> mercenaries = new List<CharacterStats>();
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
     public List<CombatEncounter> tutorialEncounters = new List<CombatEncounter>();
-    public int tutorialProgress = 0;
+    public int tutorialProgress = -1;
     public Icons currentIconCollection;
     public Tooltips currentTooltipCollection;
     public Log logElementCollection;
@@ -120,12 +120,12 @@ public class GameManager : MonoBehaviour
 
         if (tutorial)
         {
+            tutorialProgress++;
             activeMercenaries.Add(mercenaries[tutorialProgress]);
             for (int i = 0; i < tutorialEncounters[tutorialProgress].enemies.Count; i++)
             {
                 enemies.Add(tutorialEncounters[tutorialProgress].enemies[i]);
-            }
-            tutorialProgress++;
+            }            
         }
         else
         {
