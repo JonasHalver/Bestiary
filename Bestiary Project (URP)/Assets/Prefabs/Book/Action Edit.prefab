@@ -5608,6 +5608,7 @@ MonoBehaviour:
   discardHolder: {fileID: 7822652726990534294}
   nameInput: {fileID: 4038154170682406576}
   logTest: {fileID: 7822652728281771373}
+  buttonText: {fileID: 7784691672829129685}
 --- !u!222 &3340560929925632757
 CanvasRenderer:
   m_ObjectHideFlags: 0

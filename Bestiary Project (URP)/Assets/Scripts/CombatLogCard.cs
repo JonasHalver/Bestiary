@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
+using System.Text;
 
 public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
+    public CombatLogInformation info;
+    public TextMeshProUGUI text;
     public GameObject topLine, botLine;
     public TextMeshProUGUI userName, actionName, affected, victimNameText, xCharacters, effectText, andText, buffText;
     public Image userIcon, victimIcon, effectIcon, buffIcon;
@@ -18,14 +21,26 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public static bool displayingPast = false;
     private int t = 0;
+    private Log elements;
+
     private void Update()
     {
         if (t > 10) { UpdateCanvas(); CreateCard(); }
         t++;
     }
 
-    public void CreateCard() 
+    public void CreateCard()
     {
+        elements = GameManager.instance.logElementCollection;
+        OutputInfo primaryMove = null, secondaryMove = null;
+
+        if (info.action.isPass)
+        {
+            if (ca.origin.entry.isMerc) text.text = $"<b>{ca.origin.stats.characterName}</b> passed.";
+            else text.text = $"<b>{ca.origin.entry.guess.characterName}</b> passed.";
+            return;
+        }
+        #region Old Code
         /* Rewrite
         user = ca.origin;
         victim = ca.affectedCharacters.Count == 1 ? ca.affectedCharacters[0] : null;
@@ -177,6 +192,194 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         }
         UpdateCanvas();
         */
+        #endregion
+        entry = ca.origin.entry;
+        Action guessAction = null;
+        if (!entry.isMerc)
+        {
+            if (entry.CheckByOrigin(ca.action) != null) guessAction = entry.CheckByOrigin(ca.action).guessAction;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (entry.isMerc) sb.Append($"<b>{ca.origin.stats.characterName}</b>'s <i>{ca.action.actionName}</i> ");
+        else sb.Append($"<b>{(ca.origin.entry.guess.characterName != null ? ca.origin.entry.guess.characterName : "The Unknown Monster")}</b>'s <i>{(guessAction != null ? guessAction.actionName : "Unknown Action")}</i> ");
+
+        if (info.primaryAffected.Count > 0)
+        {
+            sb.Append("affected ");
+
+            if (info.primaryAffected.Count > 1)
+                sb.Append($"{info.primaryAffected.Count} characters, ");
+            else if (info.primaryAffected.Count == 1 && info.primaryAffected[0].stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                sb.Append($"{(info.primaryAffected[0] != ca.origin ? info.primaryAffected[0].stats.characterName : "itself")}, ");
+            else if (info.primaryAffected.Count == 1 && info.primaryAffected[0].stats.characterType != CharacterStats.CharacterTypes.Adventurer)
+                sb.Append($"{(info.primaryAffected[0] != ca.origin ? (info.primaryAffected[0].entry.guess.characterName != null ? info.primaryAffected[0].entry.guess.characterName : "the Unknown Monster"):"itself")}, ");
+        }
+        else
+        {
+            sb.Append("missed entirely.");
+            return;
+        }
+
+        bool flag1 = false;
+        bool flag2 = false;
+
+        if (info.action.primaryOutput.Count > 0)
+        {
+            info.action.primaryOutput.Sort((g1, g2) => g1.output.CompareTo(g2.output));
+        }
+        if (info.action.secondaryOutput.Count > 0)
+        {
+            info.action.secondaryOutput.Sort((g1, g2) => g1.output.CompareTo(g2.output));
+        }
+        if (info.action.primaryOutput.Count > 0)
+        {
+            if (info.action.primaryOutput.Count == 1 && info.action.primaryOutput[0].output == Action.Output.Movement)
+            {
+                //sb.Append("target ");
+                flag1 = true;
+            }
+            else if (info.action.primaryOutput.Count > 1 && info.action.primaryOutput[info.action.primaryOutput.Count - 1].output == Action.Output.Movement)
+            {
+                flag1 = true;
+            }
+            for (int i = 0; i < info.action.primaryOutput.Count; i++)
+            {
+                if (!flag1)
+                {
+                    if (i != 0 && i == info.action.primaryOutput.Count - 1) sb.Append("and ");
+                }
+                else
+                {
+                    if (i != 0 && i == info.action.primaryOutput.Count - 2) sb.Append("and ");
+                }
+                switch (info.action.primaryOutput[i].output)
+                {
+                    case Action.Output.Damage:
+                        sb.Append(elements.GetString(info.action.primaryOutput[i].output, info.action.primaryOutput[i].damageType, info.action.primaryOutput[i].critical));
+                        break;
+                    case Action.Output.Healing:
+                        sb.Append(elements.GetString(info.action.primaryOutput[i].output, info.action.primaryOutput[i].value));
+                        break;
+                    case Action.Output.Condition:
+                        sb.Append(elements.GetString(info.action.primaryOutput[i].output, info.action.primaryOutput[i].condition, info.action.primaryOutput[i].value));
+                        break;
+                    case Action.Output.Movement:
+                        primaryMove = info.action.primaryOutput[i];
+                        break;
+                }
+                if (!flag1)
+                {
+                    if (i != info.action.primaryOutput.Count - 1)
+                    {
+                        sb.Append(", ");
+                    }
+                    else
+                    {
+                        sb.Append(" to them");
+                    }
+                }
+                else
+                {
+                    if (i != info.action.primaryOutput.Count - 2 && i != info.action.primaryOutput.Count - 1)
+                    {
+                        sb.Append(", ");
+                    }
+                    else if (i != info.action.primaryOutput.Count - 1)
+                    {
+                        sb.Append(" to them, ");
+                    }
+                }
+            }
+        }
+
+        if (primaryMove != null)
+        {
+            sb.Append(" ");
+
+            sb.Append(elements.GetString(primaryMove.output, primaryMove.value, primaryMove.towards));
+        }
+        sb.Append(".");
+        if (info.action.secondaryOutput.Count > 0)
+        {
+            sb.Append(" It also affected ");
+            if (info.secondaryAffected.Count > 1)
+                sb.Append($"{info.secondaryAffected.Count} characters, ");
+            else if (info.secondaryAffected.Count == 1 && info.secondaryAffected[0].stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                sb.Append($"{(info.secondaryAffected[0] != ca.origin ? info.secondaryAffected[0].stats.characterName : "itself")}, ");
+            else if (info.secondaryAffected.Count == 1 && info.secondaryAffected[0].stats.characterType != CharacterStats.CharacterTypes.Adventurer)
+                sb.Append($"{(info.secondaryAffected[0] != ca.origin ? (info.secondaryAffected[0].entry.guess.characterName != null ? info.secondaryAffected[0].entry.guess.characterName : "the Unknown Monster"): "itself")}, ");
+            if (info.action.secondaryOutput.Count == 1 && info.action.secondaryOutput[0].output == Action.Output.Movement)
+            {
+                //sb.Append("target ");
+                flag2 = true;
+            }
+            else if (info.action.secondaryOutput.Count > 1 && info.action.secondaryOutput[info.action.secondaryOutput.Count - 1].output == Action.Output.Movement)
+            {
+                flag2 = true;
+            }
+            for (int i = 0; i < info.action.secondaryOutput.Count; i++)
+            {
+                if (!flag2)
+                {
+                    if (i != 0 && i == info.action.secondaryOutput.Count - 1) sb.Append("and ");
+                }
+                else
+                {
+                    if (i != 0 && i == info.action.secondaryOutput.Count - 2) sb.Append("and ");
+                }
+                switch (info.action.secondaryOutput[i].output)
+                {
+                    case Action.Output.Damage:
+                        sb.Append(elements.GetString(info.action.secondaryOutput[i].output, info.action.secondaryOutput[i].damageType, info.action.secondaryOutput[i].critical));
+                        break;
+                    case Action.Output.Healing:
+                        sb.Append(elements.GetString(info.action.secondaryOutput[i].output, info.action.secondaryOutput[i].value));
+                        break;
+                    case Action.Output.Condition:
+                        sb.Append(elements.GetString(info.action.secondaryOutput[i].output, info.action.secondaryOutput[i].condition, info.action.secondaryOutput[i].value));
+                        break;
+                    case Action.Output.Movement:
+                        secondaryMove = info.action.secondaryOutput[i];
+                        break;
+                }
+                if (!flag2)
+                {
+                    if (i != info.action.secondaryOutput.Count - 1)
+                    {
+                        sb.Append(", ");
+                    }
+                    else
+                    {
+                        sb.Append("");
+                    }
+                }
+                else
+                {
+                    if (i != info.action.secondaryOutput.Count - 2 && i != info.action.secondaryOutput.Count - 1)
+                    {
+                        sb.Append(", ");
+                    }
+                    else if (i != info.action.secondaryOutput.Count - 1)
+                    {
+                        sb.Append(" to them,");
+                    }
+                }
+            }
+            if (secondaryMove != null)
+            {
+                sb.Append(" ");
+
+                sb.Append(elements.GetString(secondaryMove.output, secondaryMove.value, secondaryMove.towards));
+            }
+            sb.Append(".");
+        }
+        string s = sb.ToString();
+        s = s.Replace("deal", "dealing");
+        s = s.Replace("apply", "applying");
+        s = s.Replace("restore", "restoring");
+        s = s.Replace("force", "forcing");
+        text.text = s;
     }
 
     public void Pass()
@@ -198,13 +401,13 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         t = 0;
         Canvas.ForceUpdateCanvases();
-        topLine.SetActive(true);
-        topLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
-        topLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
-
-        botLine.SetActive(true);
-        botLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
-        botLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
+        //topLine.SetActive(true);
+        //topLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
+        //topLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
+        //
+        //botLine.SetActive(true);
+        //botLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
+        //botLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
     public void OnPointerExit(PointerEventData eventData)
     {
@@ -242,5 +445,24 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerClick(PointerEventData eventData)
     {
         CharacterSheet.instance.ShowEntry(ca.origin);
+    }
+
+    public class CombatLogInformation
+    {
+        public List<Character> primaryAffected = new List<Character>();
+        public List<Character> secondaryAffected = new List<Character>();
+        public Action action;
+
+        public CombatLogInformation (List<Character> pa, List<Character> sa, Action a)
+        {
+            primaryAffected = pa;
+            secondaryAffected = sa;
+            action = a;
+        }
+        public CombatLogInformation(List<Character> pa, Action a)
+        {
+            primaryAffected = pa;
+            action = a;
+        }
     }
 }

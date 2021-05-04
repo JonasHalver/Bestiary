@@ -55,6 +55,7 @@ public class TutorialTextBox : MonoBehaviour
     public void Fade(bool fadeIn)
     {
         interrupt = true;
+        backGround.raycastTarget = fadeIn;
         active = fadeIn;
         textBox.text = "";
         clickToContinue.enabled = false;

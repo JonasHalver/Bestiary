@@ -50,7 +50,7 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
             cname = actor.stats.characterName;
             if (actor.alive && !actor.currentAction.action.isPass)
                 d = $"{cname} will use {actor.currentAction.action.actionName}";
-            else if (actor.alive && actor.currentAction.action.isPass) d = $"{cname} has no valid action and will pass.";
+            else if (actor.alive && actor.currentAction.action.isPass) d = $"{cname} will pass.";
         }
         else
         {
@@ -67,7 +67,7 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
 
                     if (actor.currentAction.action.isPass)
                     {
-                        d = $"{cname} has no valid action and will pass.";
+                        d = $"{cname} will pass.";
                         break;
                     }
 

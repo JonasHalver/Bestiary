@@ -20,6 +20,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: f64d81efd939e434ab4cf42f711c3ce1, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -27,6 +28,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 21592b3de4cfe344a80849e28aa25cd5, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -34,6 +36,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -41,6 +44,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: d0ee5cb8f7048fa498dfc6fd12bf2d24, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -48,6 +52,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -55,6 +60,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -62,6 +68,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -69,6 +76,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   conditions:
   - icon: {fileID: 21300000, guid: 6901ef6025c70a4418f6fb1fe119ee55, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
@@ -77,6 +85,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
     iconColor: {r: 1, g: 0.57161915, b: 0, a: 1}
     condition: 1
@@ -84,6 +93,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6be134b70141d144998154c3c55e2f1f, type: 3}
     iconColor: {r: 1, g: 0, b: 0, a: 1}
     condition: 2
@@ -91,6 +101,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: eb6269e923e9afa4192771a67300cf18, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 3
@@ -98,6 +109,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
     iconColor: {r: 0.97646475, g: 0, b: 1, a: 1}
     condition: 4
@@ -105,6 +117,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
     iconColor: {r: 0.97647065, g: 0, b: 1, a: 1}
     condition: 5
@@ -112,6 +125,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: b45ab7e73521dac4d92e2b939e84480f, type: 3}
     iconColor: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
     condition: 6
@@ -119,6 +133,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
     iconColor: {r: 0.99260664, g: 0, b: 1, a: 1}
     condition: 7
@@ -126,6 +141,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
     iconColor: {r: 0.9921569, g: 0, b: 1, a: 1}
     condition: 8
@@ -133,6 +149,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 50a4ca767cffdcd4a83bb5f4b621fcd9, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 9
@@ -140,6 +157,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 0d80ac52e17f4c4488154de8b34f9207, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 10
@@ -147,6 +165,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: f9b5f4d05c960b44287ed27114fc58fe, type: 3}
     iconColor: {r: 0.09112701, g: 0.7735849, b: 0, a: 1}
     condition: 11
@@ -154,6 +173,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
     iconColor: {r: 0, g: 1, b: 0.31401587, a: 1}
     condition: 12
@@ -161,6 +181,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: d4ef4d1237c60c347b960a6b1c45ab63, type: 3}
     iconColor: {r: 0, g: 1, b: 0.3137255, a: 1}
     condition: 13
@@ -168,6 +189,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
     iconColor: {r: 0, g: 0.821769, b: 1, a: 1}
     condition: 14
@@ -175,6 +197,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: cfcf1c3bf1cd4564989c622bcee4ec91, type: 3}
     iconColor: {r: 0, g: 0.8235295, b: 1, a: 1}
     condition: 15
@@ -182,6 +205,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: a1b1d324e3b5d024697bcca775eee114, type: 3}
     iconColor: {r: 0.3295524, g: 1, b: 0, a: 1}
     condition: 16
@@ -189,13 +213,15 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: a1b1d324e3b5d024697bcca775eee114, type: 3}
     iconColor: {r: 0.32941177, g: 1, b: 0, a: 1}
-    condition: 0
+    condition: 17
     damageType: 0
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: ee4d5b265845dbc46ae256d02330602c, type: 3}
     iconColor: {r: 1, g: 0, b: 0, a: 1}
     condition: 18
@@ -203,6 +229,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
     iconColor: {r: 1, g: 0, b: 0, a: 1}
     condition: 19
@@ -210,6 +237,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 6272d5a15a65e81479e461ed29e21947, type: 3}
     iconColor: {r: 1, g: 0, b: 0, a: 1}
     condition: 20
@@ -217,6 +245,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 8a92b45f396e9dd46a4e8a64fe1f141c, type: 3}
     iconColor: {r: 1, g: 0, b: 0.15690327, a: 1}
     condition: 21
@@ -224,6 +253,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: c7c9664a2fef59b49b752a761df5f566, type: 3}
     iconColor: {r: 0, g: 0.74711776, b: 1, a: 1}
     condition: 22
@@ -231,6 +261,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   shapes:
   - icon: {fileID: 21300000, guid: 1c9f49c12f4957343bb2c8cbd6a85fe2, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
@@ -239,6 +270,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 4d446ac1d2dc2504aaf6d5e4714a9be8, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -246,6 +278,7 @@ MonoBehaviour:
     shape: 1
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 5783e03fd8559c54a92232c621c4d103, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -253,6 +286,7 @@ MonoBehaviour:
     shape: 2
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 85e126c87f793964396752c9a8aa5320, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -260,6 +294,7 @@ MonoBehaviour:
     shape: 3
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: aa9d3281b0407994c9b3dd61ce422d1d, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -267,6 +302,7 @@ MonoBehaviour:
     shape: 4
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 8372607f2998045499593661bdc38d42, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -274,6 +310,7 @@ MonoBehaviour:
     shape: 5
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: eec07c9645b008a41b615aba512ede64, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -281,6 +318,7 @@ MonoBehaviour:
     shape: 6
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: b9c893e68c38363499c07668c573ff4f, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -288,6 +326,7 @@ MonoBehaviour:
     shape: 7
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: f2f27785fb659ea498673091e4a30e62, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -295,6 +334,7 @@ MonoBehaviour:
     shape: 8
     context: 0
     output: 0
+    priority: 0
   contexts:
   - icon: {fileID: 21300000, guid: cd4a0f35cbe7c1a459f1f05a651c632d, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
@@ -303,6 +343,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 5fbe0e6b98190664b96078fd8a0432db, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -310,6 +351,7 @@ MonoBehaviour:
     shape: 0
     context: 1
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: bdf3744102725c24299e7439c5e652da, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -317,6 +359,7 @@ MonoBehaviour:
     shape: 0
     context: 2
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 5155b4f5c5997944eb15b9d1c7ebd41f, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -324,6 +367,7 @@ MonoBehaviour:
     shape: 0
     context: 3
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: aa60ceac31bf92543b08b8b5df6a5be9, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -331,6 +375,7 @@ MonoBehaviour:
     shape: 0
     context: 4
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 97c358688d9b24d4b9d69155ece90106, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -338,6 +383,7 @@ MonoBehaviour:
     shape: 0
     context: 5
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: a1ce6d8a623eb1b459bcb2df8adcb5c2, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -345,6 +391,7 @@ MonoBehaviour:
     shape: 0
     context: 6
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 8cada024256aa144cb2f34e581623824, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -352,6 +399,7 @@ MonoBehaviour:
     shape: 0
     context: 7
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: b935574bea4a3974e803fc1d8b9f70eb, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -359,6 +407,7 @@ MonoBehaviour:
     shape: 0
     context: 8
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 88e879c3a4aa2b847a3fdfdd21715b57, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -366,6 +415,7 @@ MonoBehaviour:
     shape: 0
     context: 9
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 64a3b080e9f7f5e4e8431f9d2f4dbcf1, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -373,6 +423,7 @@ MonoBehaviour:
     shape: 0
     context: 10
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 2a0a28fdeb394fd40bf8adf90a34b29e, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -380,6 +431,7 @@ MonoBehaviour:
     shape: 0
     context: 11
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 24fb9c41325522640910697b0bf05458, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -387,6 +439,7 @@ MonoBehaviour:
     shape: 0
     context: 12
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 7e2df3f2b81b4ef4c995bc6559cda32e, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -394,6 +447,7 @@ MonoBehaviour:
     shape: 0
     context: 13
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: a7687e39ab9c8c64a94dbd7352f9bb4a, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -401,6 +455,7 @@ MonoBehaviour:
     shape: 0
     context: 16
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: faf89652599dcb94ab63f15f0a96e312, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -408,6 +463,7 @@ MonoBehaviour:
     shape: 0
     context: 17
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 170abd7f3cccbc64b8e80af64826c860, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -415,6 +471,7 @@ MonoBehaviour:
     shape: 0
     context: 18
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 5f08d31c27361714d8c89a850e86ea82, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -422,6 +479,7 @@ MonoBehaviour:
     shape: 0
     context: 19
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: a595380dbd4556144ba88b0fea50bdd8, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -429,6 +487,7 @@ MonoBehaviour:
     shape: 0
     context: 20
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 49c6b666160090e4eac2a0eb3a2e8729, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -436,6 +495,7 @@ MonoBehaviour:
     shape: 0
     context: 21
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: ea224d4055550374993758851044eb1f, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -443,6 +503,7 @@ MonoBehaviour:
     shape: 0
     context: 22
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: c607b410e170fd54f8216e541c1a3d51, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -450,6 +511,7 @@ MonoBehaviour:
     shape: 0
     context: 23
     output: 0
+    priority: 0
   outputs:
   - icon: {fileID: 21300000, guid: 706859e850839c1458b2b5ed123776df, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
@@ -458,6 +520,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 0
+    priority: 0
   - icon: {fileID: 21300000, guid: 7a8a0a20009a53142a5a84e6b9fee6cd, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -465,6 +528,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 1
+    priority: 0
   - icon: {fileID: 21300000, guid: f3bad44201d143d4a90ca2a42bec6e9d, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -472,6 +536,7 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 2
+    priority: 0
   - icon: {fileID: 21300000, guid: 668cc8d7ee324dc43850fb376babca8b, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
@@ -479,3 +544,9 @@ MonoBehaviour:
     shape: 0
     context: 0
     output: 3
+    priority: 0
+  priorities: []
+  meleeAlternate: {fileID: 21300000, guid: dcefbc256f137464eb29e67aa6f10dce, type: 3}
+  coneAlternate: {fileID: 21300000, guid: 18734afbe0b9a55469c3ce96a8f45d23, type: 3}
+  arcAlternate: {fileID: 21300000, guid: 6a7cbf853464f2e4eba6084b762eb71e, type: 3}
+  lineAlternate: {fileID: 21300000, guid: a10663f5f8ed93540bc5910eeef35641, type: 3}

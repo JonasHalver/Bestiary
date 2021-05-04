@@ -180,6 +180,15 @@ public class Entry : MonoBehaviour
         }
         return output;
     }
+    public ActionCheck CheckByOrigin(Action o)
+    {
+        ActionCheck output = null;
+        for (int i = 0; i < actionChecks.Count; i++)
+        {
+            if (actionChecks[i].originalAction == o) output = actionChecks[i];
+        }
+        return output;
+    }
 }
 
 public class ActionCheck

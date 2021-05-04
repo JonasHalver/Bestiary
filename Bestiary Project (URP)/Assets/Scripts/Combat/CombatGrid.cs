@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Linq;
 
 public class CombatGrid : MonoBehaviour, IPointerDownHandler
 {
@@ -301,13 +302,14 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     public static ShapeTest ArcTest(ShapeTest test)
     {
         bool valid = false;
-        Node bestTarget = null;
 
         Node originNode = test.origin.movement.currentNode;
         Vector2 originV2 = originNode.coordinate;
 
-        int hitCount = 0;
+        int hitCount = 0, hitBest = 0;
         bool validTarget = false;
+        Node bestTarget = null;
+        List<Node> bestTargets;
         ShapeTest output = new ShapeTest(test.action, test.origin);
         foreach (Node node in originNode.neighbors)
         {
@@ -333,8 +335,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                         }
                         if (validTarget && n.occupant.alive)
                             hitCount++;
-                    }
-                    
+                    }                    
                 }
                 if (hitCount >= test.hitMinimum)
                 {
@@ -530,6 +531,25 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         if (output.potentialTargets.Count > 0) output.valid = true;
 
         return output;
+    }
+
+    public TargetingTest TargetEvalutation(List<TargetingTest> targets, Action.TargetPriority priority)
+    {
+        switch (priority)
+        {
+            case Action.TargetPriority.MostHits:
+                //targets.Sort((t1, t2) => t1.)
+                break;
+            case Action.TargetPriority.MostHurt:
+                break;
+            case Action.TargetPriority.HasSpecificCondition:
+                break;
+            case Action.TargetPriority.DoesntHaveSpecificCondition:
+                break;
+            case Action.TargetPriority.NotHurtingAlly:
+                break;
+        }
+        return null;
     }
 
     public static List<Node> GenerateArc(Vector2 target, Vector2 origin)
@@ -867,6 +887,28 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         }
         displayingThePast = false;
     }
+    public class TargetingTest
+    {
+        public List<Node> targetNodes = new List<Node>();
+        public Node targetNode;
+        public List<Character> mercsHit = new List<Character>();
+        public List<Character> monstersHit = new List<Character>();
+
+        public TargetingTest(List<Node> l, Node t)
+        {
+            targetNodes = l;
+            targetNode = t;
+            for (int i = 0; i < l.Count; i++)
+            {
+                if (l[i].occupant != null)
+                {
+                    if (l[i].occupant.stats.characterType == CharacterStats.CharacterTypes.Adventurer) mercsHit.Add(l[i].occupant);
+                    else monstersHit.Add(l[i].occupant);
+                }
+            }
+        }
+
+    }
 }
 
 public class TargetInfo
@@ -995,6 +1037,7 @@ public class ShapeTest
     public bool hitEnemyOnly;
     public Action.TargetGroup targetGroup;
     public Action.Targeting targeting;
+    public Action.TargetPriority targetPriority;
     public Node bestTargetNode;
     public Character bestTargetCharacter;
     public List<TargetInfo> potentialTargets = new List<TargetInfo>();
@@ -1008,13 +1051,14 @@ public class ShapeTest
         hitEnemyOnly = _hitEnemyOnly;
     }
 
-    public ShapeTest(Action _action, Character _origin, int _hitMinimum, Action.TargetGroup _targetGroup, Action.Targeting _targeting)
+    public ShapeTest(Action _action, Character _origin, int _hitMinimum, Action.TargetGroup _targetGroup, Action.Targeting _targeting, Action.TargetPriority _priority)
     {
         action = _action;
         origin = _origin;
         hitMinimum = _hitMinimum;
         targetGroup = _targetGroup;
         targeting = _targeting;
+        targetPriority = _priority;
     }
 
     public ShapeTest(bool _valid, Node _targetNode)

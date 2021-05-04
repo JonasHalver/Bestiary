@@ -29,6 +29,8 @@ public class ActionEditor : MonoBehaviour
     public static event System.Action ActionEditorOpened;
     public static event System.Action ActionEditorClosed;
 
+    public TextMeshProUGUI buttonText;
+
     private Dictionary<Action.Context, ActionNode> contextNodes = new Dictionary<Action.Context, ActionNode>();
     private void Awake()
     {
@@ -149,6 +151,7 @@ public class ActionEditor : MonoBehaviour
                 contextNodes.Add(an.actionContext.context, an);
             }
         }
+        nameInput.text = Book.currentEntry.activeAction.guessAction.actionName;
         CompareActionInformation();
     }
 
@@ -180,6 +183,14 @@ public class ActionEditor : MonoBehaviour
     {
         if (nameInput.text != null) Book.currentEntry.activeAction.guessAction.actionName = nameInput.text;
         else Book.currentEntry.activeAction.guessAction.actionName = "Unnamed Action";
+        if (Book.currentEntry.activeAction.guessAction.descriptionSet)
+        {
+            buttonText.text = $"{(Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "The Monster")} {Book.instance.descriptionsList.descriptions[Book.currentEntry.activeAction.guessAction.descriptionIndex]}";
+        }
+        else
+        {
+            buttonText.text = "Warning Movement";
+        }
     }
     public void EditingName(bool editing)
     {
