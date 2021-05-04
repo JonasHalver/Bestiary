@@ -533,23 +533,87 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         return output;
     }
 
-    public TargetingTest TargetEvalutation(List<TargetingTest> targets, Action.TargetPriority priority)
+    public TargetingTest TargetEvalutation(List<TargetingTest> targets, Character actor, Action action, bool primary)
     {
-        switch (priority)
+        bool characterIsMonster = actor.stats.characterType == CharacterStats.CharacterTypes.NPC;
+        TargetingTest output;
+        float hp = 100;
+        int hits = 100;
+        Action.TargetGroup tg = primary ? action.primaryTargetGroup : action.secondaryTargetGroup;
+        switch (tg)
         {
-            case Action.TargetPriority.MostHits:
-                //targets.Sort((t1, t2) => t1.)
+            case Action.TargetGroup.Allies:
+                if (characterIsMonster) targets.Sort((t2, t1) => t1.monstersHit.Count.CompareTo(t2.monstersHit.Count));
+                else targets.Sort((t2, t1) => t1.mercsHit.Count.CompareTo(t2.mercsHit.Count));
                 break;
-            case Action.TargetPriority.MostHurt:
+            case Action.TargetGroup.Enemies:
+                if (!characterIsMonster) targets.Sort((t2, t1) => t1.monstersHit.Count.CompareTo(t2.monstersHit.Count));
+                else targets.Sort((t2, t1) => t1.mercsHit.Count.CompareTo(t2.mercsHit.Count));
                 break;
-            case Action.TargetPriority.HasSpecificCondition:
-                break;
-            case Action.TargetPriority.DoesntHaveSpecificCondition:
-                break;
-            case Action.TargetPriority.NotHurtingAlly:
+            case Action.TargetGroup.All:
+                targets.Sort((t2, t1) => t1.totalHits.CompareTo(t2.totalHits));
                 break;
         }
-        return null;
+        switch (action.targetPriority)
+        {
+            case Action.TargetPriority.MostHits:                
+                break;
+            case Action.TargetPriority.MostHurt:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (targets[i].HPOfMostHurtCharacter(tg, actor) < hp)
+                    {
+                        hp = targets[i].HPOfMostHurtCharacter(tg, actor);
+                        output = targets[i];
+                    }
+                }
+                break;
+            case Action.TargetPriority.HasSpecificCondition:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (targets[i].TargetHasCondition(tg, actor, action.priorityConditionComparison))
+                    {
+                        output = targets[i];
+                        break;
+                    }
+                }
+                break;
+            case Action.TargetPriority.DoesntHaveSpecificCondition:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (!targets[i].TargetHasCondition(tg, actor, action.priorityConditionComparison))
+                    {
+                        output = targets[i];
+                        break;
+                    }
+                }
+                break;
+            case Action.TargetPriority.NotHurtingAlly:
+                if (actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                {
+                    for (int i = 0; i < targets.Count; i++)
+                    {
+                        if (targets[i].mercsHit.Count < hits)
+                        {
+                            hits = targets[i].mercsHit.Count;
+                            output = targets[i];
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < targets.Count; i++)
+                    {
+                        if (targets[i].monstersHit.Count < hits)
+                        {
+                            hits = targets[i].monstersHit.Count;
+                            output = targets[i];
+                        }
+                    }
+                }
+                break;
+        }
+        return output;
     }
 
     public static List<Node> GenerateArc(Vector2 target, Vector2 origin)
@@ -893,7 +957,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         public Node targetNode;
         public List<Character> mercsHit = new List<Character>();
         public List<Character> monstersHit = new List<Character>();
-
+        public int totalHits;
         public TargetingTest(List<Node> l, Node t)
         {
             targetNodes = l;
@@ -906,8 +970,117 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                     else monstersHit.Add(l[i].occupant);
                 }
             }
+            totalHits = mercsHit.Count + monstersHit.Count;
         }
+        public float HPOfMostHurtCharacter(Action.TargetGroup targetGroup, Character actor)
+        {
+            float lowestMonsterHP = 100;
+            float lowestMercHP = 100;
 
+            for (int i = 0; i < targetNodes.Count; i++)
+            {
+                if (targetNodes[i].occupant != null)
+                {
+                    Character c = targetNodes[i].occupant;
+                    switch (c.stats.characterType)
+                    {
+                        case CharacterStats.CharacterTypes.Adventurer:
+                            if (c.currentHitpoints < lowestMercHP) lowestMercHP = c.currentHitpoints;
+                            break;
+                        case CharacterStats.CharacterTypes.NPC:
+                            if (c.currentHitpoints < lowestMonsterHP) lowestMonsterHP = c.currentHitpoints;
+                            break;
+                    }
+                }
+            }
+            switch (targetGroup)
+            {
+                default: return 100;
+                case Action.TargetGroup.All:
+                    return Mathf.Min(lowestMercHP, lowestMonsterHP);
+                case Action.TargetGroup.Allies:
+                    return actor.stats.characterType == CharacterStats.CharacterTypes.NPC ? lowestMonsterHP : lowestMercHP;
+                case Action.TargetGroup.Enemies:
+                    return actor.stats.characterType != CharacterStats.CharacterTypes.NPC ? lowestMonsterHP : lowestMercHP;                    
+            }
+        }
+        public bool TargetHasCondition(Action.TargetGroup tg, Character actor, Action.Condition condition)
+        {
+            bool output = false;
+            switch (tg)
+            {
+                case Action.TargetGroup.All:
+                    for (int i = 0; i < monstersHit.Count; i++)
+                    {
+                        if (monstersHit[i].Conditions.ContainsKey(condition))
+                        {
+                            output = true;
+                            break;
+                        }
+                    }
+                    if (!output)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case Action.TargetGroup.Allies:
+                    if (actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < monstersHit.Count; i++)
+                        {
+                            if (monstersHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case Action.TargetGroup.Enemies:
+                    if (actor.stats.characterType != CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < monstersHit.Count; i++)
+                        {
+                            if (monstersHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            return output;
+        }
     }
 }
 
