@@ -12,6 +12,7 @@ public class CombatUI : MonoBehaviour
     public TextMeshProUGUI stageDisplay, stageInfo, combatLog, roundDisplay;
 
     public Button commitButton;
+    public GameObject dropdownArrow;
 
     private void Awake()
     {
@@ -63,5 +64,10 @@ public class CombatUI : MonoBehaviour
     {
         canvasAnim.SetTrigger("FadeIn");
         commitButton.enabled = true;
+    }
+    public void ExpandLogAndInitiative()
+    {
+        canvasAnim.SetBool("LogShown", !canvasAnim.GetBool("LogShown"));
+        dropdownArrow.transform.rotation = Quaternion.Euler(0, 0, canvasAnim.GetBool("LogShown") ? 180 : 0);
     }
 }

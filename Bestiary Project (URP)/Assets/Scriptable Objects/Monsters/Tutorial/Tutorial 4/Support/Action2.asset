@@ -10,36 +10,58 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
-  m_Name: WolfBite
+  m_Name: Action2
   m_EditorClassIdentifier: 
   editWindow: {fileID: 0}
-  actionName: Wolf Bite
-  actionCode: wolfbitetutorial
+  actionName: Plant Growth
+  actionCode: dryadplantgrowth
   description: 
   monsterAI: {fileID: 0}
   actionDescription: 
-  descriptionIndex: 2
-  cooldown: 0
+  descriptionIndex: 5
+  cooldown: 1
   minimumHits: 1
   targetPriority: 0
   priorityConditionComparison: 0
-  actionPriority: 3
+  actionPriority: 2
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
   isPass: 0
   primaryContext:
   - actor: {fileID: 0}
-    context: 3
+    context: 5
     value: 0
     condition: 0
     damageType: 0
     difficulty: 0
-  primaryTargeting: 0
-  primaryShape: 0
+  - actor: {fileID: 0}
+    context: 18
+    value: 0
+    condition: 0
+    damageType: 0
+    difficulty: 0
+  primaryTargeting: 1
+  primaryShape: 8
   primaryTargetGroup: 0
-  primaryOutput: []
-  secondaryTargeting: 0
-  secondaryShape: 2
+  primaryOutput:
+  - output: 2
+    value: 3
+    condition: 15
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+    affectedGroup: 0
+  secondaryTargeting: 1
+  secondaryShape: 8
   secondaryTargetGroup: 1
-  secondaryOutput: []
+  secondaryOutput:
+  - output: 1
+    value: 1
+    condition: 0
+    critical: 0
+    damageType: 0
+    towards: 0
+    difficulty: 0
+    affectedGroup: 1

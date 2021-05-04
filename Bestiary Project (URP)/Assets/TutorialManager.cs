@@ -42,7 +42,6 @@ public class TutorialManager : MonoBehaviour
     public enum TutorialSequence { Main1, Main2, Main3, Main4, BestiaryMonster, ActionEditing, Standalone, Done }
     public TutorialSequence currentSequence = TutorialSequence.Main1;
     private TutorialSequence activeSequence = TutorialSequence.Main1;
-    private bool bestiaryOpened, actionEditingOpened, bestiaryClosed, actionEditorClosed;
     private List<string> openedStandalones = new List<string>();
 
     public GameObject clickBlocker;
@@ -127,7 +126,6 @@ public class TutorialManager : MonoBehaviour
             case TutorialSequence.Main1:
                 if (!unskippableMain1.Contains(tutMain1Index))
                 {
-                    print($"skipped {tutMain1Index}");
                     tutorialTextBox.interrupt = true;
                     tutorialMask.interrupt = true;
                     tutMain1Index++;
@@ -235,32 +233,49 @@ public class TutorialManager : MonoBehaviour
     }
     public void OpenedBestiary()
     {
-        if (bestiaryOpened) return;
-        bestiaryOpened = true;
+        if (GameManager.bestiaryOpened) return;
+        GameManager.bestiaryOpened = true;
         currentSequence = TutorialSequence.BestiaryMonster;
         activeSequence = TutorialSequence.BestiaryMonster;
         TutorialStateMachine();
     }
     public void ClosedBestiary()
     {
-        if (bestiaryClosed) return;
-        bestiaryClosed = true;
-        currentSequence = TutorialSequence.Main1;
-        activeSequence = TutorialSequence.Main1;
+        if (GameManager.bestiaryClosed) return;
+        GameManager.bestiaryClosed = true;
+        switch (GameManager.instance.tutorialProgress)
+        {
+            case 0:
+                currentSequence = TutorialSequence.Main1;
+                activeSequence = TutorialSequence.Main1;
+                break;
+            case 1:
+                currentSequence = TutorialSequence.Main2;
+                activeSequence = TutorialSequence.Main2;
+                break;
+            case 2:
+                currentSequence = TutorialSequence.Main3;
+                activeSequence = TutorialSequence.Main3;
+                break;
+            case 3:
+                currentSequence = TutorialSequence.Main4;
+                activeSequence = TutorialSequence.Main4;
+                break;
+        }
         ForceContinue(true);
     }
     public void OpenedActionEditor()
     {
-        if (actionEditingOpened) return;
-        actionEditingOpened = true;
+        if (GameManager.actionEditingOpened) return;
+        GameManager.actionEditingOpened = true;
         currentSequence = TutorialSequence.ActionEditing;
         activeSequence = TutorialSequence.ActionEditing;
         TutorialStateMachine();
     }
     public void ClosedActionEditor()
     {
-        if (actionEditorClosed) return;
-        actionEditorClosed = true;
+        if (GameManager.actionEditorClosed) return;
+        GameManager.actionEditorClosed = true;
         currentSequence = TutorialSequence.BestiaryMonster;
         activeSequence = TutorialSequence.BestiaryMonster;
         ForceContinue(true);
@@ -282,10 +297,13 @@ public class TutorialManager : MonoBehaviour
                 Main1Sequence(tutMain1Index);
                 break;
             case TutorialSequence.Main2:
+                Main2Sequence(tutMain2Index);
                 break;
             case TutorialSequence.Main3:
+                Main3Sequence(tutMain3Index);
                 break;
             case TutorialSequence.Main4:
+                Main4Sequence(tutMain4Index);
                 break;
             case TutorialSequence.BestiaryMonster:
                 BestiarySequence(tutBestiaryIndex);
@@ -499,10 +517,76 @@ public class TutorialManager : MonoBehaviour
             case 16:
                 HideTutorial();
                 break;
-            case 17:
-                NextTutorial(tutorialMain1[index], false, true);
+        }
+    }
+    private void Main2Sequence(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                StartCoroutine(ShowEverything());
+                StartCoroutine(Delay(1));
                 break;
-            case 18:
+            case 1:
+                NextTutorial(tutorialMain2[index], false, true);
+                break;
+            case 2:
+                NextTutorial(tutorialMain2[index], false, true);
+                break;
+            case 3:
+                NextTutorial(tutorialMain2[index], false, true);
+                break;
+            case 4:
+                NextTutorial(tutorialMain2[index], false, true);
+                break;
+            case 5:
+                HideTutorial();
+                break;
+        }
+    }
+    private void Main3Sequence(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                StartCoroutine(ShowEverything());
+                StartCoroutine(Delay(1));
+                break;
+            case 1:
+                NextTutorial(tutorialMain3[index], false, true);
+                break;
+            case 2:
+                NextTutorial(tutorialMain3[index], false, true);
+                break;
+            case 3:
+                NextTutorial(tutorialMain3[index], false, true);
+                break;
+            case 4:
+                HideTutorial();
+                break;
+        }
+    }
+    private void Main4Sequence(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                StartCoroutine(ShowEverything());
+                StartCoroutine(Delay(1));
+                break;
+            case 1:
+                NextTutorial(tutorialMain4[index], false, true);
+                break;
+            case 2:
+                NextTutorial(tutorialMain4[index], false, true);
+                break;
+            case 3:
+                HideTutorial();
+                break;
+            case 4:
+                NextTutorial(tutorialMain4[index], false, true);
+                break;
+            case 5:
                 HideTutorial();
                 break;
         }

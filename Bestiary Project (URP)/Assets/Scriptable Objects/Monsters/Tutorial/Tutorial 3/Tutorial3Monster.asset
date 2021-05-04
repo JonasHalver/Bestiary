@@ -24,6 +24,10 @@ MonoBehaviour:
   weaknesses: 03000000
   speed: 8
   movement: 4
-  actions: []
+  actions:
+  - {fileID: 11400000, guid: c7481ce08adfd724e864efd91cbf544a, type: 2}
+  - {fileID: 11400000, guid: 107ab23d1c012bf4f9eeb6eda4ab61c9, type: 2}
+  - {fileID: 11400000, guid: 6770c2c092bdcb54da18b8decdc2b6f1, type: 2}
+  - {fileID: 11400000, guid: fe56f013a34ecb14fa25937885c5e9ec, type: 2}
   pageNumber: 0
   entry: {fileID: 0}

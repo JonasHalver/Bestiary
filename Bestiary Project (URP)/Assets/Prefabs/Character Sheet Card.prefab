@@ -90,6 +90,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &694736857796660266
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,6 +185,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &1572908820599964941
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,7 +230,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 550, y: 75}
+  m_SizeDelta: {x: 420, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2773074257284747639
 CanvasRenderer:
@@ -296,6 +306,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &2058235469283981471
 GameObject:
   m_ObjectHideFlags: 0
@@ -468,8 +483,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 233.48, y: 0}
-  m_SizeDelta: {x: -466.96, y: 0}
+  m_AnchoredPosition: {x: 168.65, y: 0}
+  m_SizeDelta: {x: -337.3, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3126917991566651116
 CanvasRenderer:
@@ -622,6 +637,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &5463811962179338253
 GameObject:
   m_ObjectHideFlags: 0
@@ -712,6 +732,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &9194625072174294806
 GameObject:
   m_ObjectHideFlags: 0
@@ -806,7 +831,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11
+  m_fontSize: 10
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 1

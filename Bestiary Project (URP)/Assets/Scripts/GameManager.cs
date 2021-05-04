@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     //public GameObject glossary;
 
     public bool enemiesWon, alliesWon;
+    private bool gameoverFlag = false;
     public static bool paused;
 
     public static event System.Action GamePaused;
@@ -26,7 +27,7 @@ public class GameManager : MonoBehaviour
     public List<CharacterStats> mercenaries = new List<CharacterStats>();
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
     public List<CombatEncounter> tutorialEncounters = new List<CombatEncounter>();
-    public int tutorialProgress = 0;
+    public int tutorialProgress = -1;
     public Icons currentIconCollection;
     public Tooltips currentTooltipCollection;
     public Log logElementCollection;
@@ -53,6 +54,8 @@ public class GameManager : MonoBehaviour
     public static event System.Action ClosedBestiary;
     public static event System.Action Victory;
     public static event System.Action Defeat;
+    public static bool bestiaryOpened, actionEditingOpened, bestiaryClosed, actionEditorClosed;
+
 
     private void Awake()
     {
@@ -89,6 +92,7 @@ public class GameManager : MonoBehaviour
     }
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)
     {
+        if (instance != this) return;
         gameState = GameState.Normal;
         alliesWon = false; enemiesWon = false;
         combatStartSequence = false;
@@ -104,28 +108,31 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if (!actorsSpawned)
+            if (!actorsSpawned && !tutorial)
             {
                 CombatManager.instance.SpawnAllies();
                 CombatManager.instance.SpawnEnemies();
                 CombatManager.instance.SetInitiative();
             }
             else
+            {
                 combatStartSequence = true;
+            }
         }
     }
     private void FirstActions()
     {
         tutorial = startInTutorial;
-
+        gameoverFlag = false;
+        enemies.Clear();
         if (tutorial)
         {
+            tutorialProgress++;
             activeMercenaries.Add(mercenaries[tutorialProgress]);
             for (int i = 0; i < tutorialEncounters[tutorialProgress].enemies.Count; i++)
             {
                 enemies.Add(tutorialEncounters[tutorialProgress].enemies[i]);
-            }
-            tutorialProgress++;
+            }            
         }
         else
         {
@@ -411,8 +418,12 @@ public class GameManager : MonoBehaviour
         TextMeshProUGUI winText = MenuUI.GameOver.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         winText.text = alliesWon ? "You Win!" : "You Lose!";
         MenuUI.GameOver.SetActive(true);
-        if (alliesWon) Victory.Invoke();
-        else Defeat.Invoke();
+        if (!gameoverFlag)
+        {
+            gameoverFlag = true;
+            if (alliesWon) Victory.Invoke();
+            else Defeat.Invoke();
+        }
     }
 
     public void Restart()
