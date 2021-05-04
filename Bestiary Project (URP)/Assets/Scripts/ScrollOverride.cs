@@ -20,9 +20,13 @@ public class ScrollOverride : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup)
+        if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup && GameManager.gameState == GameManager.GameState.Normal)
         {
             sr.value = 0;
         }
+    }
+    public void ScrollToBottom()
+    {
+        sr.value = 0;
     }
 }

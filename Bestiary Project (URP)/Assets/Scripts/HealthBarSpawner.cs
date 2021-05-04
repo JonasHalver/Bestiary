@@ -13,6 +13,7 @@ public class HealthBarSpawner : MonoBehaviour
         CombatManager.CharactersSpawned += SpawnHealthBars;
         TutorialManager.ShowAlly += MoveAllyBars;
         TutorialManager.ShowEnemy += MoveEnemyBars;
+        CombatManager.WanderingMonster += SpawnWanderingHealthBar;
     }   
     
 
@@ -21,6 +22,7 @@ public class HealthBarSpawner : MonoBehaviour
         CombatManager.CharactersSpawned -= SpawnHealthBars;
         TutorialManager.ShowAlly -= MoveAllyBars;
         TutorialManager.ShowEnemy -= MoveEnemyBars;
+        CombatManager.WanderingMonster -= SpawnWanderingHealthBar;
     }
 
     // Update is called once per frame
@@ -46,6 +48,11 @@ public class HealthBarSpawner : MonoBehaviour
                 newHealthBar.GetComponent<HealthBar>().character = character;
             }
         }
+    }
+    private void SpawnWanderingHealthBar()
+    {
+        GameObject newHealthbar = Instantiate(healthBar, enemy);
+        newHealthbar.GetComponent<HealthBar>().character = CombatManager.lastWanderingMonster;
     }
 
     private void MoveAllyBars()

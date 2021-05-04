@@ -27,6 +27,7 @@ public class GameManager : MonoBehaviour
     public List<CharacterStats> mercenaries = new List<CharacterStats>();
     public List<CombatEncounter> combatEncounters = new List<CombatEncounter>();
     public List<CombatEncounter> tutorialEncounters = new List<CombatEncounter>();
+    public List<CharacterStats> monsters = new List<CharacterStats>();
     public int tutorialProgress = -1;
     public Icons currentIconCollection;
     public Tooltips currentTooltipCollection;
@@ -110,9 +111,9 @@ public class GameManager : MonoBehaviour
         {
             if (!actorsSpawned && !tutorial)
             {
-                CombatManager.instance.SpawnAllies();
-                CombatManager.instance.SpawnEnemies();
-                CombatManager.instance.SetInitiative();
+                //CombatManager.instance.SpawnAllies();
+                //CombatManager.instance.SpawnEnemies();
+                //CombatManager.instance.SetInitiative();
             }
             else
             {

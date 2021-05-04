@@ -306,7 +306,7 @@ public class Action : ScriptableObject
 
     private ShapeTest NodeTarget(BattlefieldPositionInfo bpi, bool primary)
     {
-        ShapeTest test = new ShapeTest(this, Actor, primary ? minimumHits : 0, primary ? primaryTargetGroup : secondaryTargetGroup, primary ? primaryTargeting : secondaryTargeting);
+        ShapeTest test = new ShapeTest(this, Actor, primary ? minimumHits : 0, primary ? primaryTargetGroup : secondaryTargetGroup, primary ? primaryTargeting : secondaryTargeting, targetPriority);
         ShapeTest result = new ShapeTest(this, Actor);
         List<Character> possibleTargets = new List<Character>();
         switch (primary ? primaryTargetGroup : secondaryTargetGroup)

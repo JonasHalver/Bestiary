@@ -47,6 +47,7 @@ public class BookActionDescription : MonoBehaviour
             int index = Book.currentEntry.activeDescriptionIndices[i];
             if (index > -1) buttons[index].GetComponent<Button>().interactable = false;
         }
+        
     }
 
     public void ResetValues()
@@ -79,7 +80,6 @@ public class BookActionDescription : MonoBehaviour
         currentEntry.activeAction.guessAction.descriptionIndex = index;
         currentEntry.activeAction.guessAction.actionDescription = Book.instance.descriptionsList.descriptions[index];
         //BookActionCard.CardUpdate();
-        buttonText.text = $"{(currentEntry.guess.characterName != null ? currentEntry.guess.characterName : "The Monster")} {Book.instance.descriptionsList.descriptions[index]}";
         gameObject.SetActive(false);
         Book.currentEntry.activeAction.SetComparison();
         ActionEditor.instance.CompareActionInformation();

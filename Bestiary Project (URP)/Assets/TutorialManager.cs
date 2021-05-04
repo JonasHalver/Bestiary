@@ -102,6 +102,7 @@ public class TutorialManager : MonoBehaviour
         ActionEditor.ActionEditorClosed += ClosedActionEditor;
         GameManager.Victory += Victory;
         GameManager.Defeat += Defeat;
+        CombatManager.WanderingMonster += WanderingMonster;
     }
     private void OnDisable()
     {
@@ -112,6 +113,7 @@ public class TutorialManager : MonoBehaviour
         ActionEditor.ActionEditorClosed -= ClosedActionEditor;
         GameManager.Victory -= Victory;
         GameManager.Defeat -= Defeat;
+        CombatManager.WanderingMonster -= WanderingMonster;
     }
     private void Update()
     {
@@ -279,6 +281,10 @@ public class TutorialManager : MonoBehaviour
         currentSequence = TutorialSequence.BestiaryMonster;
         activeSequence = TutorialSequence.BestiaryMonster;
         ForceContinue(true);
+    }
+    private void WanderingMonster()
+    {
+        StandaloneTutorial("Wandering");
     }
     public void Victory()
     {
@@ -623,7 +629,7 @@ public class TutorialManager : MonoBehaviour
                 NextTutorial(tutorialBestiary[index], true, false);
                 break;
             case 9:
-                NextTutorial(tutorialBestiary[index], false, false);
+                NextTutorial(tutorialBestiary[index], false, true);
                 break;
             case 10:
                 HideTutorial();
@@ -668,7 +674,7 @@ public class TutorialManager : MonoBehaviour
                 NextTutorial(tutorialAction[index], true, true);
                 break;
             case 11:
-                NextTutorial(tutorialAction[index], false, false);
+                NextTutorial(tutorialAction[index], false, true);
                 break;
             case 12:
                 HideTutorial();
