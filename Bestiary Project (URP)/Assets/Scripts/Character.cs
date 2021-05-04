@@ -132,10 +132,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             entry = stats.entry;
 
         // Animation
-        //animator.SetFloat("Left", faceLeft ? 0 : 1);
-        //animator.SetFloat("Facing", faceFront ? 0 : 1);
+        animator.SetFloat("Left", faceLeft ? 0 : 1);
+        animator.SetFloat("Facing", faceFront ? 0 : 1);
         animator.SetFloat("State", (float)animationState / 5);
-        animator.SetFloat("Left", 0.25f + (faceLeft ? 0 : 0.25f) + (faceFront ? 0 : 0.5f));
+        //animator.SetFloat("Left", 0.25f + (faceLeft ? 0 : 0.25f) + (faceFront ? 0 : 0.5f));
 
     }
 
