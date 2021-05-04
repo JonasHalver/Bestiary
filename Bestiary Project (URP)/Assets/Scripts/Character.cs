@@ -31,6 +31,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public event System.Action<Buff> AcquiredBuff;
     public event System.Action<Buff> LostBuff;
 
+    public Animator animator;
+    public bool faceLeft;
+    public bool faceFront;
+    [Range(1,5)]public int animationState = 1;
+
     public MonsterAI AI
     {
         get;set;
@@ -126,6 +131,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         //if (stats.characterType == CharacterStats.CharacterTypes.NPC) 
             entry = stats.entry;
 
+        // Animation
+        //animator.SetFloat("Left", faceLeft ? 0 : 1);
+        //animator.SetFloat("Facing", faceFront ? 0 : 1);
+        animator.SetFloat("State", (float)animationState / 5);
+        animator.SetFloat("Left", 0.25f + (faceLeft ? 0 : 0.25f) + (faceFront ? 0 : 0.5f));
 
     }
 
