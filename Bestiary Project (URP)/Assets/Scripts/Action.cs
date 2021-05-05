@@ -249,7 +249,7 @@ public class Action : ScriptableObject
         {
             if (primaryTest.potentialTargets.Count > 1)
             {
-                Target t = BestTarget(primaryTest.potentialTargets);
+                Target t = BestTarget(primaryTest, true /*primaryTest.potentialTargets*/);
                 output.primaryTarget = t;
             }
             else if (primaryTest.potentialTargets.Count == 1)
@@ -271,7 +271,7 @@ public class Action : ScriptableObject
                 output.secondaryTargetGroup = secondaryTargetGroup;
                 if (secondaryTest.potentialTargets.Count > 1)
                 {
-                    Target t = BestTarget(secondaryTest.potentialTargets);
+                    Target t = BestTarget(secondaryTest, false /*secondaryTest.potentialTargets*/);
                     output.secondaryTarget = t;
                 }
                 else if (secondaryTest.potentialTargets.Count == 1)
@@ -386,19 +386,19 @@ public class Action : ScriptableObject
                 }
                 break;
             case Shape.Arc:
-                result = CombatGrid.ArcTest(test);                
+                result = CombatGrid.ShapeTest(test, Shape.Arc); //CombatGrid.ArcTest(test);                
                 break;
             case Shape.Cone:
-                result = CombatGrid.ConeTest(test);
+                result = CombatGrid.ShapeTest(test, Shape.Cone); //CombatGrid.ConeTest(test);
                 break;
             case Shape.Line:
-                result = CombatGrid.LineTest(test);
+                result = CombatGrid.ShapeTest(test, Shape.Line); //CombatGrid.LineTest(test);
                 break;
             case Shape.Area:
-                result = CombatGrid.AreaTest(test);
+                result = CombatGrid.ShapeTest(test, Shape.Area); //CombatGrid.AreaTest(test);
                 break;
             case Shape.Pulse:
-                result = CombatGrid.PulseTest(test);
+                result = CombatGrid.ShapeTest(test, Shape.Pulse); //CombatGrid.PulseTest(test);
                 break;
             case Shape.All:
                 result.valid = true;
@@ -408,13 +408,35 @@ public class Action : ScriptableObject
         return result;
     }
 
-    private Target BestTarget(List<TargetInfo> ti)
+    private Target BestTarget(ShapeTest shapeTest, bool primary /*List<TargetInfo> ti*/)
     {
         Target output = new Target();
 
+        CombatGrid.TargetingTest bestTest = CombatGrid.instance.TargetEvaluation(shapeTest.tests, Actor, this, primary);
+
+        output.AffectedNodes = bestTest.targetNodes;
+        switch(primary ? primaryTargetGroup : secondaryTargetGroup)
+        {
+            case TargetGroup.All:
+                output.AffectedCharacters.AddRange(bestTest.mercsHit);
+                output.AffectedCharacters.AddRange(bestTest.monstersHit);
+                break;
+            case TargetGroup.Allies:
+                if (Actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
+                else output.AffectedCharacters.AddRange(bestTest.monstersHit);
+                break;
+            case TargetGroup.Enemies:
+                if (Actor.stats.characterType != CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
+                else output.AffectedCharacters.AddRange(bestTest.monstersHit);
+                break;
+        }
+        output.Character = bestTest.targetNode.occupant != null ? bestTest.targetNode.occupant : null;
+        output.Node = bestTest.targetNode;
+
         float damageTaken = -1;
         int hits = 0;
-
+        #region Old Code
+        /*
         switch (targetPriority)
         {
             case TargetPriority.MostHurt:
@@ -537,7 +559,8 @@ public class Action : ScriptableObject
                     output.AffectedNodes = ti[0].affectedNodes;
                 }
                 break;
-        }
+        }*/
+        #endregion
         output.Direction = (output.Node.coordinate - Actor.position).normalized;
         return output;
     }
