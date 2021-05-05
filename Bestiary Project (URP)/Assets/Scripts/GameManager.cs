@@ -185,7 +185,8 @@ public class GameManager : MonoBehaviour
         if (combatStartSequence)
         {
             if (!debugMode) GameStateCheck();
-            if (enemiesWon || alliesWon) GameOver();
+            if (CombatManager.instance.currentStage == CombatManager.CombatStage.EnemyMovement)
+                if (enemiesWon || alliesWon) GameOver();
             GameStateMachine();
         }
         gamestateDisplay = gameState;
@@ -417,7 +418,7 @@ public class GameManager : MonoBehaviour
     public void GameOver()
     {
         TextMeshProUGUI winText = MenuUI.GameOver.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        winText.text = alliesWon ? "You Win!" : "You Lose!";
+        winText.text = alliesWon ? "The enemy was defeated." : "The mercenaries were defeated.";
         MenuUI.GameOver.SetActive(true);
         if (!gameoverFlag)
         {

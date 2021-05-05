@@ -197,13 +197,17 @@ public class Action : ScriptableObject
         {
             get;set;
         }
+        private List<Node> affectedNodes = new List<Node>();
         public List<Node> AffectedNodes
         {
-            get;set;
+            get => affectedNodes;
+            set { affectedNodes = value; }
         }
+        private List<Character> affectedCharacters = new List<Character>();
         public List<Character> AffectedCharacters
         {
-            get;set;
+            get => affectedCharacters;
+            set { affectedCharacters = value; }
         }
         private Vector2 direction;
         public Vector2 Direction
@@ -218,7 +222,8 @@ public class Action : ScriptableObject
                 direction = new Vector2(Mathf.Round(value.x), Mathf.Round(value.y));
             }
         }
-    }  
+    }
+    [Range(1,4)]public int animationIndex = 1;
 
     public void ResetAction()
     {
@@ -239,27 +244,31 @@ public class Action : ScriptableObject
 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
     {
-        CombatAction output = new CombatAction(Actor, this);
+        CombatAction output = new CombatAction(Actor, this, bpi);
         if (!ActionValidation(bpi, guess)) return output;
-        output.valid = true;
+        //output.valid = true;
         ShapeTest primaryTest = NodeTarget(bpi, true);
         ShapeTest secondaryTest = null;
         if (secondaryOutput.Count > 0) secondaryTest = NodeTarget(bpi, false);
         if (primaryTest.valid)
         {
-            if (primaryTest.potentialTargets.Count > 1)
+            if (primaryTest.tests.Count > 1)
             {
                 Target t = BestTarget(primaryTest, true /*primaryTest.potentialTargets*/);
                 output.primaryTarget = t;
+                output.valid = true;
             }
-            else if (primaryTest.potentialTargets.Count == 1)
+            else if (primaryTest.tests.Count == 1)
             {
-                output.primaryTarget = new Target();
+                Target t = BestTarget(primaryTest, true /*primaryTest.potentialTargets*/);
+                output.primaryTarget = t;
+                output.valid = true;
+                /*output.primaryTarget = new Target();
                 output.primaryTarget.Character = primaryTest.potentialTargets[0].targetCharacter;
                 output.primaryTarget.Node = primaryTest.potentialTargets[0].targetNode;
                 output.primaryTarget.AffectedCharacters = primaryTest.potentialTargets[0].affectedCharacters;
                 output.primaryTarget.AffectedNodes = primaryTest.potentialTargets[0].affectedNodes;
-                output.primaryTarget.Direction = (output.primaryTarget.Node.coordinate - Actor.position).normalized;
+                output.primaryTarget.Direction = (output.primaryTarget.Node.coordinate - Actor.position).normalized;*/
             }
             else
             {
@@ -269,19 +278,21 @@ public class Action : ScriptableObject
             if (secondaryTest!= null && secondaryTest.valid)
             {
                 output.secondaryTargetGroup = secondaryTargetGroup;
-                if (secondaryTest.potentialTargets.Count > 1)
+                if (secondaryTest.tests.Count > 1)
                 {
                     Target t = BestTarget(secondaryTest, false /*secondaryTest.potentialTargets*/);
                     output.secondaryTarget = t;
                 }
-                else if (secondaryTest.potentialTargets.Count == 1)
+                else if (secondaryTest.tests.Count == 1)
                 {
-                    output.secondaryTarget = new Target();
+                    Target t = BestTarget(secondaryTest, false /*secondaryTest.potentialTargets*/);
+                    output.secondaryTarget = t;
+                   /* output.secondaryTarget = new Target();
                     output.secondaryTarget.Character = secondaryTest.potentialTargets[0].targetCharacter;
                     output.secondaryTarget.Node = secondaryTest.potentialTargets[0].targetNode;
                     output.secondaryTarget.AffectedCharacters = secondaryTest.potentialTargets[0].affectedCharacters;
                     output.secondaryTarget.AffectedNodes = secondaryTest.potentialTargets[0].affectedNodes;
-                    output.secondaryTarget.Direction = (output.secondaryTarget.Node.coordinate - Actor.position).normalized;
+                    output.secondaryTarget.Direction = (output.secondaryTarget.Node.coordinate - Actor.position).normalized;*/
                 }
             }
         }
@@ -335,6 +346,7 @@ public class Action : ScriptableObject
                 foreach (Character c in possibleTargets)
                 {
                     result.potentialTargets.Add(new TargetInfo(Actor, new List<Character>() { c }));
+                    result.tests.Add(new CombatGrid.TargetingTest(new List<Node>() { c.movement.currentNode }, c.movement.currentNode));
                 }
                 result.valid = true;
                 break;
@@ -359,6 +371,7 @@ public class Action : ScriptableObject
                     foreach (Character c in possibleTargets)
                     {
                         result.potentialTargets.Add(new TargetInfo(c, new List<Character>() { c }));
+                        result.tests.Add(new CombatGrid.TargetingTest(new List<Node>() { c.movement.currentNode }, c.movement.currentNode));
                     }
                 }
                 break;
@@ -382,6 +395,7 @@ public class Action : ScriptableObject
                     foreach (Character c in possibleTargets)
                     {
                         result.potentialTargets.Add(new TargetInfo(c, new List<Character>() { c }));
+                        result.tests.Add(new CombatGrid.TargetingTest(new List<Node>() { c.movement.currentNode }, c.movement.currentNode));
                     }
                 }
                 break;
@@ -402,6 +416,12 @@ public class Action : ScriptableObject
                 break;
             case Shape.All:
                 result.valid = true;
+                List<Node> nodes = new List<Node>();
+                foreach(Character c in possibleTargets)
+                {
+                    nodes.Add(c.movement.currentNode);
+                }
+                result.tests.Add(new CombatGrid.TargetingTest(nodes, Actor.movement.currentNode));
                 result.potentialTargets.Add(new TargetInfo(Actor, possibleTargets));
                 break;
         }
@@ -413,8 +433,9 @@ public class Action : ScriptableObject
         Target output = new Target();
 
         CombatGrid.TargetingTest bestTest = CombatGrid.instance.TargetEvaluation(shapeTest.tests, Actor, this, primary);
-
+        if (bestTest == null) return null;
         output.AffectedNodes = bestTest.targetNodes;
+        if (output.AffectedCharacters == null) Debug.Log("missed");
         switch(primary ? primaryTargetGroup : secondaryTargetGroup)
         {
             case TargetGroup.All:

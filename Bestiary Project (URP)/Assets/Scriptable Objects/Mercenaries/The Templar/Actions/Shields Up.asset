@@ -47,6 +47,7 @@ MonoBehaviour:
     damageType: 0
     towards: 0
     difficulty: 0
+    affectedGroup: 2
   secondaryTargeting: 1
   secondaryShape: 7
   secondaryTargetGroup: 0
@@ -58,3 +59,5 @@ MonoBehaviour:
     damageType: 0
     towards: 0
     difficulty: 0
+    affectedGroup: 2
+  animationIndex: 3

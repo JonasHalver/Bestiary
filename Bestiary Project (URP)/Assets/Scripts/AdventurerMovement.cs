@@ -109,13 +109,20 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         moving = true;
         if (targetNode != null)
         {
+            if (previousNode != currentNode) previousNode = currentNode;
+            currentNode = targetNode;
+            
+            if (previousNode != null && previousNode.occupant == character) previousNode.occupant = null;
+            if (currentNode != null)
+                if (currentNode.occupant == null || currentNode.occupant != character) currentNode.occupant = character;
+
             if (ai)
             {
                 if (destinationNodes.Count > 0)
                 {
                     foreach (Node n in destinationNodes)
                     {
-                       // n.MovementHightlight();
+                        n.MovementHightlight();
                     }
                 }
                 else currentNode.ErrorHighlight();
@@ -134,14 +141,11 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 yield return null;
                 if (selected) break;
             }
-            if (previousNode != currentNode) previousNode = currentNode;
-            currentNode = targetNode;
             targetNode = null;
+            if (currentNode!= null)
+                transform.parent = CombatGrid.instance.rows[CombatGrid.gridRows[currentNode] - 1];
         }
-        if (previousNode != null && previousNode.occupant == character) previousNode.occupant = null;
-        if (currentNode != null)
-            if (currentNode.occupant == null || currentNode.occupant != character) currentNode.occupant = character;
-
+        
         CombatGrid.StopHighlight();
         ReportNewNode(currentNode);
 
@@ -217,7 +221,8 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 ReportNewNode(c);
             }
         }
-        if (!destinationNodes.Contains(c) || c.occupant != null && c.occupant != character)
+        if (!destinationNodes.Contains(c) || c.occupant != null && c.occupant != character ||
+            IllegalDestinationBecauseTaunt(c) || IllegalDestinationBecauseFear(c))
         {
             illegalMove = true;
             foreach(Node n in destinationNodes)
@@ -234,8 +239,37 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             illegalMove = false;
             CombatGrid.MovementHighlight(destinationNodes);
         }
-
+        transform.parent = CombatGrid.instance.rows[CombatGrid.gridRows[targetNode] - 1];
         CombatGrid.HighlightNodeStatic(targetNode);
+    }
+
+    private bool IllegalDestinationBecauseTaunt(Node c)
+    {
+        if (character.Conditions.ContainsKey(Action.Condition.TauntMerc) || character.Conditions.ContainsKey(Action.Condition.TauntMonster))
+        {
+            if (CombatGrid.NodeToDistance(c, character.Taunter.movement.currentNode) > CombatGrid.NodeToDistance(character.movement.currentNode, character.Taunter.movement.currentNode))
+            {
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+    private bool IllegalDestinationBecauseFear(Node c)
+    {
+        if (character.Conditions.ContainsKey(Action.Condition.FearMerc) || character.Conditions.ContainsKey(Action.Condition.FearMonster))
+        {
+            bool flag = false;
+            for (int i = 0; i < character.AfraidOf.Count; i++)
+            {
+                if (CombatGrid.NodeToDistance(c, character.AfraidOf[i].movement.currentNode) < CombatGrid.NodeToDistance(character.movement.currentNode, character.AfraidOf[i].movement.currentNode))
+                {
+                    flag = true;
+                }
+            }
+            return flag;
+        }
+        else return false;
     }
     
     public Node CurrentNode()
@@ -266,8 +300,11 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
 
         return output;
     } 
-
     public void AIMovement()
+    {
+        StartCoroutine(AIDestinationSelection());
+    }
+    IEnumerator  AIDestinationSelection()
     {
         int movementMod = 0 - (character.Conditions.ContainsKey(Action.Condition.SlowMonster) ? 2 : 0) + (character.Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
         int currentMovement = character.stats.entry.guess.movement + movementMod;
@@ -289,8 +326,14 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         }
         Node destination = destinations.Count > 0 ? destinations[UnityEngine.Random.Range(0, destinations.Count)] : currentNode;
         destinationNodes = destinations;*/
-        character.AI.Behavior();
-        targetNode = character.AI.Destination;
+        for (int i = 0; i < 100; i++)
+        {
+            character.AI.Behavior();
+            targetNode = character.AI.Destination;
+            if (targetNode != null || targetNode.occupant == null) break;
+            yield return null;
+        }
+        
         destinations.Clear();
         if (!character.Conditions.ContainsKey(Action.Condition.RootMonster)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;

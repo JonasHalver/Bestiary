@@ -21,7 +21,7 @@ MonoBehaviour:
   actionDescription: 
   descriptionIndex: -1
   cooldown: 2
-  minimumHits: 1
+  minimumHits: 2
   targetPriority: 1
   priorityConditionComparison: 0
   actionPriority: 3
@@ -60,3 +60,4 @@ MonoBehaviour:
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 3

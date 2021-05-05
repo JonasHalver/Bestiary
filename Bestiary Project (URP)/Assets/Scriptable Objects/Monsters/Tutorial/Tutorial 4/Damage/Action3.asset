@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: scolopendraburrow
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
+  actionDescription: opens its mouth wide
   descriptionIndex: 0
   cooldown: 2
   minimumHits: 1
@@ -57,3 +57,4 @@ MonoBehaviour:
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 3

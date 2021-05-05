@@ -281,7 +281,7 @@ public class CombatManager : MonoBehaviour
                         actors[i].currentAction = newCombatAction;
                     }
                 }
-                else actors[i].currentAction = new CombatAction(actors[i], actors[i].pass);
+                else actors[i].currentAction = new CombatAction(actors[i], actors[i].pass, new BattlefieldPositionInfo(actors[i], characterPositions));
             }
             else actors[i].currentAction = null;
         }
@@ -375,10 +375,11 @@ public class CombatManager : MonoBehaviour
                 {
                     cAction.highlighted = true;
                     Vector2 dir = Vector2.zero;
-                    if (cAction.action.primaryTargeting == Action.Targeting.Character)
-                        dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
-                    else
-                        dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
+                    //if (cAction.action.primaryTargeting == Action.Targeting.Character)
+                    //    dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
+                    //else
+                    //    dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
+                    dir = cAction.primaryTarget.Direction;
                     actors[i].StartCoroutine("TakeAction", dir);
                     while (!combatFlag)
                     {
@@ -426,6 +427,7 @@ public class CombatManager : MonoBehaviour
         yield return null;
         for (int i = 0; i < actors.Count; i++)
         {
+            yield return null;
             CombatGrid.StopHighlight();
 
             if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC && actors[i].alive)
@@ -568,10 +570,11 @@ public class CombatAction : Action
         targetNode = _target.movement.currentNode;
     }
     */
-    public CombatAction(Character _origin, Action _action)
+    public CombatAction(Character _origin, Action _action, BattlefieldPositionInfo _bpi)
     {
         origin = _origin;
         action = _action;
+        bpi = _bpi;
     }
 
     public void ResolveAction(CombatLogCard card)

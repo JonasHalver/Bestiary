@@ -26,6 +26,10 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
 
     public Gradient heatmap;
 
+    public static Dictionary<Node, int> gridRows = new Dictionary<Node, int>();
+    public List<Transform> rows = new List<Transform>();
+
+
     private void Awake()
     {
         instance = this;
@@ -58,7 +62,9 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         {
             for (int x = 0; x < 5; x++)
             {
-                grid[x, y] = new Node(transform.GetChild(index).gameObject, x, y);
+                Node newNode = new Node(transform.GetChild(index).gameObject, x, y);
+                grid[x, y] = newNode;
+                AssignToRow(newNode);
                 index++;
             }
         }
@@ -66,6 +72,112 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         {
             n.FindNeighbors();
         }        
+    }
+    private void AssignToRow(Node n)
+    {
+        switch (n.x)
+        {
+            case 0:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 7);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 8);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 9);
+                        break;
+                }
+                break;
+            case 1:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 7);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 8);
+                        break;
+                }
+                break;
+            case 2:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 7);
+                        break;
+                }
+                break;
+            case 3:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 2);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 6);
+                        break;
+                }
+                break;
+            case 4:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 1);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 2);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 5);
+                        break;
+                }
+                break;
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -677,7 +789,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 }
                 break;
         }
-        if (output == null) output = targets[0];
+        if (output == null && targets.Count > 0) output = targets[0];
         return output;
     }
 
@@ -1031,8 +1143,11 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             {
                 if (l[i].occupant != null)
                 {
-                    if (l[i].occupant.stats.characterType == CharacterStats.CharacterTypes.Adventurer) mercsHit.Add(l[i].occupant);
-                    else monstersHit.Add(l[i].occupant);
+                    if (l[i].occupant.alive)
+                    {
+                        if (l[i].occupant.stats.characterType == CharacterStats.CharacterTypes.Adventurer) mercsHit.Add(l[i].occupant);
+                        else monstersHit.Add(l[i].occupant);
+                    }
                 }
             }
             totalHits = mercsHit.Count + monstersHit.Count;

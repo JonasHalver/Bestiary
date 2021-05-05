@@ -36,8 +36,8 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 75, y: 75}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 75, y: 125}
+  m_Pivot: {x: 0.5, y: 0.25}
 --- !u!222 &8556248952471432657
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -124,12 +124,12 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7283788277956465955}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 0, y: 48.57}
+  m_SizeDelta: {x: 100, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2089614787217731390
 CanvasRenderer:
@@ -182,6 +182,7 @@ GameObject:
   - component: {fileID: 7283788277956465982}
   - component: {fileID: 7283788277956465980}
   - component: {fileID: 329833077950276860}
+  - component: {fileID: 3476906391662747794}
   m_Layer: 8
   m_Name: Character
   m_TagString: Untagged
@@ -201,8 +202,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 8688603730695582077}
-  - {fileID: 6442345738950930009}
   - {fileID: 5239143698919056926}
+  - {fileID: 6442345738950930009}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -269,7 +270,7 @@ MonoBehaviour:
   debuffs: []
   buffs: []
   currentAction: {fileID: 0}
-  characterIcon: {fileID: 390191400349471051}
+  characterIcon: {fileID: 5239143698919056924}
   characterIconColor: {r: 1, g: 1, b: 1, a: 1}
   deadImage: {fileID: 215725937335092920}
   animator: {fileID: 5239143698919056927}
@@ -321,6 +322,7 @@ MonoBehaviour:
   highlightMyNode: 0
   pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
   conditions: {fileID: 329833077950276860}
+  direction: {x: 0, y: 0}
 --- !u!114 &7283788277956465980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -351,6 +353,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   character: {fileID: 7283788277956465982}
+--- !u!95 &3476906391662747794
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7283788277956465952}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8f19f6a9e9ec4234696dacb6e13c8ffb, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &607293131150386443
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -376,7 +397,7 @@ PrefabInstance:
     - target: {fileID: 4672665538920121109, guid: 3341026cc4a10be40bb53132d2d29f69,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4672665538920121109, guid: 3341026cc4a10be40bb53132d2d29f69,
         type: 3}
@@ -481,6 +502,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 607293131150386443}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5239143698919056924 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4672665538920121111, guid: 3341026cc4a10be40bb53132d2d29f69,
+    type: 3}
+  m_PrefabInstance: {fileID: 607293131150386443}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &5239143698919056927 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4672665538920121108, guid: 3341026cc4a10be40bb53132d2d29f69,

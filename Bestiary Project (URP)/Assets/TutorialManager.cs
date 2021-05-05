@@ -92,6 +92,7 @@ public class TutorialManager : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         ShowLogAndInitiative.Invoke();
         //gameObject.SetActive(false);
+        
     }
     private void OnEnable()
     {

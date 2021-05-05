@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: earthelementalcraggyexterior
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
+  actionDescription: inhales deeply
   descriptionIndex: 1
   cooldown: 2
   minimumHits: 1
@@ -59,3 +59,4 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 1
+  animationIndex: 1

@@ -21,7 +21,7 @@ public class CustomToggle : MonoBehaviour, IPointerClickHandler
         activeIndex++;
         if (activeIndex == sprites.Count) activeIndex = 0;
         if (img) img.sprite = sprites[activeIndex];
-        else if (text) text.text = (activeIndex + 1).ToString();
+        else if (text) text.text = (activeIndex).ToString();
         sts.tooltipString = tooltips[activeIndex];
         sts.RefreshTooltip();
         switch (type)
