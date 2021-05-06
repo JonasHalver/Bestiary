@@ -321,7 +321,7 @@ MonoBehaviour:
   entry: {fileID: 0}
   highlightMyNode: 0
   pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
-  conditions: {fileID: 329833077950276860}
+  conditionManager: {fileID: 329833077950276860}
   direction: {x: 0, y: 0}
 --- !u!114 &7283788277956465980
 MonoBehaviour:

@@ -46,7 +46,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     {
         get
         {
-            return conditions.Conditions;
+            return conditionManager.Conditions;
         }
     }
     public Character Taunter
@@ -83,7 +83,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     [HideInInspector] public Entry entry;
     [HideInInspector] public bool highlightMyNode = false;
     public Action pass;
-    public ConditionManager conditions;
+    public ConditionManager conditionManager;
 
     public Dictionary<Action, int> actionCooldowns = new Dictionary<Action, int>();
 
@@ -265,7 +265,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     private void RoundChange(CombatManager.CombatTiming timing)
     {
-        conditions.UpdateDurations(timing);
+        conditionManager.UpdateDurations(timing);
     }
 
     private void OnMyTurn(CombatManager.CombatTiming timing, Character currentActor)
@@ -273,10 +273,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (currentActor != this) return;
         if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) 
         { 
-            conditions.TriggerOverTimeEffects();
+            conditionManager.TriggerOverTimeEffects();
             CooldownTick();            
         }
-        conditions.UpdateDurations(timing);
+        conditionManager.UpdateDurations(timing);
     }
     public void CooldownTick()
     {
@@ -479,11 +479,14 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 if (AllyOrEnemy(this, interaction.origin)) return;
                 break;
         }
+        if (Conditions.ContainsKey(Action.Condition.Dodge))
+        {
+            if (!AllyOrEnemy(this, interaction.origin)) return;
+        }
         switch (interaction.effect.output)
         {
             case Action.Output.Damage:
-                if (Conditions.ContainsKey(Action.Condition.Dodge)) break;
-                ReceiveHit(interaction.effect);
+                ReceiveHit(interaction.effect, interaction.origin);
                 break;
             case Action.Output.Healing:
                 ReceiveHealing(interaction.effect);
@@ -523,13 +526,15 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         animationState = 1;
     }
     
-    public void ReceiveHit(OutputInfo info)
+    public void ReceiveHit(OutputInfo info, Character origin)
     {
         float damage = 1;
         if (info.critical || stats.weaknesses.Contains(info.damageType)) damage++;
         if (Conditions.ContainsKey(Action.Condition.Vulnerable)) damage++;
+        if (origin.Conditions.ContainsKey(Action.Condition.StrengthenOther) || origin.Conditions.ContainsKey(Action.Condition.StrengthenSelf)) damage++;
         if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(info.damageType)) damage /= 2;
+        if (origin.Conditions.ContainsKey(Action.Condition.Weaken)) damage /= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
@@ -565,7 +570,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     }
     public void ReceiveCondition(OutputInfo info)
     {
-        conditions.ApplyCondition(info.condition, info.value);        
+        conditionManager.ApplyCondition(info.condition, info.value);        
     }
 
     public void MoveByAction(Interaction interaction)
@@ -577,7 +582,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         else
         {
-            target = interaction.primaryTarget.Character.movement.currentNode;
+            target = interaction.origin.movement.currentNode;
         }
         Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized;
         dir = new Vector2(Mathf.Round(dir.x), Mathf.Round(dir.y)) * (interaction.effect.towards ? 1 : -1);

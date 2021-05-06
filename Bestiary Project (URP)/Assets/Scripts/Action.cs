@@ -1277,6 +1277,7 @@ public class OutputInfo
     [HideInInspector]public Entry.Difficulty difficulty;
     [Tooltip("Who is affected by this action? Separate from targeting.")]
     public Action.TargetGroup affectedGroup = Action.TargetGroup.All;
+    [HideInInspector] public Character origin;
 
     public bool Match(OutputInfo comparison)
     {

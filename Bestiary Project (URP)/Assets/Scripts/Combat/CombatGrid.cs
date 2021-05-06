@@ -261,7 +261,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     {
         if (GameManager.tutorial && TutorialManager.instance.currentSequence == TutorialManager.TutorialSequence.Main1)
         {
-            if (isMonster) return grid[2, 3];
+            if (isMonster) return grid[2, 4];
             else return grid[2, 1];
         }
         List<Node> possibleSpawns = new List<Node>();
@@ -350,7 +350,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         //{
         //    n.NodeDeselected();
         //}
-        if (selectedNode != null) selectedNode.NodeDeselected();
+        //if (selectedNode != null) selectedNode.NodeDeselected();
         selectedNode = node;
         node.NodeSelected();
     }

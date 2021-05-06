@@ -209,7 +209,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
     public void Selected()
     {
         if (destinationNodes.Count == 0) destinationNodes = GenerateDestinationList(MovementLeft);
-        currentNode.NodeSelected();
+        //currentNode.NodeSelected();
         transform.position = Input.mousePosition + pickupOffset;
         Node c = CurrentNode();
         if (c != null)

@@ -44,12 +44,12 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     }
     private void OnEnable()
     {
-        BookActionCard.CardUpdated += UpdateIcons;
+        //BookActionCard.CardUpdated += UpdateIcons;
         UpdateIcons(false);
     }
     private void OnDisable()
     {
-        BookActionCard.CardUpdated -= UpdateIcons;
+       // BookActionCard.CardUpdated -= UpdateIcons;
     }
 
     private void Update()

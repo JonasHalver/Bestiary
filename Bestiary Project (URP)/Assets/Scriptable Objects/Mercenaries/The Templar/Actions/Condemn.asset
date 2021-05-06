@@ -24,7 +24,7 @@ MonoBehaviour:
   minimumHits: 2
   targetPriority: 1
   priorityConditionComparison: 14
-  actionPriority: 1
+  actionPriority: 3
   descriptionSet: 0
   targetingSet: 0
   outcomeSet: 0
@@ -48,6 +48,7 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 0
+    origin: {fileID: 0}
   - output: 2
     value: 1
     condition: 14
@@ -56,6 +57,7 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 0
+    origin: {fileID: 0}
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1

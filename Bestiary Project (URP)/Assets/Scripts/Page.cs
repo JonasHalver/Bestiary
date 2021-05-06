@@ -77,6 +77,7 @@ public class Page : MonoBehaviour
         actionCards.Add(card);
         card.page = this;
         card.entry = entry;
+        entry.actionCardCount++;
         if (entry.actionChecks.Count >= actionCards.Count) card.actionCheck = entry.actionChecks[actionCards.Count - 1];        
         if (card.panelColors.Count >= actionCards.Count) card.panelColor = card.panelColors[actionCards.Count - 1];
         if (card.actionCheck != null) card.actionCheck.panelColor = card.panelColor;
@@ -87,6 +88,7 @@ public class Page : MonoBehaviour
     {
         GameObject newWarning = Instantiate(warningPrefab, transform);
         newWarning.GetComponent<WarningPopup>().page = this;
+        entry.actionCardCount--;
         StartCoroutine(WaitingForDeletionConfirmation(card));
     }
     IEnumerator WaitingForDeletionConfirmation(CardRearrangement card)
