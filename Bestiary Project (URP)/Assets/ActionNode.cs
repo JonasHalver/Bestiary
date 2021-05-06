@@ -416,7 +416,17 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         if (oi != null)
         {
             clone.GetComponent<ActionNode>().actionOutput = oi;
+            clone.GetComponent<ActionNode>().DelaySetIcons();
         }
+    }
+    public void DelaySetIcons()
+    {
+        StartCoroutine(OneFrameDelay());
+    }
+    IEnumerator OneFrameDelay()
+    {
+        yield return null;
+        SetIcons();
     }
     public void OnBeginDrag(PointerEventData eventData)
     {

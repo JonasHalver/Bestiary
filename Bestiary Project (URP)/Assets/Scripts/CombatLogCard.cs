@@ -18,26 +18,34 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     private Entry entry, victimEntry;
     public Color enemy, ally;
     private Character user, victim;
-
+    public bool wasStunned = false;
     public static bool displayingPast = false;
     private int t = 0;
     private Log elements;
 
     private void Update()
     {
-        if (t > 10) { UpdateCanvas(); CreateCard(); }
+        if (t > 20) { UpdateCanvas(); CreateCard(); }
         t++;
     }
-
+    private void OnDisable()
+    {
+        if (displayingPast)
+        {
+            displayingPast = false;
+            CombatManager.instance.ShowCurrentPositions();
+        }
+    }
     public void CreateCard()
     {
         elements = GameManager.instance.logElementCollection;
         OutputInfo primaryMove = null, secondaryMove = null;
 
         if (info.action.isPass)
-        {
-            if (ca.origin.entry.isMerc) text.text = $"<b>{ca.origin.stats.characterName}</b> passed.";
-            else text.text = $"<b>{ca.origin.entry.guess.characterName}</b> passed.";
+        {           
+            string failedText = wasStunned ? "was stunned" : "passed";
+            if (ca.origin.entry.isMerc) text.text = $"<b>{ca.origin.stats.characterName}</b> {failedText}.";
+            else text.text = $"<b>{ca.origin.entry.guess.characterName}</b> {failedText}.";
             return;
         }
         #region Old Code
@@ -398,29 +406,20 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     public void UpdateCanvas()
     {
-
         t = 0;
         Canvas.ForceUpdateCanvases();
-        //topLine.SetActive(true);
-        //topLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
-        //topLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
-        //
-        //botLine.SetActive(true);
-        //botLine.GetComponent<HorizontalLayoutGroup>().enabled = false;
-        //botLine.GetComponent<HorizontalLayoutGroup>().enabled = true;
     }
     public void OnPointerExit(PointerEventData eventData)
-    {
-        
+    {        
         displayingPast = false;
-        StartCoroutine(ExitDelay());
+        CombatManager.instance.ShowCurrentPositions();
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (CombatManager.instance.currentStage != CombatManager.CombatStage.Setup) return;
         displayingPast = true;
-        CombatGrid.ShowPreviousPositions(ca.bpi, user, ca.affectedCharacters);
+        CombatManager.instance.ShowPreviousPositions(ca);
     }
 
     IEnumerator ExitDelay()
@@ -438,7 +437,6 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         if (!displayingPast)
         {
             CombatGrid.ShowCurrentPositions();
-
         }
     }
 

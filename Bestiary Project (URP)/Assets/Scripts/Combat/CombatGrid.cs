@@ -26,6 +26,10 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
 
     public Gradient heatmap;
 
+    public static Dictionary<Node, int> gridRows = new Dictionary<Node, int>();
+    public List<Transform> rows = new List<Transform>();
+
+
     private void Awake()
     {
         instance = this;
@@ -58,7 +62,9 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         {
             for (int x = 0; x < 5; x++)
             {
-                grid[x, y] = new Node(transform.GetChild(index).gameObject, x, y);
+                Node newNode = new Node(transform.GetChild(index).gameObject, x, y);
+                grid[x, y] = newNode;
+                AssignToRow(newNode);
                 index++;
             }
         }
@@ -66,6 +72,112 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         {
             n.FindNeighbors();
         }        
+    }
+    private void AssignToRow(Node n)
+    {
+        switch (n.x)
+        {
+            case 0:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 7);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 8);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 9);
+                        break;
+                }
+                break;
+            case 1:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 7);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 8);
+                        break;
+                }
+                break;
+            case 2:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 6);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 7);
+                        break;
+                }
+                break;
+            case 3:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 2);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 5);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 6);
+                        break;
+                }
+                break;
+            case 4:
+                switch (n.y)
+                {
+                    case 0:
+                        gridRows.Add(n, 1);
+                        break;
+                    case 1:
+                        gridRows.Add(n, 2);
+                        break;
+                    case 2:
+                        gridRows.Add(n, 3);
+                        break;
+                    case 3:
+                        gridRows.Add(n, 4);
+                        break;
+                    case 4:
+                        gridRows.Add(n, 5);
+                        break;
+                }
+                break;
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -149,7 +261,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     {
         if (GameManager.tutorial && TutorialManager.instance.currentSequence == TutorialManager.TutorialSequence.Main1)
         {
-            if (isMonster) return grid[2, 3];
+            if (isMonster) return grid[2, 4];
             else return grid[2, 1];
         }
         List<Node> possibleSpawns = new List<Node>();
@@ -238,7 +350,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         //{
         //    n.NodeDeselected();
         //}
-        if (selectedNode != null) selectedNode.NodeDeselected();
+        //if (selectedNode != null) selectedNode.NodeDeselected();
         selectedNode = node;
         node.NodeSelected();
     }
@@ -299,6 +411,64 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     }
     */
 
+    public static ShapeTest ShapeTest(ShapeTest test, Action.Shape shape)
+    {
+        Node originNode = test.origin.movement.currentNode;
+        Vector2 originV2 = originNode.coordinate;
+        List<TargetingTest> tests = new List<TargetingTest>();
+        List<Node> targetTest = new List<Node>();
+
+        if (shape == Action.Shape.Area)
+        {
+            foreach (Node node in grid)
+            {
+                if (node != null)
+                {
+                    targetTest = GenerateThreeByThree(node);
+                    tests.Add(new TargetingTest(targetTest, node));
+                }
+
+            }
+        }
+        else if (shape == Action.Shape.Pulse)
+        {
+            List<Node> nodelist = new List<Node>();
+            foreach (Node node in originNode.neighbors)
+            {
+                if (node != null) nodelist.Add(node);
+            }
+            tests.Add(new TargetingTest(nodelist, originNode));
+        }
+        else
+        {
+            foreach (Node node in originNode.neighbors)
+            {
+                if (node != null)
+                {
+                    switch (shape)
+                    {
+                        case Action.Shape.Arc:
+                            targetTest = GenerateArc(node.coordinate, originV2);
+                            break;
+                        case Action.Shape.Cone:
+                            targetTest = GenerateCone(node.coordinate, originV2);
+                            break;
+                        case Action.Shape.Line:
+                            targetTest = GenerateLine(node.coordinate, originV2);
+                            break;
+                    }
+                    tests.Add(new TargetingTest(targetTest, node));
+                }
+            }
+        }
+        if (tests.Count > 0)
+        {
+            test.tests.AddRange(tests);
+            test.Validation();
+        }
+        return test;
+    }
+
     public static ShapeTest ArcTest(ShapeTest test)
     {
         bool valid = false;
@@ -309,7 +479,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         int hitCount = 0, hitBest = 0;
         bool validTarget = false;
         Node bestTarget = null;
-        List<Node> bestTargets;
+        List<TargetingTest> tests = new List<TargetingTest>();
         ShapeTest output = new ShapeTest(test.action, test.origin);
         foreach (Node node in originNode.neighbors)
         {
@@ -317,7 +487,9 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             {
                 hitCount = 0;
                 List<Node> targetTest = GenerateArc(node.coordinate, originV2);
-                foreach(Node n in targetTest)
+                tests.Add(new TargetingTest(targetTest, node));
+                
+                /*foreach(Node n in targetTest)
                 {
                     if (n.occupant != null)
                     {
@@ -340,10 +512,14 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 if (hitCount >= test.hitMinimum)
                 {
                     output.potentialTargets.Add(new TargetInfo(node, targetTest));
-                }
+                }*/                
             }
         }
-        if (output.potentialTargets.Count > 0) output.valid = true;
+        if (tests.Count > 0)
+        {
+            output.tests.AddRange(tests);
+            output.valid = true;
+        }
         return output;
     }
 
@@ -533,23 +709,88 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         return output;
     }
 
-    public TargetingTest TargetEvalutation(List<TargetingTest> targets, Action.TargetPriority priority)
+    public TargetingTest TargetEvaluation(List<TargetingTest> targets, Character actor, Action action, bool primary)
     {
-        switch (priority)
+        bool characterIsMonster = actor.stats.characterType == CharacterStats.CharacterTypes.NPC;
+        TargetingTest output = null;
+        float hp = 100;
+        int hits = 100;
+        Action.TargetGroup tg = primary ? action.primaryTargetGroup : action.secondaryTargetGroup;
+        switch (tg)
         {
-            case Action.TargetPriority.MostHits:
-                //targets.Sort((t1, t2) => t1.)
+            case Action.TargetGroup.Allies:
+                if (characterIsMonster) targets.Sort((t2, t1) => t1.monstersHit.Count.CompareTo(t2.monstersHit.Count));
+                else targets.Sort((t2, t1) => t1.mercsHit.Count.CompareTo(t2.mercsHit.Count));
                 break;
-            case Action.TargetPriority.MostHurt:
+            case Action.TargetGroup.Enemies:
+                if (!characterIsMonster) targets.Sort((t2, t1) => t1.monstersHit.Count.CompareTo(t2.monstersHit.Count));
+                else targets.Sort((t2, t1) => t1.mercsHit.Count.CompareTo(t2.mercsHit.Count));
                 break;
-            case Action.TargetPriority.HasSpecificCondition:
-                break;
-            case Action.TargetPriority.DoesntHaveSpecificCondition:
-                break;
-            case Action.TargetPriority.NotHurtingAlly:
+            case Action.TargetGroup.All:
+                targets.Sort((t2, t1) => t1.totalHits.CompareTo(t2.totalHits));
                 break;
         }
-        return null;
+        switch (action.targetPriority)
+        {
+            case Action.TargetPriority.MostHits:                
+                break;
+            case Action.TargetPriority.MostHurt:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (targets[i].HPOfMostHurtCharacter(tg, actor) < hp)
+                    {
+                        hp = targets[i].HPOfMostHurtCharacter(tg, actor);
+                        output = targets[i];
+                    }
+                }
+                break;
+            case Action.TargetPriority.HasSpecificCondition:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (targets[i].TargetHasCondition(tg, actor, action.priorityConditionComparison))
+                    {
+                        output = targets[i];
+                        break;
+                    }
+                }
+                break;
+            case Action.TargetPriority.DoesntHaveSpecificCondition:
+                for (int i = 0; i < targets.Count; i++)
+                {
+                    if (!targets[i].TargetHasCondition(tg, actor, action.priorityConditionComparison))
+                    {
+                        output = targets[i];
+                        break;
+                    }
+                }
+                break;
+            case Action.TargetPriority.NotHurtingAlly:
+                if (actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                {
+                    for (int i = 0; i < targets.Count; i++)
+                    {
+                        if (targets[i].mercsHit.Count < hits)
+                        {
+                            hits = targets[i].mercsHit.Count;
+                            output = targets[i];
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < targets.Count; i++)
+                    {
+                        if (targets[i].monstersHit.Count < hits)
+                        {
+                            hits = targets[i].monstersHit.Count;
+                            output = targets[i];
+                        }
+                    }
+                }
+                break;
+        }
+        if (output == null && targets.Count > 0) output = targets[0];
+        return output;
     }
 
     public static List<Node> GenerateArc(Vector2 target, Vector2 origin)
@@ -893,7 +1134,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         public Node targetNode;
         public List<Character> mercsHit = new List<Character>();
         public List<Character> monstersHit = new List<Character>();
-
+        public int totalHits;
         public TargetingTest(List<Node> l, Node t)
         {
             targetNodes = l;
@@ -902,12 +1143,124 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             {
                 if (l[i].occupant != null)
                 {
-                    if (l[i].occupant.stats.characterType == CharacterStats.CharacterTypes.Adventurer) mercsHit.Add(l[i].occupant);
-                    else monstersHit.Add(l[i].occupant);
+                    if (l[i].occupant.alive)
+                    {
+                        if (l[i].occupant.stats.characterType == CharacterStats.CharacterTypes.Adventurer) mercsHit.Add(l[i].occupant);
+                        else monstersHit.Add(l[i].occupant);
+                    }
                 }
             }
+            totalHits = mercsHit.Count + monstersHit.Count;
         }
+        public float HPOfMostHurtCharacter(Action.TargetGroup targetGroup, Character actor)
+        {
+            float lowestMonsterHP = 100;
+            float lowestMercHP = 100;
 
+            for (int i = 0; i < targetNodes.Count; i++)
+            {
+                if (targetNodes[i].occupant != null)
+                {
+                    Character c = targetNodes[i].occupant;
+                    switch (c.stats.characterType)
+                    {
+                        case CharacterStats.CharacterTypes.Adventurer:
+                            if (c.currentHitpoints < lowestMercHP) lowestMercHP = c.currentHitpoints;
+                            break;
+                        case CharacterStats.CharacterTypes.NPC:
+                            if (c.currentHitpoints < lowestMonsterHP) lowestMonsterHP = c.currentHitpoints;
+                            break;
+                    }
+                }
+            }
+            switch (targetGroup)
+            {
+                default: return 100;
+                case Action.TargetGroup.All:
+                    return Mathf.Min(lowestMercHP, lowestMonsterHP);
+                case Action.TargetGroup.Allies:
+                    return actor.stats.characterType == CharacterStats.CharacterTypes.NPC ? lowestMonsterHP : lowestMercHP;
+                case Action.TargetGroup.Enemies:
+                    return actor.stats.characterType != CharacterStats.CharacterTypes.NPC ? lowestMonsterHP : lowestMercHP;                    
+            }
+        }
+        public bool TargetHasCondition(Action.TargetGroup tg, Character actor, Action.Condition condition)
+        {
+            bool output = false;
+            switch (tg)
+            {
+                case Action.TargetGroup.All:
+                    for (int i = 0; i < monstersHit.Count; i++)
+                    {
+                        if (monstersHit[i].Conditions.ContainsKey(condition))
+                        {
+                            output = true;
+                            break;
+                        }
+                    }
+                    if (!output)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case Action.TargetGroup.Allies:
+                    if (actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < monstersHit.Count; i++)
+                        {
+                            if (monstersHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case Action.TargetGroup.Enemies:
+                    if (actor.stats.characterType != CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        for (int i = 0; i < mercsHit.Count; i++)
+                        {
+                            if (mercsHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < monstersHit.Count; i++)
+                        {
+                            if (monstersHit[i].Conditions.ContainsKey(condition))
+                            {
+                                output = true;
+                                break;
+                            }
+                        }
+                    }
+                    break;
+            }
+            return output;
+        }
     }
 }
 
@@ -1041,6 +1394,7 @@ public class ShapeTest
     public Node bestTargetNode;
     public Character bestTargetCharacter;
     public List<TargetInfo> potentialTargets = new List<TargetInfo>();
+    public List<CombatGrid.TargetingTest> tests = new List<CombatGrid.TargetingTest>();
     public bool valid;
 
     public ShapeTest(Action _action, Character _origin, int _hitMinimum, bool _hitEnemyOnly)
@@ -1077,5 +1431,60 @@ public class ShapeTest
         valid = true;
         action = _action;
         origin = _origin;
+    }
+    public void Validation()
+    {
+        bool flag = false;
+        for (int i = 0; i < tests.Count; i++)
+        {
+            switch (targetGroup)
+            {
+                case Action.TargetGroup.All:
+                    if (tests[i].totalHits >= hitMinimum)
+                    {
+                        flag = true;
+                        goto Done;
+                    }
+                    break;
+                case Action.TargetGroup.Allies:
+                    if (action.Actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        if (tests[i].mercsHit.Count >= hitMinimum)
+                        {
+                            flag = true;
+                            goto Done;
+                        }
+                    }
+                    else
+                    {
+                        if (tests[i].monstersHit.Count >= hitMinimum)
+                        {
+                            flag = true;
+                            goto Done;
+                        }
+                    }
+                    break;
+                case Action.TargetGroup.Enemies:
+                    if (action.Actor.stats.characterType != CharacterStats.CharacterTypes.Adventurer)
+                    {
+                        if (tests[i].mercsHit.Count >= hitMinimum)
+                        {
+                            flag = true;
+                            goto Done;
+                        }
+                    }
+                    else
+                    {
+                        if (tests[i].monstersHit.Count >= hitMinimum)
+                        {
+                            flag = true;
+                            goto Done;
+                        }
+                    }
+                    break;
+            }
+        }
+        Done:
+        valid = flag;
     }
 }

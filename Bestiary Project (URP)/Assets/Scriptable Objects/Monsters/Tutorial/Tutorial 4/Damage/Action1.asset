@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: scolopendraacidspray
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
+  actionDescription: starts swinging its arms
   descriptionIndex: 10
   cooldown: 1
   minimumHits: 1
@@ -57,3 +57,4 @@ MonoBehaviour:
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 1

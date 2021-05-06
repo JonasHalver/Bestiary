@@ -32,26 +32,30 @@ MonoBehaviour:
   - <b>Pulse:</b>
   - <b>All:</b>
   conditions:
-  - <b>Acid:</b>
-  - <b>Armor:</b>
-  - <b>Bleeding:</b>
-  - <b>Burning:</b>
+  - <b>Acid:</b> Deals acid damage at the start of the victim's turn.
+  - <b>Armor:</b> Damage taken from damaging actions is halved.
+  - <b>Bleeding:</b> Deals cutting damage at the start of the victim's turn.
+  - <b>Burning:</b> Deals fire damage at the start of the victim's turn.
   - <b>Disorient:</b>
   - <b>Disorient:</b>
-  - <b>Dodge:</b>
-  - <b>Fear:</b>
-  - <b>Fear:</b>
-  - <b>Haste:</b>
-  - <b>Poison:</b>
-  - <b>Regeneration:</b>
-  - <b>Root:</b>
-  - <b>Root:</b>
-  - <b>Slow:</b>
-  - <b>Slow:</b>
-  - <b>Strengthen:</b>
-  - <b>Strengthen:</b>
-  - <b>Stun:</b>
-  - <b>Taunt:</b>
-  - <b>Taunt:</b>
-  - <b>Vulnerable:</b>
-  - <b>Weaken:</b>
+  - <b>Dodge:</b> Enemy actions miss.
+  - <b>Fear:</b> The victim cannot move closer to the character who applied this.
+  - <b>Fear:</b> The victim cannot move closer to the character who applied this.
+  - <b>Haste:</b> The character's <i>Speed</i> and <i>Movement</i> are increased
+    by 2.
+  - <b>Poison:</b> Deals poison damage at the start of the victim's turn.
+  - <b>Regeneration:</b> Heals the character at the start of their turn.
+  - <b>Root:</b> The victim's <i>Movement</i> is set to 0.
+  - <b>Root:</b> The victim's <i>Movement</i> is set to 0.
+  - <b>Slow:</b> The character's <i>Speed</i> and <i>Movement</i> are decreased by
+    2.
+  - <b>Slow:</b> The character's <i>Speed</i> and <i>Movement</i> are decreased by
+    2.
+  - <b>Strengthen:</b> The character's damaging actions deal more damage.
+  - <b>Strengthen:</b> The character's damaging actions deal more damage.
+  - <b>Stun:</b> The victim cannot take actions.
+  - <b>Taunt:</b> The victim must move closer to the taunter.
+  - <b>Taunt:</b> The victim must move closer to the taunter.
+  - <b>Vulnerable:</b> The victim takes more damage from damaging actions.
+  - <b>Weaken:</b> The victim's damaging actions deal half damage.
+  priorities: []

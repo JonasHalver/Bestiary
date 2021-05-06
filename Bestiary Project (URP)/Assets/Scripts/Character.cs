@@ -46,8 +46,17 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     {
         get
         {
-            return conditions.Conditions;
+            return conditionManager.Conditions;
         }
+    }
+    public Character Taunter
+    {
+        get;set;
+    }
+    private List<Character> afraidOf = new List<Character>();
+    public List<Character> AfraidOf
+    {
+        get => afraidOf;
     }
     public List<Buff.BuffType> currentBuffs = new List<Buff.BuffType>();
 
@@ -74,9 +83,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     [HideInInspector] public Entry entry;
     [HideInInspector] public bool highlightMyNode = false;
     public Action pass;
-    public ConditionManager conditions;
+    public ConditionManager conditionManager;
 
     public Dictionary<Action, int> actionCooldowns = new Dictionary<Action, int>();
+
+    public Vector2 direction;
 
     private void Awake()
     {
@@ -131,7 +142,80 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         //if (stats.characterType == CharacterStats.CharacterTypes.NPC) 
             entry = stats.entry;
 
+
         // Animation
+        if (movement.canMove || stats.characterType == CharacterStats.CharacterTypes.NPC)
+        {
+            if (currentAction != null && !currentAction.action.isPass)
+            {
+                if (currentAction.primaryTarget != null)
+                {
+                    direction = currentAction.primaryTarget.Direction;
+                    if (direction == Vector2.zero) direction = (CombatGrid.grid[2, 2].coordinate - position).normalized;
+                }
+                else direction = (CombatGrid.grid[2, 2].coordinate - position).normalized;
+            }
+            else
+            {
+                direction = (CombatGrid.grid[2, 2].coordinate - position).normalized;
+            }
+        }
+
+        switch (Mathf.RoundToInt(direction.x))
+        {
+            case -1:
+                switch (Mathf.RoundToInt(direction.y))
+                {
+                    case -1:
+                        faceLeft = true;
+                        faceFront = true;
+                        break;
+                    case 0:
+                        faceLeft = true;
+                        faceFront = false;
+                        break;
+                    case 1:
+                        faceLeft = true;
+                        faceFront = false;
+                        break;
+                }
+                break;
+            case 0:
+                switch (Mathf.RoundToInt(direction.y))
+                {
+                    case -1:
+                        faceLeft = true;
+                        faceFront = true;
+                        break;
+                    case 0:
+                        faceLeft = false;
+                        faceFront = true;
+                        break;
+                    case 1:
+                        faceLeft = false;
+                        faceFront = false;
+                        break;
+                }
+                break;
+            case 1:
+                switch (Mathf.RoundToInt(direction.y))
+                {
+                    case -1:
+                        faceLeft = true;
+                        faceFront = true;
+                        break;
+                    case 0:
+                        faceLeft = false;
+                        faceFront = true;
+                        break;
+                    case 1:
+                        faceLeft = false;
+                        faceFront = true;
+                        break;
+                }
+                break;
+        }       
+        
         animator.SetFloat("Left", faceLeft ? 0 : 1);
         animator.SetFloat("Facing", faceFront ? 0 : 1);
         animator.SetFloat("State", (float)animationState / 5);
@@ -141,7 +225,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     public void Created()
     {
-        anim = transform.GetChild(0).GetComponent<Animator>();
+        anim = GetComponent<Animator>();
         movement.character = this;
 
         if (!CombatManager.actors.Contains(this)) CombatManager.actors.Add(this);
@@ -156,14 +240,15 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             stats.actions[i].Actor = this;
         }
         memory = new LastRoundMemory();
-        characterIcon.sprite = stats.characterIcon;
+        //characterIcon.sprite = stats.characterIcon;
         characterIcon.color = stats.characterIconColor;
         if(stats.characterType == CharacterStats.CharacterTypes.NPC)
         {
             AI = gameObject.AddComponent<MonsterAI>();
             AI.character = this;
         }
-        anim.SetTrigger("FadeIn");
+        //anim.SetTrigger("FadeIn");
+        transform.parent = CombatGrid.instance.rows[CombatGrid.gridRows[movement.currentNode] - 1];
         movement.MoveByAction(movement.currentNode, true);
     }
 
@@ -180,7 +265,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
     private void RoundChange(CombatManager.CombatTiming timing)
     {
-        conditions.UpdateDurations(timing);
+        conditionManager.UpdateDurations(timing);
     }
 
     private void OnMyTurn(CombatManager.CombatTiming timing, Character currentActor)
@@ -188,10 +273,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (currentActor != this) return;
         if (timing == CombatManager.CombatTiming.StartOfCharacterTurn) 
         { 
-            conditions.TriggerOverTimeEffects();
+            conditionManager.TriggerOverTimeEffects();
             CooldownTick();            
         }
-        conditions.UpdateDurations(timing);
+        conditionManager.UpdateDurations(timing);
     }
     public void CooldownTick()
     {
@@ -394,17 +479,28 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                 if (AllyOrEnemy(this, interaction.origin)) return;
                 break;
         }
+        if (Conditions.ContainsKey(Action.Condition.Dodge))
+        {
+            if (!AllyOrEnemy(this, interaction.origin)) return;
+        }
         switch (interaction.effect.output)
         {
             case Action.Output.Damage:
-                if (Conditions.ContainsKey(Action.Condition.Dodge)) break;
-                ReceiveHit(interaction.effect);
+                ReceiveHit(interaction.effect, interaction.origin);
                 break;
             case Action.Output.Healing:
                 ReceiveHealing(interaction.effect);
                 break;
             case Action.Output.Condition:
                 ReceiveCondition(interaction.effect);
+                if (interaction.effect.condition == Action.Condition.FearMonster || interaction.effect.condition == Action.Condition.FearMerc)
+                {
+                    AfraidOf.Add(interaction.origin);
+                }
+                else if (interaction.effect.condition == Action.Condition.TauntMerc || interaction.effect.condition == Action.Condition.TauntMonster)
+                {
+                    Taunter = interaction.origin;
+                }
                 break;
             case Action.Output.Movement:
                 MoveByAction(interaction);
@@ -419,19 +515,26 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         {
             t += Time.deltaTime;
             if (t >= 0.1f) CombatManager.combatFlag = true;
+            if (t < 0.1f)
+            {
+                animationState = 1 + currentAction.action.animationIndex;
+            }
             anim.SetFloat("X", attackAnimation.Evaluate(t) * dir.x);
             anim.SetFloat("Y", attackAnimation.Evaluate(t) * dir.y);
             yield return null;
         }
+        animationState = 1;
     }
     
-    public void ReceiveHit(OutputInfo info)
+    public void ReceiveHit(OutputInfo info, Character origin)
     {
         float damage = 1;
         if (info.critical || stats.weaknesses.Contains(info.damageType)) damage++;
         if (Conditions.ContainsKey(Action.Condition.Vulnerable)) damage++;
+        if (origin.Conditions.ContainsKey(Action.Condition.StrengthenOther) || origin.Conditions.ContainsKey(Action.Condition.StrengthenSelf)) damage++;
         if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
         if (stats.resistances.Contains(info.damageType)) damage /= 2;
+        if (origin.Conditions.ContainsKey(Action.Condition.Weaken)) damage /= 2;
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
@@ -467,7 +570,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     }
     public void ReceiveCondition(OutputInfo info)
     {
-        conditions.ApplyCondition(info.condition, info.value);
+        conditionManager.ApplyCondition(info.condition, info.value);        
     }
 
     public void MoveByAction(Interaction interaction)
@@ -479,7 +582,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         else
         {
-            target = interaction.primaryTarget.Character.movement.currentNode;
+            target = interaction.origin.movement.currentNode;
         }
         Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized;
         dir = new Vector2(Mathf.Round(dir.x), Mathf.Round(dir.y)) * (interaction.effect.towards ? 1 : -1);
@@ -667,7 +770,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         
             //Debug.LogError("No Available Actions for " + bpi.origin.stats.characterName);
-        output = new CombatAction(this, pass);
+        output = new CombatAction(this, pass, bpi);
         return output;        
     }
 

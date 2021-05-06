@@ -47,6 +47,7 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 2
+    origin: {fileID: 0}
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
@@ -59,3 +60,5 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 2
+    origin: {fileID: 0}
+  animationIndex: 4

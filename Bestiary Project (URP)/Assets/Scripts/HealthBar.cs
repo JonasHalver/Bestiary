@@ -40,15 +40,15 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         bgColor = background.color;
         maxWidth = bar.GetComponent<RectTransform>().rect.width;
         //nameText.text = character.stats.characterName;
-        character.conditions.GainedCondition += DisplayEffect;
-        character.conditions.LostCondition += RemoveEffect;
+        character.conditionManager.GainedCondition += DisplayEffect;
+        character.conditionManager.LostCondition += RemoveEffect;
         character.Healed += Healed;
         character.TookDamage += TookDamage;
     }
     private void OnDisable()
     {
-        character.conditions.GainedCondition -= DisplayEffect;
-        character.conditions.LostCondition -= RemoveEffect;
+        character.conditionManager.GainedCondition -= DisplayEffect;
+        character.conditionManager.LostCondition -= RemoveEffect;
         character.Healed -= Healed;
         character.TookDamage -= TookDamage;
     }

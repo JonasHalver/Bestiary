@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: webspittutorial
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
+  actionDescription: opens its mouth wide
   descriptionIndex: 7
   cooldown: 1
   minimumHits: 1
@@ -35,7 +35,7 @@ MonoBehaviour:
     condition: 0
     damageType: 0
     difficulty: 0
-  primaryTargeting: 0
+  primaryTargeting: 1
   primaryShape: 4
   primaryTargetGroup: 0
   primaryOutput:
@@ -47,6 +47,7 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 0
+    origin: {fileID: 0}
   - output: 2
     value: 1
     condition: 13
@@ -55,7 +56,9 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 0
+    origin: {fileID: 0}
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 2

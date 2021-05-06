@@ -20,7 +20,7 @@ public class CharacterSheet : MonoBehaviour
 
     public GameObject showEntryButton;
     public Entry currentEntry;
-
+    public GameObject noActions;
     private void Awake()
     {
         instance = this;
@@ -41,18 +41,35 @@ public class CharacterSheet : MonoBehaviour
         instance.characterName.text = stats.characterName != null ? stats.characterName : "Unknown Monster";
         if (instance.characterName.text.Length == 0) instance.characterName.text = "Unknown Monster";
         instance.characterActions.Clear();
-
-        for (int i = 0; i < instance.cards.Count; i++)
+        instance.sheet.SetActive(true);
+        if (instance.currentEntry.actionCardCount == 0)
         {
-            for (int j = 0; j < instance.currentEntry.actionChecks.Count; j++)
+            for (int i = 0; i < instance.cards.Count; i++)
             {
-                if (instance.currentEntry.actionChecks[j].guessAction.actionPriority == i+1)
+                instance.cards[i].gameObject.SetActive(false);
+            }
+            instance.noActions.SetActive(true);
+        }
+        else
+        {
+            instance.noActions.SetActive(false);
+            for (int i = 0; i < instance.cards.Count; i++)
+            {
+                if (i < instance.currentEntry.actionCardCount) instance.cards[i].gameObject.SetActive(true);
+                else
                 {
-                    // instance.cards[i].ChangeInfo(instance.currentEntry.actionChecks[j]);
-                }                
+                    instance.cards[i].gameObject.SetActive(false);
+                    continue;
+                }
+                for (int j = 0; j < instance.currentEntry.actionChecks.Count; j++)
+                {
+                    if (instance.currentEntry.actionChecks[j].guessAction.actionPriority == i + 1)
+                    {
+                        instance.cards[i].ChangeInfo(instance.currentEntry.actionChecks[j]);
+                    }
+                }
             }
         }
-        instance.sheet.SetActive(true);
     }
 
     public void ShowEntry(Character character)

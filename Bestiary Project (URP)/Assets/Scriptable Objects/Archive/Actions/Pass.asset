@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3bd41ab4a2ff394db0a6691dc15db89, type: 3}
   m_Name: Pass
   m_EditorClassIdentifier: 
+  editWindow: {fileID: 0}
   actionName: Pass
   actionCode: passtest
   description: I have no good targets, and will pass.
@@ -36,3 +37,4 @@ MonoBehaviour:
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 2

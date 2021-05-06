@@ -40,7 +40,10 @@ public class MonsterAI : MonoBehaviour
             if (assessments.Count > 0)
             {
                 assessments.Sort((a1, a2) => a1.DangerValue.CompareTo(a2.DangerValue));
-                return assessments[0].Space;
+                Node v = FirstValidNode(assessments);
+                if (v != null)
+                    return v;
+                else return null;
             }
             else
             {
@@ -55,7 +58,10 @@ public class MonsterAI : MonoBehaviour
             if (assessments.Count > 0)
             {
                 assessments.Sort((a2, a1) => a1.DangerValue.CompareTo(a2.DangerValue));
-                return assessments[0].Space;
+                Node v = FirstValidNode(assessments);
+                if (v != null)
+                    return v;
+                else return null;
             }
             else
             {
@@ -78,7 +84,8 @@ public class MonsterAI : MonoBehaviour
                         {
                             if (assessments[i].AdjacentCharacters[j].stats.characterType == CharacterStats.CharacterTypes.Adventurer)
                             {
-                                return assessments[i].Space;
+                                if(FirstValidNode(new List<GridSpaceAssessment>() { assessments[i] }) != null)
+                                    return assessments[i].Space;
                             }
                         }                        
                     }
@@ -113,7 +120,10 @@ public class MonsterAI : MonoBehaviour
                     if (temp.Count > 0)
                     {
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                        return temp[0].Space;
+                        Node v = FirstValidNode(temp);
+                        if (v != null)
+                            return v;
+                        //return temp[0].Space;
                     }
                 }
                 return SafestAnyMeleeNode;
@@ -143,7 +153,10 @@ public class MonsterAI : MonoBehaviour
                     if (temp.Count > 0)
                     {
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                        return temp[0].Space;
+                        Node v = FirstValidNode(temp);
+                        if (v != null)
+                            return v;
+                        //return temp[0].Space;
                     }
                 }
                 return SafestAnyMeleeNode;
@@ -199,7 +212,10 @@ public class MonsterAI : MonoBehaviour
                     if (temp.Count > 0)
                     {
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                        return temp[0].Space;
+                        Node v = FirstValidNode(temp);
+                        if (v != null)
+                            return v;
+                        //return temp[0].Space;
                     }
                 }
                 return SafestAnyMeleeNode;
@@ -255,7 +271,10 @@ public class MonsterAI : MonoBehaviour
                     if (temp.Count > 0)
                     {
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                        return temp[0].Space;
+                        Node v = FirstValidNode(temp);
+                        if (v != null)
+                            return v;
+                        //return temp[0].Space;
                     }
                 }
                 return SafestAnyMeleeNode;
@@ -297,7 +316,10 @@ public class MonsterAI : MonoBehaviour
                 if (temp.Count > 0)
                 {
                     temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                    return temp[0].Space;
+                    Node v = FirstValidNode(temp);
+                    if (v != null)
+                        return v;
+                    //return temp[0].Space;
                 }
             }
             return null;
@@ -325,8 +347,44 @@ public class MonsterAI : MonoBehaviour
                 if (temp.Count > 0)
                 {
                     temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
-                    return temp[0].Space;
+                    Node v = FirstValidNode(temp);
+                    if (v != null)
+                        return v;
+                    //return temp[0].Space;
                 }
+            }
+        }
+        return null;
+    }
+
+    public Node FirstValidNode(List<GridSpaceAssessment> gsa)
+    {
+        bool fear = character.Conditions.ContainsKey(Action.Condition.FearMonster) || character.Conditions.ContainsKey(Action.Condition.FearMerc);
+        bool taunt = character.Conditions.ContainsKey(Action.Condition.TauntMerc) || character.Conditions.ContainsKey(Action.Condition.TauntMonster);
+        for (int i = 0; i < gsa.Count; i++)
+        {
+            if (gsa[i].Available)
+            {
+                if (taunt)
+                {
+                    if (CombatGrid.NodeToDistance(gsa[i].Space, character.Taunter.movement.currentNode) < CombatGrid.Vector2ToDistance(character.position, character.Taunter.position))
+                    {
+                        return gsa[i].Space;
+                    }
+                }
+                else if (fear)
+                {
+                    bool flag = false;
+                    for (int j = 0; j < character.AfraidOf.Count; j++)
+                    {
+                        if (CombatGrid.NodeToDistance(gsa[i].Space, character.AfraidOf[j].movement.currentNode) < CombatGrid.Vector2ToDistance(character.position, character.AfraidOf[j].position))
+                        {
+                            flag = true;
+                        }
+                    }
+                    if (!flag) return gsa[i].Space;
+                }
+                else return gsa[i].Space;
             }
         }
         return null;
@@ -358,8 +416,13 @@ public class MonsterAI : MonoBehaviour
         // Update the AI's knowledge before picking a destination
         UpdateEvaluationAndAssessment();
 
+        // Is the monster afraid?
+        CharacterStats.Personality personality;
+        if (character.AfraidOf.Count > 0) personality = CharacterStats.Personality.Fearful;
+        else personality = character.stats.personality;
+
         // Then use that knowledge based on the AI's personality
-        switch (character.stats.personality)
+        switch (personality)
         {
             case CharacterStats.Personality.Aggressive:
                 Aggressive();
@@ -496,11 +559,16 @@ public class GridSpaceAssessment
     private float dangerValue;
     private List<Character> adjacentCharacters = new List<Character>();
 
+    public bool Available
+    {
+        get;set;
+    }
     public GridSpaceAssessment(Character _origin, Node _space, MonsterAI _ai)
     {
         space = _space;
         origin = _origin;
         ai = _ai;
+        Available = space.occupant == null;
     }
     public Node Space
     {

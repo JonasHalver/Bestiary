@@ -20,6 +20,7 @@ public class Entry : MonoBehaviour
     public List<ActionCheck> actionChecks = new List<ActionCheck>();
 
     public enum Difficulty { Easy, Medium, Hard, VeryHard }
+    public int actionCardCount = 0;
 
     public Entry (CharacterStats _origin)
     {
@@ -70,9 +71,10 @@ public class Entry : MonoBehaviour
         page.icon.sprite = origin.characterIcon;
         page.icon.color = origin.characterIconColor;
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < origin.actions.Count; i++)
         {
             ActionCheck ac = new ActionCheck(origin, origin.actions[i]);
+            ac.originalAction = origin.actions[i];
             actionChecks.Add(ac);
             ac.entry = this;
         }
@@ -314,7 +316,7 @@ public class ActionCheck
     {
         descriptionCorrect = false;
         if (guessAction.descriptionIndex == -1) return;
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < origin.actions.Count; i++)
         {
             if (origin.actions[i].descriptionIndex == guessAction.descriptionIndex)
             {

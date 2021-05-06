@@ -9,11 +9,59 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
 {
     public SimpleTooltipSpawner ttp;
     public Image iconGridBackground;
+    public Sprite targetGround, targetCharacter;
+    public Sprite targetAll, targetAllies, targetEnemies;
     public TextMeshProUGUI description, actionName;
-    public Image icon1, icon2, icon3, icon4;
+    public Image target, targetGroup;
+    [SerializeField]private SimpleTooltipSpawner stsTarget, stsCooldown, stsTargetgroup;
+    public TextMeshProUGUI cooldown;
     public Entry entry;
     public Action action;
     private int priority = 0;
+
+    public void ChangeInfo(ActionCheck ac)
+    {
+        entry = ac.entry;
+        
+        if (entry.isMerc)
+        {
+            action = ac.originalAction;
+        }
+        else
+        {
+            action = ac.guessAction;
+        }
+        actionName.text = action.actionName;
+        description.text = action.description;
+        cooldown.text = action.cooldown.ToString();
+        stsCooldown.tooltipString = $"{action.cooldown} rounds.";
+        switch (action.primaryOutput[0].affectedGroup)
+        {
+            case Action.TargetGroup.All:
+                targetGroup.sprite = targetAll;
+                stsTargetgroup.tooltipString = "This action will affect all characters.";
+                break;
+            case Action.TargetGroup.Allies:
+                targetGroup.sprite = targetAllies;
+                stsTargetgroup.tooltipString = "This action will affect allies.";
+                break;
+            case Action.TargetGroup.Enemies:
+                targetGroup.sprite = targetEnemies;
+                stsTargetgroup.tooltipString = "This action will affect enemies.";
+                break;
+        }
+        switch (action.primaryTargeting)
+        {
+            case Action.Targeting.Character:
+                target.sprite = targetCharacter;
+                stsTarget.tooltipString = "This action targets characters directly.";
+                break;
+            case Action.Targeting.Ground:
+                target.sprite = targetGround;
+                stsTarget.tooltipString = "This action targets the ground.";
+                break;
+        }
+    }
 
     /* Outdated
     public void ChangeInfo(ActionCheck actionCheck)

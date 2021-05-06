@@ -171,6 +171,8 @@ public class ConditionManager : MonoBehaviour
         appliedThisRound[condition] = false;
         activeConditions.Remove(condition);
         LostCondition.Invoke(condition);
+        if (condition == Action.Condition.TauntMonster || condition == Action.Condition.TauntMerc) character.Taunter = null;
+        else if (condition == Action.Condition.FearMerc || condition == Action.Condition.FearMonster) character.AfraidOf.Clear();
     }
 
     private void CheckMutuallyExclusiveConditions(Action.Condition have, Action.Condition gained, int duration)

@@ -48,7 +48,8 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
         {
             initiative = actor.stats.speed;
             cname = actor.stats.characterName;
-            if (actor.alive && !actor.currentAction.action.isPass)
+            if (actor.alive && actor.Conditions.ContainsKey(Action.Condition.Stun)) d = $"{cname} is stunned.";
+            else if (actor.alive && !actor.currentAction.action.isPass)
                 d = $"{cname} will use {actor.currentAction.action.actionName}";
             else if (actor.alive && actor.currentAction.action.isPass) d = $"{cname} will pass.";
         }
@@ -69,6 +70,10 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
                     {
                         d = $"{cname} will pass.";
                         break;
+                    }
+                    if (actor.Conditions.ContainsKey(Action.Condition.Stun))
+                    {
+                        d = $"{cname} is stunned.";
                     }
 
                     initiative = e.guess.speed - ((actor.Conditions.ContainsKey(Action.Condition.SlowMonster) || actor.Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0);

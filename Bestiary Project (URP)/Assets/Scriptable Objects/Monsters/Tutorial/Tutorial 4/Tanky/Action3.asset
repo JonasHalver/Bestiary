@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: earthelementalreconstitution
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: 
+  actionDescription: opens its mouth wide
   descriptionIndex: 9
   cooldown: 1
   minimumHits: 1
@@ -59,3 +59,4 @@ MonoBehaviour:
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 3

@@ -47,6 +47,7 @@ MonoBehaviour:
     damageType: 0
     towards: 1
     difficulty: 0
+    affectedGroup: 2
   - output: 2
     value: 1
     condition: 14
@@ -54,7 +55,9 @@ MonoBehaviour:
     damageType: 0
     towards: 0
     difficulty: 0
+    affectedGroup: 2
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1
   secondaryOutput: []
+  animationIndex: 4

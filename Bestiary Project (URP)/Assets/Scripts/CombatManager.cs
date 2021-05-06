@@ -93,7 +93,6 @@ public class CombatManager : MonoBehaviour
 
     public void FirstActions()
     {
-        print("First Actions");
         combatActions.Clear();
         actors.Clear();
         characterPositions.Clear();
@@ -141,7 +140,6 @@ public class CombatManager : MonoBehaviour
     }    
     public void SpawnAllies()
     {
-        print("spawning allies");
         for (int i = 0; i < GameManager.instance.activeMercenaries.Count; i++)
         {
             GameObject newMerc = Instantiate(characterPrefab, actorsContainer);
@@ -281,7 +279,12 @@ public class CombatManager : MonoBehaviour
                         actors[i].currentAction = newCombatAction;
                     }
                 }
-                else actors[i].currentAction = new CombatAction(actors[i], actors[i].pass);
+                else
+                {
+                    CombatAction pass = new CombatAction(actors[i], actors[i].pass, new BattlefieldPositionInfo(actors[i], characterPositions));
+                    actors[i].currentAction = pass;
+                    combatActions.Add(pass);
+                }
             }
             else actors[i].currentAction = null;
         }
@@ -371,23 +374,30 @@ public class CombatManager : MonoBehaviour
             for (int j = 0; j < combatActions.Count; j++)
             {
                 CombatAction cAction = combatActions[j];
+                if (cAction.origin == actors[i] && actors[i].Conditions.ContainsKey(Action.Condition.Stun))
+                {
+                    cAction.action = actors[i].pass;
+                }
                 if (cAction.origin == actors[i] && cAction.origin.alive)
                 {
                     cAction.highlighted = true;
                     Vector2 dir = Vector2.zero;
-                    if (cAction.action.primaryTargeting == Action.Targeting.Character)
-                        dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
-                    else
-                        dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
+                    //if (cAction.action.primaryTargeting == Action.Targeting.Character)
+                    //    dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
+                    //else
+                    //    dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
+                    if (!cAction.action.isPass)
+                        dir = cAction.primaryTarget.Direction;
                     actors[i].StartCoroutine("TakeAction", dir);
                     while (!combatFlag)
                     {
                         yield return null;
                     }
                     GameObject newCard = Instantiate(combatLogCardPrefab, combatLogCardHolder);
-                    newCard.GetComponent<CombatLogCard>().ca = cAction;
-                    
-                    cAction.ResolveAction(newCard.GetComponent<CombatLogCard>());                   
+                    CombatLogCard clc = newCard.GetComponent<CombatLogCard>();
+                    clc.ca = cAction;
+                    clc.wasStunned = actors[i].Conditions.ContainsKey(Action.Condition.Stun);
+                    cAction.ResolveAction(clc);                   
                 }
             }
             combatFlag = false;
@@ -426,6 +436,7 @@ public class CombatManager : MonoBehaviour
         yield return null;
         for (int i = 0; i < actors.Count; i++)
         {
+            yield return null;
             CombatGrid.StopHighlight();
 
             if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC && actors[i].alive)
@@ -507,6 +518,31 @@ public class CombatManager : MonoBehaviour
         }
         return output;
     }
+    public void ShowPreviousPositions(CombatAction ca)
+    {
+        CombatGrid.ShowPreviousPositions(ca.bpi, ca.origin, ca.affectedCharacters);
+    }
+    public void ShowCurrentPositions()
+    {
+        StartCoroutine(ExitDelay());
+    }
+    IEnumerator ExitDelay()
+    {
+        float t = 0;
+        while (t < 1)
+        {
+            t += Time.deltaTime;
+            if (CombatLogCard.displayingPast)
+            {
+                break;
+            }
+            yield return null;
+        }
+        if (!CombatLogCard.displayingPast)
+        {
+            CombatGrid.ShowCurrentPositions();
+        }
+    }
 
     public void Delay()
     {
@@ -568,10 +604,11 @@ public class CombatAction : Action
         targetNode = _target.movement.currentNode;
     }
     */
-    public CombatAction(Character _origin, Action _action)
+    public CombatAction(Character _origin, Action _action, BattlefieldPositionInfo _bpi)
     {
         origin = _origin;
         action = _action;
+        bpi = _bpi;
     }
 
     public void ResolveAction(CombatLogCard card)
@@ -581,6 +618,7 @@ public class CombatAction : Action
             origin.lastCombatAction = null;
             CombatManager.threat[origin] = -1;
             card.info = new CombatLogCard.CombatLogInformation(null, null, action);
+            card.CreateCard();
             return;
         }
         #region Old Code
