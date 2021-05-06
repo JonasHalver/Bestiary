@@ -283,64 +283,17 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
     public static List<Node> NodesAffectedByAction(CombatAction ca)
     {
         List<Node> output = new List<Node>();
-        if (ca.action.isPass)
+        if (ca.action.isPass  || ca.primaryTarget == null)
         {
             output.Add(ca.origin.movement.currentNode);
             return output;
         }
 
-        /* Outdated
-        switch (ca.action.shape)
+        output.AddRange(ca.primaryTarget.AffectedNodes);
+        if (ca.secondaryTarget != null)
         {
-            case Action.Shape.Arc:
-                output = GenerateArc(ca.targetNode.coordinate, ca.origin.position);
-                break;
-            case Action.Shape.Cone:
-                output = GenerateCone(ca.targetNode.coordinate, ca.origin.position);
-                break;
-            case Action.Shape.Single:
-                output.Add(ca.targetNode);
-                if (ca.action.alwaysHitsSelf) output.Add(ca.origin.movement.currentNode);
-                break;
-            case Action.Shape.Area:
-                output = GenerateThreeByThree(ca.targetNode);
-                break;
-            case Action.Shape.Line:
-                output = GenerateLine(ca.targetNode.coordinate, ca.origin.position);
-                break;
-            case Action.Shape.All:
-                foreach (Character actor in CombatManager.actors)
-                {
-                    if (actor.alive)
-                    {
-                        switch (ca.action.targetGroup)
-                        {
-                            case Action.TargetGroup.Allies:
-                                if (actor != ca.origin && Character.AllyOrEnemy(ca.origin, actor))
-                                {
-                                    output.Add(actor.movement.currentNode);
-                                }
-                                else if (actor == ca.origin && ca.action.canHitSelf)
-                                {
-                                    output.Add(actor.movement.currentNode);
-                                }
-                                break;
-                            case Action.TargetGroup.Enemies:
-                                if (!Character.AllyOrEnemy(ca.origin, actor))
-                                {
-                                    output.Add(actor.movement.currentNode);
-                                }
-                                break;
-                            case Action.TargetGroup.All:
-                                output.Add(actor.movement.currentNode);
-                                break;
-                        }
-                    }
-                }
-                break;
-        }
-        */
-        output = ca.affectedNodes;
+            output.AddRange(ca.secondaryTarget.AffectedNodes);
+        }        
         return output;
     }
 
@@ -367,49 +320,6 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
             n.NodeDeselected();
         }
     }
-
-    /* Outdated
-    public List<Node> Arc(CombatAction ca)
-    {
-        List<Node> output = new List<Node>();
-        List<Node> baseline = GenerateArc(ca.target.position, ca.origin.position);
-        int hitcount = 0, hitmax = 0;
-        if (ca.action.targetGroup == Action.TargetGroup.Enemies && ca.action.targetPriority == Action.TargetPriority.Closest)
-        {
-            if (ca.bpi.enemiesInMelee.Count > 1)
-            {
-                foreach(Node node in ca.target.movement.currentNode.neighbors)
-                {
-                    if (node != null)
-                    {
-                        hitcount = 0;
-                        List<Node> targetTest = GenerateArc(node.coordinate, ca.origin.position);
-                        foreach (Node n in targetTest)
-                        {
-                            if (n.occupant != null && !Character.AllyOrEnemy(ca.origin, n.occupant))
-                            {
-                                hitcount++;
-                            }
-                            if (hitcount > hitmax)
-                            {
-                                output = targetTest;
-                                hitmax = hitcount;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (hitmax > 1)
-        {
-            return output;
-        }
-        else
-        {
-            return baseline;
-        }
-    }
-    */
 
     public static ShapeTest ShapeTest(ShapeTest test, Action.Shape shape)
     {

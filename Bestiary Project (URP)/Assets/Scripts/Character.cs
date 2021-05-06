@@ -139,9 +139,16 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         damageTaken = Mathf.Clamp(damageTaken, 0, Mathf.Infinity);
 
-        //if (stats.characterType == CharacterStats.CharacterTypes.NPC) 
-            entry = stats.entry;
-
+        entry = stats.entry;
+        entry.character = this;
+        if (!entry.actionCharactersSet)
+        {
+            for (int i = 0; i < entry.actionChecks.Count; i++)
+            {
+                entry.actionChecks[i].guessAction.Actor = this;
+            }
+            entry.actionCharactersSet = true;            
+        }
 
         // Animation
         if (movement.canMove || stats.characterType == CharacterStats.CharacterTypes.NPC)
@@ -818,6 +825,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             }
             if (ga != null)
             {
+                print("targeting set " + ga.targetingSet);
                 if (ga.targetingSet)
                 {
                     CombatAction ca = ga.CombatAction(new BattlefieldPositionInfo(this, CombatManager.characterPositions), true);
