@@ -400,6 +400,7 @@ public class ActionEditor : MonoBehaviour
 
         if (outputGuessesPrimary.Count == 0 || contextGuessesPrimary.Count == 0 || primaryShapes.Count == 0 || guessAction.descriptionIndex == -1)
         {
+            guessAction.targetingSet = false;
             log.Append($"Add at least 1 <b><color={(contextGuessesPrimary.Count > 0 ? "#015400" : "red")}>Context</color></b>, 1 " +
                 $"<b><color={(primaryShapes.Count > 0 ? "#015400" : "red")}>Shape</color></b>, " +
                 $"and 1 <b><color={(outputGuessesPrimary.Count > 0 ? "#015400" : "red")}>Output</color></b>, " +
@@ -408,6 +409,7 @@ public class ActionEditor : MonoBehaviour
             Book.currentEntry.activeAction.guessAction.description = "This action lacks information. Click here to add it.";
             return;
         }
+        else guessAction.targetingSet = true;
 
         log.Append("If the monster ");
         if (outputGuessesPrimary.Count> 0)

@@ -92,6 +92,11 @@ MonoBehaviour:
   tooltipPrefab: {fileID: 4946799868986211823, guid: 7f0a7ed12d5c090478e4969945d7ea04,
     type: 3}
   tooltipString: 
+  type: 3
+  damageType: 0
+  condition: 0
+  shape: 0
+  priority: 0
 --- !u!1 &620230396768894383
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,7 +131,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 110.9, y: -23.6}
+  m_AnchoredPosition: {x: 109.7, y: -28.7}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6775143933767075599
@@ -165,8 +170,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

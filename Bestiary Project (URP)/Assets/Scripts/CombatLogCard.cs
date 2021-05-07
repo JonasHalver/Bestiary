@@ -11,12 +11,12 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public CombatLogInformation info;
     public TextMeshProUGUI text;
     public GameObject topLine, botLine;
-    public TextMeshProUGUI userName, actionName, affected, victimNameText, xCharacters, effectText, andText, buffText;
     public Image userIcon, victimIcon, effectIcon, buffIcon;
 
     public CombatAction ca;
     private Entry entry, victimEntry;
     public Color enemy, ally;
+    public Image background;
     private Character user, victim;
     public bool wasStunned = false;
     public static bool displayingPast = false;
@@ -25,7 +25,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     private void Update()
     {
-        if (t > 20) { UpdateCanvas(); CreateCard(); }
+        if (t > 20) { CreateCard(); }
         t++;
     }
     private void OnDisable()
@@ -40,12 +40,16 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     {
         elements = GameManager.instance.logElementCollection;
         OutputInfo primaryMove = null, secondaryMove = null;
+        entry = ca.origin.entry;
+        if (entry.isMerc) background.color = ally;
+        else background.color = enemy;
 
         if (info.action.isPass)
         {           
             string failedText = wasStunned ? "was stunned" : "passed";
             if (ca.origin.entry.isMerc) text.text = $"<b>{ca.origin.stats.characterName}</b> {failedText}.";
-            else text.text = $"<b>{ca.origin.entry.guess.characterName}</b> {failedText}.";
+            else text.text = $"<b>{(ca.origin.entry.guess.characterName != null ? ca.origin.entry.guess.characterName : "The Unknown Monster")}</b> {failedText}.";
+            UpdateCanvas();
             return;
         }
         #region Old Code
@@ -201,7 +205,6 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         UpdateCanvas();
         */
         #endregion
-        entry = ca.origin.entry;
         Action guessAction = null;
         if (!entry.isMerc)
         {
@@ -226,6 +229,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         else
         {
             sb.Append("missed entirely.");
+            UpdateCanvas();
             return;
         }
 
@@ -388,25 +392,27 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         s = s.Replace("restore", "restoring");
         s = s.Replace("force", "forcing");
         text.text = s;
+        UpdateCanvas();
     }
 
     public void Pass()
     {
-        victimNameText.gameObject.SetActive(false);
-        victimIcon.gameObject.SetActive(false);
-        xCharacters.gameObject.SetActive(false);
-        buffIcon.gameObject.SetActive(false);
-        buffText.gameObject.SetActive(false);
-        affected.gameObject.SetActive(false);
-        effectText.gameObject.SetActive(false);
-        andText.gameObject.SetActive(false);
-        effectIcon.gameObject.SetActive(false);
-        actionName.text = "passed.";
+        //victimNameText.gameObject.SetActive(false);
+        //victimIcon.gameObject.SetActive(false);
+        //xCharacters.gameObject.SetActive(false);
+        //buffIcon.gameObject.SetActive(false);
+        //buffText.gameObject.SetActive(false);
+        //affected.gameObject.SetActive(false);
+        //effectText.gameObject.SetActive(false);
+        //andText.gameObject.SetActive(false);
+        //effectIcon.gameObject.SetActive(false);
+        //actionName.text = "passed.";
     }
 
     public void UpdateCanvas()
     {
         t = 0;
+
         Canvas.ForceUpdateCanvases();
     }
     public void OnPointerExit(PointerEventData eventData)

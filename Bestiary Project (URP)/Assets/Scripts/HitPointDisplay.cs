@@ -53,7 +53,6 @@ public class HitPointDisplay : MonoBehaviour
                 }
                 else if (previousDamageTaken != damageTaken)
                 {
-
                     StartCoroutine(UpdateHearts());
                     previousDamageTaken = damageTaken;
                 }

@@ -26,7 +26,7 @@ public class MovementEditor : MonoBehaviour
         value = Book.currentEntry.guess.movement;
         input.text = value.ToString();
         characterIcon.sprite = Book.currentEntry.origin.characterIcon;
-        characterIcon.color = Book.currentEntry.origin.characterIconColor;
+        characterIcon.color = Book.currentEntry.origin.characterColor;
     }
 
     // Update is called once per frame

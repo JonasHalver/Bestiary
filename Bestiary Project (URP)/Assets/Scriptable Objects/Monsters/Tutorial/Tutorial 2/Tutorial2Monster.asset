@@ -16,8 +16,10 @@ MonoBehaviour:
   characterCode: giantspidertutorial
   characterType: 0
   personality: 0
+  characterModel: {fileID: 4672665538920121106, guid: 3341026cc4a10be40bb53132d2d29f69,
+    type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterIconColor: {r: 0.64445686, g: 0, b: 1, a: 1}
+  characterColor: {r: 0.23762906, g: 0.5660378, b: 0.49477965, a: 1}
   hitPoints: 3
   armored: 0
   resistances: 06000000

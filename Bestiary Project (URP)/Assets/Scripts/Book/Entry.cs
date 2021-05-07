@@ -6,6 +6,7 @@ public class Entry : MonoBehaviour
 {
     public CharacterStats origin;
     public CharacterStats guess;
+    public Character character;
     public Page page;
 
     public bool isMerc = false;
@@ -21,7 +22,7 @@ public class Entry : MonoBehaviour
 
     public enum Difficulty { Easy, Medium, Hard, VeryHard }
     public int actionCardCount = 0;
-
+    public bool actionCharactersSet = false;
     public Entry (CharacterStats _origin)
     {
         origin = _origin;
@@ -59,7 +60,7 @@ public class Entry : MonoBehaviour
         }
         page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
-        page.icon.color = origin.characterIconColor;
+        page.icon.color = origin.characterColor;
         origin.entry = this;
         guess.entry = this;
     }
@@ -69,7 +70,7 @@ public class Entry : MonoBehaviour
         isMerc = true;
         //page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
-        page.icon.color = origin.characterIconColor;
+        page.icon.color = origin.characterColor;
 
         for (int i = 0; i < origin.actions.Count; i++)
         {
@@ -85,6 +86,7 @@ public class Entry : MonoBehaviour
     {
         if (!isMerc)
             CheckStats();
+        
     }
 
     public void SetActiveAction(int index)
@@ -321,7 +323,7 @@ public class ActionCheck
             if (origin.actions[i].descriptionIndex == guessAction.descriptionIndex)
             {
                 originalAction = origin.actions[i];
-                descriptionCorrect = true;
+                descriptionCorrect = true;                
             }
         }
         if (!descriptionCorrect) originalAction = null;

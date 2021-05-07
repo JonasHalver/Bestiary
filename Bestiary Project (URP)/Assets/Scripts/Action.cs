@@ -244,12 +244,24 @@ public class Action : ScriptableObject
 
     public CombatAction CombatAction(BattlefieldPositionInfo bpi, bool guess)
     {
-        CombatAction output = new CombatAction(Actor, this, bpi);
+        CombatAction output = new CombatAction(bpi.origin, this, bpi);
         if (!ActionValidation(bpi, guess)) return output;
         //output.valid = true;
         ShapeTest primaryTest = NodeTarget(bpi, true);
         ShapeTest secondaryTest = null;
-        if (secondaryOutput.Count > 0) secondaryTest = NodeTarget(bpi, false);
+        bool sameShape = false;
+        if (secondaryOutput.Count > 0)
+        {
+            if (secondaryShape != primaryShape)
+            {
+                secondaryTest = NodeTarget(bpi, false);
+            }
+            else
+            {
+                sameShape = true;
+                secondaryTest = primaryTest;
+            }
+        }
         if (primaryTest.valid)
         {
             if (primaryTest.tests.Count > 1)
@@ -278,7 +290,11 @@ public class Action : ScriptableObject
             if (secondaryTest!= null && secondaryTest.valid)
             {
                 output.secondaryTargetGroup = secondaryTargetGroup;
-                if (secondaryTest.tests.Count > 1)
+                if (sameShape)
+                {
+                    output.secondaryTarget = output.primaryTarget;
+                }
+                else if (secondaryTest.tests.Count > 1)
                 {
                     Target t = BestTarget(secondaryTest, false /*secondaryTest.potentialTargets*/);
                     output.secondaryTarget = t;
@@ -307,7 +323,7 @@ public class Action : ScriptableObject
         int count = 0;
         for (int i = 0; i < primaryContext.Count; i++)
         {
-            primaryContext[i].actor = Actor;
+            primaryContext[i].actor = bpi.origin;
             if (primaryContext[i].ContextValid(bpi)) count++;
         }
         if (count != primaryContext.Count) return false;
@@ -317,21 +333,21 @@ public class Action : ScriptableObject
 
     private ShapeTest NodeTarget(BattlefieldPositionInfo bpi, bool primary)
     {
-        ShapeTest test = new ShapeTest(this, Actor, primary ? minimumHits : 0, primary ? primaryTargetGroup : secondaryTargetGroup, primary ? primaryTargeting : secondaryTargeting, targetPriority);
-        ShapeTest result = new ShapeTest(this, Actor);
+        ShapeTest test = new ShapeTest(this, bpi.origin, primary ? minimumHits : 0, primary ? primaryTargetGroup : secondaryTargetGroup, primary ? primaryTargeting : secondaryTargeting, targetPriority);
+        ShapeTest result = new ShapeTest(this, bpi.origin);
         List<Character> possibleTargets = new List<Character>();
         switch (primary ? primaryTargetGroup : secondaryTargetGroup)
         {
             case TargetGroup.Enemies:
                 foreach(Character c in CombatManager.actors)
                 {
-                    if (!Character.AllyOrEnemy(Actor, c)) possibleTargets.Add(c);
+                    if (!Character.AllyOrEnemy(bpi.origin, c)) possibleTargets.Add(c);
                 }
                 break;
             case TargetGroup.Allies:
                 foreach (Character c in CombatManager.actors)
                 {
-                    if (Character.AllyOrEnemy(Actor, c)) possibleTargets.Add(c);
+                    if (Character.AllyOrEnemy(bpi.origin, c)) possibleTargets.Add(c);
                 }
                 break;
             case TargetGroup.All:
@@ -342,10 +358,10 @@ public class Action : ScriptableObject
         {
             case Shape.Self:
                 possibleTargets.Clear();
-                possibleTargets.Add(Actor);
+                possibleTargets.Add(bpi.origin);
                 foreach (Character c in possibleTargets)
                 {
-                    result.potentialTargets.Add(new TargetInfo(Actor, new List<Character>() { c }));
+                    result.potentialTargets.Add(new TargetInfo(bpi.origin, new List<Character>() { c }));
                     result.tests.Add(new CombatGrid.TargetingTest(new List<Node>() { c.movement.currentNode }, c.movement.currentNode));
                 }
                 result.valid = true;
@@ -421,8 +437,8 @@ public class Action : ScriptableObject
                 {
                     nodes.Add(c.movement.currentNode);
                 }
-                result.tests.Add(new CombatGrid.TargetingTest(nodes, Actor.movement.currentNode));
-                result.potentialTargets.Add(new TargetInfo(Actor, possibleTargets));
+                result.tests.Add(new CombatGrid.TargetingTest(nodes, bpi.origin.movement.currentNode));
+                result.potentialTargets.Add(new TargetInfo(bpi.origin, possibleTargets));
                 break;
         }
         return result;
@@ -432,7 +448,7 @@ public class Action : ScriptableObject
     {
         Target output = new Target();
 
-        CombatGrid.TargetingTest bestTest = CombatGrid.instance.TargetEvaluation(shapeTest.tests, Actor, this, primary);
+        CombatGrid.TargetingTest bestTest = CombatGrid.instance.TargetEvaluation(shapeTest.tests, shapeTest.origin, this, primary);
         if (bestTest == null) return null;
         output.AffectedNodes = bestTest.targetNodes;
         if (output.AffectedCharacters == null) Debug.Log("missed");
@@ -443,11 +459,11 @@ public class Action : ScriptableObject
                 output.AffectedCharacters.AddRange(bestTest.monstersHit);
                 break;
             case TargetGroup.Allies:
-                if (Actor.stats.characterType == CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
+                if (shapeTest.origin.stats.characterType == CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
                 else output.AffectedCharacters.AddRange(bestTest.monstersHit);
                 break;
             case TargetGroup.Enemies:
-                if (Actor.stats.characterType != CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
+                if (shapeTest.origin.stats.characterType != CharacterStats.CharacterTypes.Adventurer) output.AffectedCharacters.AddRange(bestTest.mercsHit);
                 else output.AffectedCharacters.AddRange(bestTest.monstersHit);
                 break;
         }
@@ -582,7 +598,7 @@ public class Action : ScriptableObject
                 break;
         }*/
         #endregion
-        output.Direction = (output.Node.coordinate - Actor.position).normalized;
+        output.Direction = (output.Node.coordinate - shapeTest.origin.position).normalized;
         return output;
     }
     #region Old Validation

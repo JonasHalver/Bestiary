@@ -16,8 +16,10 @@ MonoBehaviour:
   characterCode: earthelemental
   characterType: 0
   personality: 7
+  characterModel: {fileID: 4672665538920121106, guid: 3341026cc4a10be40bb53132d2d29f69,
+    type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterIconColor: {r: 0.6226415, g: 0.50407904, b: 0.35537556, a: 1}
+  characterColor: {r: 0.3584906, g: 0.22490044, b: 0.12344251, a: 1}
   hitPoints: 10
   armored: 0
   resistances: 00000000010000000200000006000000
