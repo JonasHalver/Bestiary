@@ -96,7 +96,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
             Selected();
         }
 
-        canMove = !moving &&
+        canMove = 
             character.alive &&
             CombatManager.instance.currentStage == CombatManager.CombatStage.Setup &&
             GameManager.gameState == GameManager.GameState.Normal &&

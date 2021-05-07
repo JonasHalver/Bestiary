@@ -16,8 +16,10 @@ MonoBehaviour:
   characterCode: firemagemerc
   characterType: 1
   personality: 0
+  characterModel: {fileID: 4672665538920121106, guid: 3341026cc4a10be40bb53132d2d29f69,
+    type: 3}
   characterIcon: {fileID: 21300000, guid: d4e732ea81a7f9145850cd248898c59f, type: 3}
-  characterIconColor: {r: 1, g: 0.47614014, b: 0, a: 1}
+  characterColor: {r: 0.75686276, g: 0.30363244, b: 0, a: 1}
   hitPoints: 3
   armored: 0
   resistances: 0300000005000000

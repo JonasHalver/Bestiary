@@ -16,8 +16,10 @@ MonoBehaviour:
   characterCode: knightmerc
   characterType: 1
   personality: 0
+  characterModel: {fileID: 4672665538920121106, guid: 3341026cc4a10be40bb53132d2d29f69,
+    type: 3}
   characterIcon: {fileID: 21300000, guid: c8d735a990ef49b48b400d673f837751, type: 3}
-  characterIconColor: {r: 0.042452812, g: 0.9902184, b: 1, a: 1}
+  characterColor: {r: 0, g: 0.59970784, b: 1, a: 1}
   hitPoints: 8
   armored: 0
   resistances: 0000000001000000
@@ -25,9 +27,9 @@ MonoBehaviour:
   speed: 5
   movement: 2
   actions:
-  - {fileID: 11400000, guid: 032983bdcd600384c8d17305db5e7fad, type: 2}
   - {fileID: 11400000, guid: fbf34e18b03a231448e5935bf96f7e58, type: 2}
   - {fileID: 11400000, guid: 81062ca7a1e3cb547891aa0cf8ec9939, type: 2}
+  - {fileID: 11400000, guid: 032983bdcd600384c8d17305db5e7fad, type: 2}
   - {fileID: 11400000, guid: 793cc5529536ca24a9dbbb2b3dbea1e8, type: 2}
   pageNumber: 0
   entry: {fileID: 0}

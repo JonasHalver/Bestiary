@@ -27,7 +27,7 @@ public class InputManager : MonoBehaviour
         }
         if (Input.GetButtonDown("OpenJournal")) OpenJournal.Invoke();
         if (Input.GetButtonDown("OpenGlossary")) OpenGlossary.Invoke();
-        if (Input.GetButtonDown("Pause")) Pause.Invoke();
+        //if (Input.GetButtonDown("Pause")) Pause.Invoke();
         if (Input.GetButtonDown("Commit")) Commit.Invoke();
         if (Input.GetButtonDown("Escape")) Escape.Invoke();
     }

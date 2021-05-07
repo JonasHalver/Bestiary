@@ -51,10 +51,12 @@ public class MenuUI : MonoBehaviour
     private void OnEnable()
     {
         TutorialManager.ShowBestiary += ShowBestiary;
+        TutorialManager.StartCombat += LowerTopBar;
     }
     private void OnDisable()
     {
         TutorialManager.ShowBestiary -= ShowBestiary;
+        TutorialManager.StartCombat -= LowerTopBar;
     }
 
     public void OpenGlossary()
@@ -75,9 +77,13 @@ public class MenuUI : MonoBehaviour
         GameManager.instance.Exit();
     }
 
-    private void ShowBestiary()
+    private void LowerTopBar()
     {
         UIAnim.SetTrigger("FadeIn");
+    }
+
+    private void ShowBestiary()
+    {
         bestiaryButton.enabled = true;
     }
 }

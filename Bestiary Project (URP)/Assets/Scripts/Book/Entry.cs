@@ -60,7 +60,7 @@ public class Entry : MonoBehaviour
         }
         page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
-        page.icon.color = origin.characterIconColor;
+        page.icon.color = origin.characterColor;
         origin.entry = this;
         guess.entry = this;
     }
@@ -70,7 +70,7 @@ public class Entry : MonoBehaviour
         isMerc = true;
         //page.ConnectActions();
         page.icon.sprite = origin.characterIcon;
-        page.icon.color = origin.characterIconColor;
+        page.icon.color = origin.characterColor;
 
         for (int i = 0; i < origin.actions.Count; i++)
         {

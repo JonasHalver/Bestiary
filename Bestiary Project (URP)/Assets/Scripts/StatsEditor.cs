@@ -46,7 +46,7 @@ public class StatsEditor : MonoBehaviour
         editable = !Book.currentEntry.isMerc;
         hitPointValue = Book.currentEntry.guess.hitPoints;
         moveCharacterIcon.sprite = Book.currentEntry.origin.characterIcon;
-        moveCharacterIcon.color = Book.currentEntry.origin.characterIconColor;
+        moveCharacterIcon.color = Book.currentEntry.origin.characterColor;
     }
 
     private void OnEnable()
@@ -71,7 +71,7 @@ public class StatsEditor : MonoBehaviour
     public void DisplayHitPoints()
     {
         hitPointDisplay.value = 1;
-        hitPointDisplay.ClearHearts();
+        //hitPointDisplay.ClearHearts();
 
         if (!Book.currentEntry.isMerc)
             hitPointDisplay.value = (int)Book.currentEntry.guess.hitPoints;

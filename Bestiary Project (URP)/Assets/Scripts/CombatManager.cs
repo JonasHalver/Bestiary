@@ -26,7 +26,7 @@ public class CombatManager : MonoBehaviour
 
     public static List<CombatAction> combatActions = new List<CombatAction>();
     public static Dictionary<Character, Vector2> characterPositions = new Dictionary<Character, Vector2>();
-    
+
     // Find out if this is outdated 
     public event System.Action updateCombat;
     //public static event System.Action startCombat;
@@ -37,6 +37,9 @@ public class CombatManager : MonoBehaviour
 
     //public static event System.Action StartRound, EndRound;
     public static bool combatFlag = false;
+
+    [SerializeField] private Sprite swords, pause, play;
+    [SerializeField] private Image commitButton;
 
     public enum CombatStage { Setup, Combat, EnemyMovement }
     public CombatStage currentStage = CombatStage.Setup;
@@ -57,6 +60,7 @@ public class CombatManager : MonoBehaviour
     public static event System.Action<CombatTiming, Character> TurnPhases;
     public static event System.Action<bool> CharactersSpawned;
     public static event System.Action WanderingMonster;
+    public static event System.Action<Character> CurrentTurn;
     private void Awake()
     {
         instance = this;
@@ -75,6 +79,7 @@ public class CombatManager : MonoBehaviour
         TutorialManager.ShowAlly += SpawnAllies;
         TutorialManager.ShowEnemy += SpawnEnemies;
         TutorialManager.StartCombat += SetInitiative;
+        InputManager.Commit += Commit;
     }
     private void OnDisable()
     {
@@ -84,6 +89,7 @@ public class CombatManager : MonoBehaviour
         TutorialManager.ShowAlly -= SpawnAllies;
         TutorialManager.ShowEnemy -= SpawnEnemies;
         TutorialManager.StartCombat -= SetInitiative;
+        InputManager.Commit -= Commit;
     }
 
     public void OnNewLoad(Scene scene, LoadSceneMode mode)
@@ -131,11 +137,27 @@ public class CombatManager : MonoBehaviour
             case CombatStage.Combat:
                 CombatUI.instance.stageDisplay.text = "Combat";
                 CombatUI.instance.stageInfo.text = "Actions resolve in the order determined by each character's speed.";
+                
                 break;
             case CombatStage.EnemyMovement:
                 CombatUI.instance.stageDisplay.text = "Enemy Movement";
                 CombatUI.instance.stageInfo.text = "The enemy is repositioning.";
                 break;
+        }
+        if (currentStage != CombatStage.Setup)
+        {
+            if (GameManager.gameState != GameManager.GameState.Normal)
+            {
+                commitButton.sprite = play;
+            }
+            else
+            {
+                commitButton.sprite = pause;
+            }
+        }
+        else
+        {
+            commitButton.sprite = swords;
         }
     }    
     public void SpawnAllies()
@@ -335,10 +357,16 @@ public class CombatManager : MonoBehaviour
     }
     public void Commit()
     {
+        if (currentStage != CombatStage.Setup)
+        {
+            GameManager.instance.PauseCombat();
+            return;
+        }
         if (GameManager.tutorial) TutorialManager.instance.ForceContinue(true);
         UpdateCombat();
         UIInteractable(false, false);
         Delay("StartOfRound");
+        commitButton.sprite = pause;
     }
 
     public void StartOfRound()
@@ -359,19 +387,20 @@ public class CombatManager : MonoBehaviour
             if (!actors[i].alive) continue;
             //ResolveBuffsAndDebuffs(actors[i]);
             TurnPhases.Invoke(CombatTiming.StartOfCharacterTurn, actors[i]);
-            for (int j = 0; j < 10; j++)
+            for (int j = 0; j < 25; j++)
             {
                 while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
                 yield return new WaitForSeconds(0.05f);
             }
+            CurrentTurn.Invoke(actors[i]);
             CombatGrid.HighlightNodeStatic(actors[i].movement.currentNode);
-            for (int j = 0; j < 10; j++)
+            for (int j = 0; j < 15; j++)
             {
                 while (GameManager.gameState != GameManager.GameState.Normal) yield return null;
                 yield return new WaitForSeconds(0.05f);
             }
             foreach (CombatAction a in combatActions) a.highlighted = false;
-            for (int j = 0; j < combatActions.Count; j++)
+            /*for (int j = 0; j < combatActions.Count; j++)
             {
                 CombatAction cAction = combatActions[j];
                 if (cAction.origin == actors[i] && actors[i].Conditions.ContainsKey(Action.Condition.Stun))
@@ -382,10 +411,6 @@ public class CombatManager : MonoBehaviour
                 {
                     cAction.highlighted = true;
                     Vector2 dir = Vector2.zero;
-                    //if (cAction.action.primaryTargeting == Action.Targeting.Character)
-                    //    dir = (cAction.primaryTarget.Character.position - actors[i].position).normalized;
-                    //else
-                    //    dir = (cAction.primaryTarget.Node.coordinate - actors[i].position).normalized;
                     if (!cAction.action.isPass)
                         dir = cAction.primaryTarget.Direction;
                     actors[i].StartCoroutine("TakeAction", dir);
@@ -397,14 +422,46 @@ public class CombatManager : MonoBehaviour
                     CombatLogCard clc = newCard.GetComponent<CombatLogCard>();
                     clc.ca = cAction;
                     clc.wasStunned = actors[i].Conditions.ContainsKey(Action.Condition.Stun);
-                    cAction.ResolveAction(clc);                   
+                    cAction.ResolveAction(clc);
+                    print($"resolving action {j}");
                 }
+            }*/
+            if (!actors[i].alive) continue;
+            if (actors[i].currentAction != null)
+            {
+                CombatAction cAction = actors[i].currentAction;
+                if (actors[i].Conditions.ContainsKey(Action.Condition.Stun))
+                {
+                    cAction.action = actors[i].pass;
+                }
+
+                cAction.highlighted = true;
+                Vector2 dir = Vector2.zero;
+                if (!cAction.action.isPass)
+                    dir = cAction.primaryTarget.Direction;
+                actors[i].StartCoroutine("TakeAction", dir);
+                while (!combatFlag)
+                {
+                    yield return null;
+                }
+                GameObject newCard = Instantiate(combatLogCardPrefab, combatLogCardHolder);
+                CombatLogCard clc = newCard.GetComponent<CombatLogCard>();
+                clc.ca = cAction;
+                clc.wasStunned = actors[i].Conditions.ContainsKey(Action.Condition.Stun);
+                cAction.ResolveAction(clc);
+                yield return null;
+                combatLogCardHolder.gameObject.SetActive(false);
+                combatLogCardHolder.gameObject.SetActive(true);
+            }
+            else
+            {
+                print($"{actors[i].currentAction} is null");
             }
             combatFlag = false;
             TurnPhases.Invoke(CombatTiming.EndOfCharacterTurn, actors[i]);
             if (GameManager.tutorial)
             {
-                if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC && TutorialManager.instance.tutMain1Index < 12) TutorialManager.instance.ForceContinue(false);
+                if (actors[i].stats.characterType == CharacterStats.CharacterTypes.NPC && TutorialManager.instance.currentSequence == TutorialManager.TutorialSequence.Main1 && TutorialManager.instance.tutMain1Index < 12) TutorialManager.instance.ForceContinue(false);
             }
             for (int j = 0; j < 20; j++)
             {
@@ -412,6 +469,7 @@ public class CombatManager : MonoBehaviour
                 yield return new WaitForSeconds(0.05f);
             }
         }
+        CurrentTurn.Invoke(null);
         StartCoroutine(EnemyMovement());
     }    
 
@@ -491,7 +549,7 @@ public class CombatManager : MonoBehaviour
 
     public void UIInteractable(bool check, bool fromPause)
     {
-        CombatUI.instance.commitButton.interactable = check;
+        //CombatUI.instance.commitButton.interactable = check;
 
         //if (!fromPause) interactableCheck = check;
         //foreach(Transform item in combatUI)

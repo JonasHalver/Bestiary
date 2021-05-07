@@ -24,7 +24,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public Image characterIcon;
     public Color characterIconColor = Color.white;
     public Image deadImage;
-
+    [SerializeField]private CharacterEffectDisplay characterEffectDisplay;
     public event System.Action<Debuff> AcquiredDebuff;
     public event System.Action<Debuff> LostDebuff;
 
@@ -88,7 +88,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public Dictionary<Action, int> actionCooldowns = new Dictionary<Action, int>();
 
     public Vector2 direction;
-
+    public static event System.Action<Character> CharacterDeath;
+    private bool deathInvoked = false;
     private void Awake()
     {
         if (stats == null) CreateEmptyStats();
@@ -105,7 +106,6 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     private void OnEnable()
@@ -128,7 +128,15 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         currentHitpoints = stats.hitPoints - damageTaken;
         currentHitpoints = Mathf.Clamp(currentHitpoints, 0, stats.hitPoints);
 
-        if (currentHitpoints == 0) alive = false;
+        if (currentHitpoints == 0)
+        {
+            alive = false;
+            if (!deathInvoked)
+            {
+                CharacterDeath.Invoke(this);
+                deathInvoked = true;
+            }
+        }
         if (!alive) deadImage.enabled = true;
         UpdatePosition();
         int initiativeMod = 0 - ((Conditions.ContainsKey(Action.Condition.SlowMonster) || Conditions.ContainsKey(Action.Condition.SlowMerc)) ? 2 : 0) + (Conditions.ContainsKey(Action.Condition.Haste) ? 2 : 0);
@@ -248,7 +256,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         memory = new LastRoundMemory();
         //characterIcon.sprite = stats.characterIcon;
-        characterIcon.color = stats.characterIconColor;
+        GameObject newModel = Instantiate(stats.characterModel, transform);
+        newModel.transform.SetSiblingIndex(1);
+        characterIcon = newModel.GetComponent<Image>();
+        animator = newModel.GetComponent<Animator>();
+        characterIcon.color = stats.characterColor;
         if(stats.characterType == CharacterStats.CharacterTypes.NPC)
         {
             AI = gameObject.AddComponent<MonsterAI>();
@@ -264,8 +276,14 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (movement.currentNode != null)
         {
             position = movement.selected ? (movement.targetNode != null ? movement.targetNode.coordinate : movement.currentNode.coordinate) : movement.currentNode.coordinate;
-            if (!CombatManager.characterPositions.ContainsKey(this)) CombatManager.characterPositions.Add(this, position);
-            else CombatManager.characterPositions[this] = position;
+            if (!CombatManager.characterPositions.ContainsKey(this))
+            {
+                CombatManager.characterPositions.Add(this, position);
+            }
+            else
+            {
+                CombatManager.characterPositions[this] = position;
+            }
         }
 
     }
@@ -546,6 +564,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         currentHitpoints -= damage;
         damageTaken += damage;
         TookDamage.Invoke();
+        characterEffectDisplay.DisplayEffect(new Effect(damage, info.damageType));
     }
 
     public void ReceiveHit(DamageTypes conditionDamageType)
@@ -557,6 +576,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         currentHitpoints -= damage;
         damageTaken += damage;
         TookDamage.Invoke();
+        if (conditionDamageType == DamageTypes.Crushing)
+        {
+            characterEffectDisplay.DisplayEffect(new Effect(true, damage));
+        }
+        else
+            characterEffectDisplay.DisplayEffect(new Effect(damage, conditionDamageType));
     }
 
     public void ReceiveHealing(OutputInfo info)
@@ -566,6 +591,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         currentHitpoints += healing;
         damageTaken -= healing;
         Healed.Invoke();
+        characterEffectDisplay.DisplayEffect(new Effect(healing, DamageTypes.Healing));
     }
     public void ReceiveHealing(bool fromRegeneration)
     {
@@ -574,10 +600,12 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         currentHitpoints += healing;
         damageTaken -= healing;
         Healed.Invoke();
+        characterEffectDisplay.DisplayEffect(new Effect(healing, DamageTypes.Healing));
     }
     public void ReceiveCondition(OutputInfo info)
     {
-        conditionManager.ApplyCondition(info.condition, info.value);        
+        conditionManager.ApplyCondition(info.condition, info.value);
+        characterEffectDisplay.DisplayEffect(new Effect(info.condition));
     }
 
     public void MoveByAction(Interaction interaction)
@@ -589,7 +617,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         }
         else
         {
-            target = interaction.origin.movement.currentNode;
+            if (interaction.primaryTarget.Character != null)
+                target = interaction.primaryTarget.Character.movement.currentNode;
+            else if (interaction.primaryTarget.Node != null)
+                target = interaction.primaryTarget.Node;
+            else return;
         }
         Vector2 dir = (target.coordinate - movement.currentNode.coordinate).normalized;
         dir = new Vector2(Mathf.Round(dir.x), Mathf.Round(dir.y)) * (interaction.effect.towards ? 1 : -1);
@@ -598,44 +630,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         Node lastValidNode = movement.currentNode;
         bool impactWall = false;
         bool impactCharacter = false;
-        /*
-        for (int i = interaction.effect.value; i > -1; i--)
-        {
-            move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
-            destination = movement.currentNode.coordinate + move;
-            // Check the path
-            if (destination.x < 5 && destination.x > -1)
-            {
-                if (destination.y < 5 && destination.y > -1)
-                {
-                    checkNode = CombatGrid.grid[(int)destination.x, (int)destination.y];
-                    if (checkNode.occupant != null && checkNode.occupant != interaction.origin)
-                    {                        
-                        if (checkNode.occupant == this)
-                        {
-                            break;
-                        }
-                        if (checkNode.occupant.CanBeMovedToNode(CombatGrid.NodeFromPosition(checkNode.coordinate + dir)))
-                        {
-                            impactCharacter = true;
-                            lastValidNode = checkNode;
-                        }
-                    }
-                    else if (checkNode.occupant != null && checkNode.occupant == interaction.origin)
-                    {
 
-                    }
-                    else
-                    {
-                        if (!impactCharacter)
-                            lastValidNode = checkNode;
-                    }
-                }
-                else impactWall = true;
-            }
-            else impactWall = true;
-        }
-        */
         for (int i = 1; i < interaction.effect.value+1; i++)
         {
             move = new Vector2(Mathf.Round(dir.x * i), Mathf.Round(dir.y * i));
@@ -660,6 +655,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
                         }
                     }
                     else if (checkNode.occupant != null && checkNode.occupant == interaction.origin)
+                    {
+
+                    }
+                    else if (checkNode.occupant != null)
                     {
 
                     }

@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
         InputManager.Escape += Escape;
         InputManager.OpenGlossary += OpenGlossary;
         InputManager.OpenJournal += OpenBestiary;
-        InputManager.Commit += PauseCombat;
+        //InputManager.Commit += PauseCombat;
         TutorialManager.StartCombat += CombatStartSequence;
     }
     private void OnDisable()
@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
         InputManager.Escape -= Escape;
         InputManager.OpenGlossary -= OpenGlossary;
         InputManager.OpenJournal -= OpenBestiary;
-        InputManager.Commit -= PauseCombat;
+        //InputManager.Commit -= PauseCombat;
         TutorialManager.StartCombat -= CombatStartSequence;
     }
     private void OnNewSceneLoad(Scene scene, LoadSceneMode mode)

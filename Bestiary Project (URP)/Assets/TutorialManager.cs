@@ -32,6 +32,7 @@ public class TutorialManager : MonoBehaviour
 
     public static bool allowBestiary = false;
     public static bool allowCombat = false;
+    public static bool showedCharacterDeath = false;
 
     public static event System.Action ShowGrid;
     public static event System.Action ShowAlly;
@@ -104,6 +105,7 @@ public class TutorialManager : MonoBehaviour
         GameManager.Victory += Victory;
         GameManager.Defeat += Defeat;
         CombatManager.WanderingMonster += WanderingMonster;
+        Character.CharacterDeath += CharacterDeath;
     }
     private void OnDisable()
     {
@@ -115,6 +117,7 @@ public class TutorialManager : MonoBehaviour
         GameManager.Victory -= Victory;
         GameManager.Defeat -= Defeat;
         CombatManager.WanderingMonster -= WanderingMonster;
+        Character.CharacterDeath -= CharacterDeath;
     }
     private void Update()
     {
@@ -281,15 +284,27 @@ public class TutorialManager : MonoBehaviour
         GameManager.actionEditorClosed = true;
         currentSequence = TutorialSequence.BestiaryMonster;
         activeSequence = TutorialSequence.BestiaryMonster;
+        tutBestiaryIndex = 8;
         ForceContinue(true);
     }
     private void WanderingMonster()
     {
         StandaloneTutorial("Wandering");
     }
+    private void CharacterDeath(Character character)
+    {
+        if (!showedCharacterDeath)
+        {
+            if (character.stats.characterType == CharacterStats.CharacterTypes.Adventurer)
+            {
+                StandaloneTutorial("CharacterDeath");
+            }
+        }
+    }
     public void Victory()
     {
-        StandaloneTutorial("Victory");
+        if (activeSequence == TutorialSequence.Main1)
+            StandaloneTutorial("Victory");
     }
     public void Defeat()
     {
