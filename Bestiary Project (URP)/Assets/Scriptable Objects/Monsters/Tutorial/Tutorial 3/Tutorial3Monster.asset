@@ -16,6 +16,7 @@ MonoBehaviour:
   characterCode: wolftutorial
   characterType: 0
   personality: 3
+  bodyType: 1
   characterModel: {fileID: 3921077594347169764, guid: a85db1cd819449e4180523d15c458b8c,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}

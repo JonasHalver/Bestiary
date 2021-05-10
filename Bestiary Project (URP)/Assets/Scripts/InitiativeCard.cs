@@ -112,14 +112,14 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
                                 }
                                 else
                                 {
-                                    d = cname + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
+                                    d = cname + " " + Book.instance.descriptionsList.GetList(actor.stats.bodyType)[actor.currentAction.action.descriptionIndex];
 
                                 }
                                 if (flag) break;
                             }                            
                             else
                             {
-                                d = cname + " " + Book.instance.descriptionsList.descriptions[actor.currentAction.action.descriptionIndex];
+                                d = cname + " " + Book.instance.descriptionsList.GetList(actor.stats.bodyType)[actor.currentAction.action.descriptionIndex];
                             }
                         }
                     }

@@ -4555,6 +4555,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7822652727520258223}
+  - component: {fileID: 3767533209760682610}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -4579,8 +4580,33 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 500}
+  m_SizeDelta: {x: 0, y: 333.88}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &3767533209760682610
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7822652727520258222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &7822652727528855030
 GameObject:
   m_ObjectHideFlags: 0
@@ -5109,9 +5135,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   tooltips:
+  - The action has 0 rounds of cooldown.
   - The action has 1 round of cooldown.
   - The action has 2 rounds of cooldown.
-  - The action has 3 rounds of cooldown.
   activeIndex: 0
   type: 2
   primary: 1
@@ -5608,7 +5634,14 @@ MonoBehaviour:
   discardHolder: {fileID: 7822652726990534294}
   nameInput: {fileID: 4038154170682406576}
   logTest: {fileID: 7822652728281771373}
+  ptg: {fileID: 7822652729090585058}
+  pt: {fileID: 7822652729103079330}
+  c: {fileID: 7822652727665574108}
+  stg: {fileID: 7822652727877656050}
+  st: {fileID: 7822652726982198371}
   buttonText: {fileID: 7784691672829129685}
+  hlg1: {fileID: 3767533209760682610}
+  hlg2: {fileID: 1563204454533878636}
 --- !u!222 &3340560929925632757
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -6533,7 +6566,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 0
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6685,6 +6718,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7822652728269569485}
+  - component: {fileID: 1563204454533878636}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -6711,6 +6745,31 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 50}
   m_SizeDelta: {x: 0, y: 200}
   m_Pivot: {x: 0, y: 1}
+--- !u!114 &1563204454533878636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7822652728269569484}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 4
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!1 &7822652728281771372
 GameObject:
   m_ObjectHideFlags: 0

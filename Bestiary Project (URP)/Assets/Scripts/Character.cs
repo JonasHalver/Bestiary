@@ -251,7 +251,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         for (int i = 0; i < stats.actions.Count; i++)
         {
             actionCooldowns.Add(stats.actions[i], 0);
-            if (stats.actions[i].descriptionIndex > -1) stats.actions[i].actionDescription = Book.instance.descriptionsList.descriptions[i];
+            if (stats.actions[i].descriptionIndex > -1) stats.actions[i].actionDescription = Book.instance.descriptionsList.GetList(stats.bodyType)[i];
             stats.actions[i].Actor = this;
         }
         memory = new LastRoundMemory();

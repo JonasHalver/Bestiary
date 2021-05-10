@@ -12,7 +12,7 @@ public class CustomToggle : MonoBehaviour, IPointerClickHandler
     public List<Sprite> sprites = new List<Sprite>();
     public List<string> tooltips = new List<string>();
     private SimpleTooltipSpawner sts;
-    [SerializeField]private int activeIndex = 0;
+    public int activeIndex = 0;
     public ActionNode.ToggleType type;
     public bool primary; 
 
@@ -37,10 +37,17 @@ public class CustomToggle : MonoBehaviour, IPointerClickHandler
                 break;
         }
     }
+    private void Update()
+    {
+        if (img) img.sprite = sprites[activeIndex];
+        else if (text) text.text = (activeIndex).ToString();
+        sts.tooltipString = tooltips[activeIndex];
+        //sts.RefreshTooltip();
+    }
 
     private void Awake()
     {
         sts = GetComponent<SimpleTooltipSpawner>();
-        sts.tooltipString = tooltips[0];
+        sts.tooltipString = tooltips[0];        
     }
 }

@@ -205,6 +205,9 @@ public class ActionCheck
     public Entry entry;
     public Color panelColor;
 
+    public bool informationCorrect = false;
+    public bool informationConfirmed = false;
+
     public Dictionary<ActionNode, Vector3> nodePositions = new Dictionary<ActionNode, Vector3>();
     public Dictionary<ActionNode, ActionNode.WindowType> nodeParents = new Dictionary<ActionNode, ActionNode.WindowType>(); 
 

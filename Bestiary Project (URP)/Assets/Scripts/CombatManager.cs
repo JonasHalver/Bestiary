@@ -61,6 +61,7 @@ public class CombatManager : MonoBehaviour
     public static event System.Action<bool> CharactersSpawned;
     public static event System.Action WanderingMonster;
     public static event System.Action<Character> CurrentTurn;
+    
     private void Awake()
     {
         instance = this;
@@ -641,7 +642,7 @@ public class CombatAction : Action
     public List<Character> secondaryAffectedCharacters = new List<Character>();
 
     public BattlefieldPositionInfo bpi;
-
+    public static event System.Action<ActionCheck> ActionInformationConfirmed;
     private float threatValue;
 
     /*
@@ -1092,6 +1093,15 @@ public class CombatAction : Action
         card.CreateCard();
         origin.actionCooldowns[action] = action.cooldown;
         origin.lastCombatAction = null;
+        if (origin.entry != null)
+        {
+            if (origin.entry.CheckByOrigin(action).informationCorrect)
+            {
+                Debug.Log("information confirmed");
+                origin.entry.CheckByOrigin(action).informationConfirmed = true;
+                ActionInformationConfirmed.Invoke(origin.entry.CheckByOrigin(action));
+            }
+        }
         CombatManager.threat[origin] = threatValue;
     }
 }

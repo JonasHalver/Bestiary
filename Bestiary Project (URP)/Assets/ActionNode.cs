@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
+[Serializable]
 public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEndDragHandler
 {
     private bool selected = false;
@@ -49,6 +51,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public static event System.Action NodeChanged;
 
     public Color bgShape, bgContext, bgOutput;
+    [HideInInspector] public ActionNode cloneOriginal;
 
     public Animator Animator
     {
@@ -161,6 +164,14 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         else if (InEditor && error) attn.SetActive(true);
         else attn.SetActive(false);
+        if (!InEditor)
+        {
+            //LineManager.Instance.SeverConnections(this);
+            actionContext.ResetInformation();
+            actionOutput.ResetInformation();
+            hasBeenEdited = false;
+            ResetIcons();
+        }
     }
 
     private void Selected()
@@ -232,8 +243,11 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                 {
                     if (originalWindow.parent.parent.parent.name.Contains("Collection"))
                     {
-                        Book.currentEntry.activeAction.nodeParents[this] = windowType;
-                        Book.currentEntry.activeAction.nodePositions[this] = transform.position;
+                        if (nodeType == NodeType.Shape)
+                        {
+                            Book.currentEntry.activeAction.nodeParents[this] = windowType;
+                            Book.currentEntry.activeAction.nodePositions[this] = transform.position;
+                        }
                         Clone(transform.position, window, nodeType == NodeType.Output ? actionOutput : null);
                         transform.parent = originalWindow;
                         transform.position = originalLocation;
@@ -242,7 +256,8 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     }
                     else if (originalWindow.parent.parent.parent.name.Contains("Discard"))
                     {
-                        transform.parent = window;
+                        transform.parent = ActionEditor.instance.collectionHolder;
+                        Clone(transform.position, window, actionOutput);
                         Book.currentEntry.activeAction.nodeParents[this] = windowType;
                         Book.currentEntry.activeAction.nodePositions[this] = transform.position;
                     }
@@ -315,6 +330,14 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                         case NodeType.Shape:
                             break;
                     }
+                    if (cloneOriginal != null)
+                    {
+                        Book.currentEntry.activeAction.nodeParents[cloneOriginal] = WindowType.Discard;
+                        Book.currentEntry.activeAction.nodePositions[cloneOriginal] = transform.position;
+                        cloneOriginal.gameObject.transform.parent = ActionEditor.instance.discardHolder;
+                        cloneOriginal.transform.position = transform.position;
+                        Destroy(gameObject);
+                    }
                 }
                 else if (window.parent.parent.parent.name.Contains("Collection"))
                 {
@@ -329,6 +352,8 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     }
                     if (originalWindow.parent.parent.parent.name.Contains("Edit"))
                     {
+                        Book.currentEntry.activeAction.nodeParents[cloneOriginal] = WindowType.Collection;
+                        Book.currentEntry.activeAction.nodePositions[cloneOriginal] = transform.position;
                         NodeChanged.Invoke();
                         Destroy(gameObject);
                         return;
@@ -364,7 +389,6 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     {
                         case NodeType.Context:
                             if (windowType == WindowType.Edit1 && !originalWindow.parent.parent.parent.name.Contains("Edit1")) Book.currentEntry.activeAction.guessAction.primaryContext.Add(actionContext);
-                            print($"Guess action has {Book.currentEntry.activeAction.guessAction.primaryContext.Count} contexts");
                             break;
                         case NodeType.Shape:
                             if (windowType == WindowType.Edit1) Book.currentEntry.activeAction.guessAction.primaryShape = actionShape;
@@ -413,11 +437,15 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         clone.GetComponent<Image>().raycastTarget = true;
         clone.GetComponent<ActionNode>().blend = 1;
         clone.GetComponent<ActionNode>().isBig = true;
+        clone.GetComponent<ActionNode>().cloneOriginal = this;
         if (oi != null)
         {
-            clone.GetComponent<ActionNode>().actionOutput = oi;
+            clone.GetComponent<ActionNode>().actionOutput = new OutputInfo(oi);
             clone.GetComponent<ActionNode>().DelaySetIcons();
         }
+        NodeChanged.Invoke();
+        //Book.currentEntry.activeAction.nodeParents.Add(clone.GetComponent<ActionNode>(), parent.parent.parent.parent.name.Contains("Edit1") ? WindowType.Edit1 : WindowType.Edit2);
+        //Book.currentEntry.activeAction.nodePositions.Add(clone.GetComponent<ActionNode>(), position);
     }
     public void DelaySetIcons()
     {
@@ -481,7 +509,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     }
     private void EditNode()
     {
-        print("Open editing");
+
         GameObject newWindow;
         switch (nodeType)
         {
@@ -512,7 +540,8 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
 
         if (hasBeenEdited)
         {
-            SetIcons();
+            SetIcons(); 
+            /*
             switch (nodeType)
             {
                 case NodeType.Context:
@@ -559,6 +588,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
                     // Add functionality for target priority
                     break;
             }
+            */
         }
         NodeChanged.Invoke();
     }

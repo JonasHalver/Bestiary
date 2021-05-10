@@ -6,17 +6,17 @@ using UnityEngine.UI;
 
 public class ActionDescriptionEdit : MonoBehaviour
 {
-    [SerializeField] private TMP_Dropdown dropdown;
-
-    private void Start()
-    {
-        for (int i = 0; i < Book.instance.descriptionsList.descriptions.Count; i++)
-        {
-            dropdown.options.Add(new TMP_Dropdown.OptionData(Book.instance.descriptionsList.descriptions[i]));
-        }
-    }
-    private void Update()
-    {
-        Book.currentEntry.activeAction.guessAction.descriptionIndex = dropdown.value - 1;
-    }
+   // [SerializeField] private TMP_Dropdown dropdown;
+   //
+   // private void Start()
+   // {
+   //     for (int i = 0; i < Book.instance.descriptionsList.GetList.Count; i++)
+   //     {
+   //         dropdown.options.Add(new TMP_Dropdown.OptionData(Book.instance.descriptionsList.descriptions[i]));
+   //     }
+   // }
+   // private void Update()
+   // {
+   //     Book.currentEntry.activeAction.guessAction.descriptionIndex = dropdown.value - 1;
+   // }
 }

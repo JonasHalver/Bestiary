@@ -14,6 +14,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     private float maxWidth;
     private float t;
     public GameObject effectPrefab;
+    public Sprite effectPositive, effectNegative;
     public Transform effectsDisplay;
     public List<HealthBarEffects> effects = new List<HealthBarEffects>();
     bool displayingDamageOrHeal = false;
@@ -141,12 +142,14 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     {
         GameObject newEffect = Instantiate(effectPrefab, effectsDisplay);
         Image img = newEffect.transform.GetChild(0).GetComponent<Image>();
+        Image bg = newEffect.GetComponent<Image>();
         Icons.Properties icons = GameManager.instance.currentIconCollection.GetIcon(condition);
         string tooltip = GameManager.instance.currentTooltipCollection.GetString(condition);
         img.sprite = icons.icon;
         img.color = icons.iconColor;
-        Image bg = newEffect.GetComponent<Image>();
-        bg.color = d;
+        bg.sprite = Action.ConditionIsBuff[condition] ? effectPositive : effectNegative;
+        //bg.color = d;
+        bg.color = Action.ConditionIsBuff[condition] ? b : d;
         newEffect.GetComponent<SimpleTooltipSpawner>().tooltipString = tooltip;
 
         newEffect.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = character.Conditions[condition].ToString();

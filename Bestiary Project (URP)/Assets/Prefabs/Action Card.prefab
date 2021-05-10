@@ -700,6 +700,7 @@ MonoBehaviour:
   - {r: 0, g: 1, b: 0.9853697, a: 0.39215687}
   - {r: 0.55408716, g: 0, b: 1, a: 0.39215687}
   panelColor: {r: 0, g: 0, b: 0, a: 0}
+  confirmedColor: {r: 0.84705883, g: 1, b: 0.8509804, a: 1}
   description: {fileID: 5363582985388160582}
   actionName: {fileID: 7498107275379116447}
   delete: {fileID: 3451278631245447419}
@@ -740,7 +741,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7555414687957851873
 RectTransform:
   m_ObjectHideFlags: 0

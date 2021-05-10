@@ -1295,6 +1295,19 @@ public class OutputInfo
     public Action.TargetGroup affectedGroup = Action.TargetGroup.All;
     [HideInInspector] public Character origin;
 
+    public OutputInfo(OutputInfo toClone)
+    {
+        output = toClone.output;
+        value = toClone.value;
+        condition = toClone.condition;
+        critical = toClone.critical;
+        damageType = toClone.damageType;
+        towards = toClone.towards;
+        difficulty = toClone.difficulty;
+        affectedGroup = toClone.affectedGroup;
+        origin = toClone.origin;
+    }
+
     public bool Match(OutputInfo comparison)
     {
         bool flag = false;

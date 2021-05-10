@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0af9b3499bdb90e4a927f3f22509a46f, type: 3}
+  m_Name: Descriptions
+  m_EditorClassIdentifier: 
+  humanoid:
+  - squares up
+  - lifts its arms above its head
+  - crouches down
+  - steps from side to side
+  - swings its arms wildly
+  - lets out a high pitched scream
+  - starts clawing at the air
+  - inhales deeply
+  - grabs its head and starts shaking
+  - starts laughing
+  - gets down on all fours
+  - starts humming rhythmically
+  quadroped:
+  - stands on its hind legs
+  - starts growling
+  - squeals loudly
+  - scrapes the ground
+  - ducks down low
+  - bares its teeth
+  - moves its tail rhythmically
+  - shakes its body
+  - breathes heavily
+  - lets out a howl
+  - swipes its claws through the air
+  - stands perfectly still
+  insectoid:
+  - ducks down low
+  - scrapes the ground
+  - starts writhing
+  - lets out a slow hiss
+  - shakes violently
+  - raises most of its legs
+  - taps the ground rhythmically
+  - makes rapid clicking noises
+  - excretes a thick liquid
+  - rubs its front legs together
+  - bares its fangs
+  - stands perfectly still

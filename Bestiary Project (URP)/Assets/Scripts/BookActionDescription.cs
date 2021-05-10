@@ -31,7 +31,7 @@ public class BookActionDescription : MonoBehaviour
 
     public void GenerateList()
     {
-        List<string> descriptions = Book.instance.descriptionsList.descriptions;
+        List<string> descriptions = Book.instance.descriptionsList.GetList(Book.currentEntry.character.stats.bodyType);
 
         for (int i = 0; i < buttons.Count; i++)
         {
@@ -78,7 +78,7 @@ public class BookActionDescription : MonoBehaviour
         }
         currentEntry.activeAction.guessAction.descriptionSet = true;
         currentEntry.activeAction.guessAction.descriptionIndex = index;
-        currentEntry.activeAction.guessAction.actionDescription = Book.instance.descriptionsList.descriptions[index];
+        currentEntry.activeAction.guessAction.actionDescription = Book.instance.descriptionsList.GetList(Book.currentEntry.character.stats.bodyType)[index];
         //BookActionCard.CardUpdate();
         gameObject.SetActive(false);
         Book.currentEntry.activeAction.SetComparison();

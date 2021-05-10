@@ -28,6 +28,8 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     public List<Color> panelColors = new List<Color>();
     public Color panelColor;
 
+    public Color confirmedColor;
+
     public TextMeshProUGUI description;
     public TextMeshProUGUI actionName;
     private bool editable = true;

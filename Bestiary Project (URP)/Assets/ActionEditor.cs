@@ -12,7 +12,7 @@ public class ActionEditor : MonoBehaviour
 
     public Action action, guessAction;
     [SerializeField] private TextMeshProUGUI editCount, collectionCount, discardCount;
-    [SerializeField] private Transform editHolder, secondEditHolder, collectionHolder, discardHolder;
+    public Transform editHolder, secondEditHolder, collectionHolder, discardHolder;
 
     [SerializeField] private TMP_InputField nameInput;
 
@@ -28,8 +28,10 @@ public class ActionEditor : MonoBehaviour
     private Action.TargetGroup secondaryTargetGroup = Action.TargetGroup.Allies;
     public static event System.Action ActionEditorOpened;
     public static event System.Action ActionEditorClosed;
-
+    public CustomToggle ptg, pt, c, stg, st;
     public TextMeshProUGUI buttonText;
+
+    public HorizontalLayoutGroup hlg1, hlg2;
 
     private Dictionary<Action.Context, ActionNode> contextNodes = new Dictionary<Action.Context, ActionNode>();
     private void Awake()
@@ -54,6 +56,7 @@ public class ActionEditor : MonoBehaviour
         graphicRaycaster = GetComponent<GraphicRaycaster>();
         ActionNode[] n = transform.GetComponentsInChildren<ActionNode>();
         Dictionary<ActionNode, ActionNode> temp = new Dictionary<ActionNode, ActionNode>();
+        ActionNode condition = null;
         if (Book.currentEntry.activeAction.nodeParents.Count > 0)
         {
             foreach (KeyValuePair<ActionNode, ActionNode.WindowType> oan in Book.currentEntry.activeAction.nodeParents)
@@ -64,6 +67,7 @@ public class ActionEditor : MonoBehaviour
                     {
                         temp.Add(oan.Key, nan);
                     }
+                    if (nan.nodeType == ActionNode.NodeType.Output && nan.actionOutput.output == Action.Output.Condition) condition = nan;
                 }
             }
             foreach (KeyValuePair<ActionNode, ActionNode> aa in temp)
@@ -110,9 +114,9 @@ public class ActionEditor : MonoBehaviour
                             StartCoroutine(OneFrameDelay(an.gameObject, "ExternalExpand"));
                             break;
                         case ActionNode.NodeType.Shape:
-                            an.transform.parent = editHolder;
-                            an.transform.position = Book.currentEntry.activeAction.nodePositions[an];
-                            StartCoroutine(OneFrameDelay(an.gameObject, "ExternalExpand"));
+                            an.Clone(Book.currentEntry.activeAction.nodePositions[an], editHolder, null);
+                            //an.transform.parent = editHolder;
+                            //an.transform.position = Book.currentEntry.activeAction.nodePositions[an];
                             break;
                         case ActionNode.NodeType.Output:
                             OutputInfo oi = null;
@@ -120,7 +124,9 @@ public class ActionEditor : MonoBehaviour
                             {
                                 if (Book.currentEntry.activeAction.guessAction.primaryOutput[i].output == an.actionOutput.output) oi = Book.currentEntry.activeAction.guessAction.primaryOutput[i];
                             }
-                            an.Clone(Book.currentEntry.activeAction.nodePositions[an], editHolder, oi);
+                            an.transform.parent = editHolder;
+                            an.transform.position = Book.currentEntry.activeAction.nodePositions[an];
+                            //an.Clone(Book.currentEntry.activeAction.nodePositions[an], editHolder, oi);
                             break;
                     }
                     StartCoroutine(OneFrameDelay(an.gameObject, "SetIcons"));
@@ -130,9 +136,9 @@ public class ActionEditor : MonoBehaviour
                     {
                         case ActionNode.NodeType.Context:
                         case ActionNode.NodeType.Shape:
+                           // an.Clone(Book.currentEntry.activeAction.nodePositions[an], secondEditHolder, null);
                             an.transform.parent = secondEditHolder;
                             an.transform.position = Book.currentEntry.activeAction.nodePositions[an];
-                            an.blend = 1;
                             break;
                         case ActionNode.NodeType.Output:
                             OutputInfo oi = null;
@@ -140,7 +146,9 @@ public class ActionEditor : MonoBehaviour
                             {
                                 if (Book.currentEntry.activeAction.guessAction.secondaryOutput[i].output == an.actionOutput.output) oi = Book.currentEntry.activeAction.guessAction.secondaryOutput[i];
                             }
-                            an.Clone(Book.currentEntry.activeAction.nodePositions[an], secondEditHolder, oi);
+                            //an.Clone(Book.currentEntry.activeAction.nodePositions[an], secondEditHolder, oi);
+                            an.transform.parent = secondEditHolder;
+                            an.transform.position = Book.currentEntry.activeAction.nodePositions[an];
                             break;
                     }
                     StartCoroutine(OneFrameDelay(an.gameObject, "SetIcons"));
@@ -151,8 +159,50 @@ public class ActionEditor : MonoBehaviour
                 contextNodes.Add(an.actionContext.context, an);
             }
         }
+        ActionCheck ac = Book.currentEntry.activeAction;
+        if (ac.guessAction != null)
+        {
+            if (ac.guessAction.primaryOutput.Count > 0)
+            {
+                ptg.activeIndex = (int)ac.guessAction.primaryOutput[0].affectedGroup;
+            }
+            pt.activeIndex = (int)guessAction.primaryTargeting;
+            c.activeIndex = guessAction.cooldown;
+            if (guessAction.secondaryOutput.Count > 0)
+            {
+                stg.activeIndex = (int)ac.guessAction.secondaryOutput[0].affectedGroup;
+                st.activeIndex = (int)ac.guessAction.secondaryTargeting;
+            }
+        }
+        for (int i = 0; i < ac.guessAction.primaryOutput.Count; i++)
+        {
+            switch (ac.guessAction.primaryOutput[i].output)
+            {
+                case Action.Output.Condition:
+                    condition.Clone(Vector3.zero, editHolder, ac.guessAction.primaryOutput[i]);
+                    break;
+                default: break;
+            }
+        }
+        for (int i = 0; i < ac.guessAction.secondaryOutput.Count; i++)
+        {
+            switch (ac.guessAction.secondaryOutput[i].output)
+            {
+                case Action.Output.Condition:
+                    condition.Clone(Vector3.zero, secondEditHolder, ac.guessAction.secondaryOutput[i]);
+                    break;
+                default: break;
+            }
+        }
         nameInput.text = Book.currentEntry.activeAction.guessAction.actionName;
         CompareActionInformation();
+        StartCoroutine(DelayLayoutDisable());
+    }
+    IEnumerator DelayLayoutDisable()
+    {
+        yield return null;
+        hlg1.enabled = false;
+        hlg2.enabled = false;
     }
 
     private bool SameNode(ActionNode originalNode, ActionNode newNode)
@@ -185,7 +235,8 @@ public class ActionEditor : MonoBehaviour
         else Book.currentEntry.activeAction.guessAction.actionName = "Unnamed Action";
         if (Book.currentEntry.activeAction.guessAction.descriptionSet)
         {
-            buttonText.text = $"{(Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "The Monster")} {Book.instance.descriptionsList.descriptions[Book.currentEntry.activeAction.guessAction.descriptionIndex]}";
+            buttonText.text = $"{(Book.currentEntry.guess.characterName != null ? Book.currentEntry.guess.characterName : "The Monster")} " +
+                $"{Book.instance.descriptionsList.GetList(Book.currentEntry.character.stats.bodyType)[Book.currentEntry.activeAction.guessAction.descriptionIndex]}";
         }
         else
         {
@@ -231,17 +282,16 @@ public class ActionEditor : MonoBehaviour
 
     public void CompareActionInformation()
     {
-        //if (guessAction.primaryTargetGroup == action.primaryTargetGroup) print("Primary target group correct");
-        //if (guessAction.primaryTargeting == action.primaryTargeting) print("Primary targeting correct");
-        //if (guessAction.cooldown == action.cooldown) print("Cooldown correct");
+        print("updating information");
         outputGuessesPrimary.Clear();
         contextGuessesPrimary.Clear();
         primaryShapes.Clear();
         int outputCorrectCount = 0;
         int contextCorrectCount = 0;
+        ActionNode node = null;
         for (int i = 0; i < editHolder.childCount; i++)
         {
-            ActionNode node = editHolder.GetChild(i).GetComponent<ActionNode>();
+            node = editHolder.GetChild(i).GetComponent<ActionNode>();
             if (node.nodeType == ActionNode.NodeType.Context) contextGuessesPrimary.Add(node.actionContext);
             else if (node.nodeType == ActionNode.NodeType.Shape)
             {
@@ -283,7 +333,7 @@ public class ActionEditor : MonoBehaviour
         secondaryShapes.Clear();
         for (int i = 0; i < secondEditHolder.childCount; i++)
         {
-            ActionNode node = secondEditHolder.GetChild(i).GetComponent<ActionNode>();
+            node = secondEditHolder.GetChild(i).GetComponent<ActionNode>();
             if (node.nodeType == ActionNode.NodeType.Context) node.Error("The secondary effect uses the context of the primary effect. Only place Shape and Output nodes here.");
             else if (node.nodeType == ActionNode.NodeType.Shape)
             {
@@ -324,6 +374,7 @@ public class ActionEditor : MonoBehaviour
 
         // Comparison
         if (action == null) return;
+        print("running comparison");
         for (int i = 0; i < contextGuessesPrimary.Count; i++)
         {
             for (int j = 0; j < action.primaryContext.Count; j++)
@@ -338,10 +389,9 @@ public class ActionEditor : MonoBehaviour
                 if (outputGuessesPrimary[i].Match(action.primaryOutput[j])) outputCorrectCount++;
             }
         }
-        if (contextCorrectCount == action.primaryContext.Count && outputCorrectCount == action.primaryOutput.Count)
-        {
-            print("Primary effect is correct");
-        }
+        bool primaryNodesCorrect = false;
+        if (contextCorrectCount == action.primaryContext.Count || outputCorrectCount == action.primaryOutput.Count) primaryNodesCorrect = true;
+        
 
         
         outputCorrectCount = 0;
@@ -358,12 +408,46 @@ public class ActionEditor : MonoBehaviour
                 if (outputGuessesSecondary[i].Match(action.secondaryOutput[j])) outputCorrectCount++;
             }
         }
+        bool secondaryNodesCorrect = false;
+        if (outputCorrectCount == action.secondaryOutput.Count) secondaryNodesCorrect = true;
 
-        //if (outputCorrectCount == action.secondaryOutput.Count)
-        //{
-        //    print("Secondary effect is correct");
-        //}
+        // Setting guess action info
+        guessAction.primaryOutput.Clear();
+        guessAction.secondaryOutput.Clear();
+        guessAction.primaryContext.Clear();
+        for (int i = 0; i < contextGuessesPrimary.Count; i++)
+        {
+            guessAction.primaryContext.Add(contextGuessesPrimary[i]);
+        }
+        for (int i = 0; i < outputGuessesPrimary.Count; i++)
+        {
+            guessAction.primaryOutput.Add(outputGuessesPrimary[i]);
+        }
+        for (int i = 0; i < outputGuessesSecondary.Count; i++)
+        {
+            guessAction.secondaryOutput.Add(outputGuessesSecondary[i]);
+        }
 
+        // Check primary
+        if (guessAction.descriptionIndex != action.descriptionIndex) return;
+        if (primaryShapes.Count != 1 || primaryShapes[0] != action.primaryShape) return;
+        if (!primaryNodesCorrect) return;
+        if (guessAction.primaryOutput.Count > 0)
+            if (guessAction.primaryOutput[0].affectedGroup != action.primaryOutput[0].affectedGroup) return;
+            else return;
+        if (guessAction.primaryTargeting != action.primaryTargeting) return;
+        if (guessAction.cooldown != action.cooldown) return;
+
+        // Check secondary
+        if (action.secondaryOutput.Count > 0)
+        {
+            if (!secondaryNodesCorrect) return;
+            if (secondaryShapes.Count != 1 || secondaryShapes[0] != action.secondaryShape) return;
+            if (guessAction.secondaryTargeting != action.secondaryTargeting) return;
+            if (guessAction.secondaryOutput[0].affectedGroup != action.secondaryOutput[0].affectedGroup) return;
+        }
+        Book.currentEntry.activeAction.informationCorrect = true;
+        Debug.Log("information correct");
     }
     private void CheckIncompatibility(List<ContextInfo> list)
     {

@@ -55,7 +55,7 @@ public class CharacterEffectDisplay : MonoBehaviour
         StartCoroutine(IconFade(img, true, effect));
         if (effect.type != Effect.Type.Condition)
         {
-            print(effect.value);
+
             float displayed = 0;
             bool half = false;
             if (effect.value % 1 == 0.5)
@@ -93,7 +93,6 @@ public class CharacterEffectDisplay : MonoBehaviour
                 StartCoroutine(IconFade(img, true, effect));
                 displayed += 0.5f;
             }
-            print(displayed);
         }
     }
     IEnumerator IconFade(Image img, bool fadeIn, Effect effect)
