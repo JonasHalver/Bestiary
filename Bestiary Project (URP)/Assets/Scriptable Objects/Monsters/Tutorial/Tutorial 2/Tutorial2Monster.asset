@@ -17,10 +17,10 @@ MonoBehaviour:
   characterType: 0
   personality: 0
   bodyType: 2
-  characterModel: {fileID: 4672665538920121106, guid: 3341026cc4a10be40bb53132d2d29f69,
+  characterModel: {fileID: 7911568078921080912, guid: 9e45d8121107b094dacc1463bdad86f5,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterColor: {r: 0.23762906, g: 0.5660378, b: 0.49477965, a: 1}
+  characterColor: {r: 0.6320754, g: 0.2236116, b: 0.23573412, a: 1}
   hitPoints: 3
   armored: 0
   resistances: 06000000

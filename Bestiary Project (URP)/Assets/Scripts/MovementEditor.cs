@@ -8,37 +8,54 @@ public class MovementEditor : MonoBehaviour
 {
     public TMP_InputField input;
     public int value = 1;
-    public Color valid, invalid;
-    public List<Image> tiles = new List<Image>();
-    public Image characterIcon;
-    public Transform grid;
+    public Image g1, g2, g3, g4;
     // Start is called before the first frame update
     void Start()
     {
-        for (int i = 1; i < grid.childCount; i++)
-        {
-            tiles.Add(grid.GetChild(i).GetComponent<Image>());
-        }
+
     }
 
     private void OnEnable()
     {
         value = Book.currentEntry.guess.movement;
         input.text = value.ToString();
-        characterIcon.sprite = Book.currentEntry.origin.characterIcon;
-        characterIcon.color = Book.currentEntry.origin.characterColor;
     }
 
     // Update is called once per frame
     void Update()
     {
         value = Mathf.Clamp(value, 1, 4);
-        for (int i = 0; i < tiles.Count; i++)
+        ShowValue();
+    }
+
+    private void ShowValue()
+    {
+        switch (value)
         {
-            if (i < value)
-                tiles[i].color = valid;
-            else
-                tiles[i].color = invalid;                    
+            case 1:
+                g1.enabled = true;
+                g2.enabled = false;
+                g3.enabled = false;
+                g4.enabled = false;
+                break;
+            case 2:
+                g1.enabled = false;
+                g2.enabled = true;
+                g3.enabled = false;
+                g4.enabled = false;
+                break;
+            case 3:
+                g1.enabled = false;
+                g2.enabled = false;
+                g3.enabled = true;
+                g4.enabled = false;
+                break;
+            case 4:
+                g1.enabled = false;
+                g2.enabled = false;
+                g3.enabled = false;
+                g4.enabled = true;
+                break;
         }
     }
 

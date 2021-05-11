@@ -17,10 +17,10 @@ MonoBehaviour:
   characterType: 0
   personality: 3
   bodyType: 1
-  characterModel: {fileID: 3921077594347169764, guid: a85db1cd819449e4180523d15c458b8c,
+  characterModel: {fileID: 4279230760111765391, guid: ee69b4a54478a0f499659db5691caaf3,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterColor: {r: 0.5283019, g: 0.3264507, b: 0.3264507, a: 0}
+  characterColor: {r: 0.3216447, g: 0.47586796, b: 0.49056602, a: 1}
   hitPoints: 3
   armored: 0
   resistances: 05000000
@@ -28,9 +28,9 @@ MonoBehaviour:
   speed: 8
   movement: 4
   actions:
-  - {fileID: 11400000, guid: c7481ce08adfd724e864efd91cbf544a, type: 2}
+  - {fileID: 11400000, guid: fe56f013a34ecb14fa25937885c5e9ec, type: 2}
   - {fileID: 11400000, guid: 107ab23d1c012bf4f9eeb6eda4ab61c9, type: 2}
   - {fileID: 11400000, guid: 6770c2c092bdcb54da18b8decdc2b6f1, type: 2}
-  - {fileID: 11400000, guid: fe56f013a34ecb14fa25937885c5e9ec, type: 2}
-  pageNumber: 0
+  - {fileID: 11400000, guid: c7481ce08adfd724e864efd91cbf544a, type: 2}
+  pageNumber: 2
   entry: {fileID: 0}
