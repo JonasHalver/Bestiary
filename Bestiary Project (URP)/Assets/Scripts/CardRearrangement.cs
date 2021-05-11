@@ -29,6 +29,7 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     public Color panelColor;
 
     public Color confirmedColor;
+    public Image background;
 
     public TextMeshProUGUI description;
     public TextMeshProUGUI actionName;
@@ -82,7 +83,9 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
     {
         if(!merc)
             if (Book.currentEntry.activeAction != actionCheck) return;
-        description.text = actionCheck.guessAction.description;
+        if (actionCheck != null)
+            description.text = actionCheck.guessAction.description;
+        else return;
         actionName.text = actionCheck.guessAction.actionName != null ? actionCheck.guessAction.actionName : "Unnamed Action";
         for (int i = 0; i < icons.Count; i++)
         {
@@ -90,134 +93,8 @@ public class CardRearrangement : MonoBehaviour, IPointerDownHandler, IBeginDragH
             icons.RemoveAt(i);
             i--;
         }
-        if (actionCheck.guessAction.targetingSet)
-        {
-            /* Rewrite as dictionary
-            switch (actionCheck.guessAction.primaryShape)
-            {
-                case Action.Shape.Self:
-                    AddIcon(GameManager.instance.currentIconCollection.self);
-                    break;
-                case Action.Shape.Melee:
-                    AddIcon(GameManager.instance.currentIconCollection.meleeVert);
-                    AddIcon(GameManager.instance.currentIconCollection.meleeDia);
-                    break;
-                case Action.Shape.Ranged:
-                    AddIcon(GameManager.instance.currentIconCollection.ranged);
-                    break;
-                case Action.Shape.Line:
-                    AddIcon(GameManager.instance.currentIconCollection.lineVert);
-                    AddIcon(GameManager.instance.currentIconCollection.lineDia);
-                    break;
-                case Action.Shape.Arc:
-                    AddIcon(GameManager.instance.currentIconCollection.arcVert);
-                    AddIcon(GameManager.instance.currentIconCollection.arcDia);
-                    break;
-                case Action.Shape.Cone:
-                    AddIcon(GameManager.instance.currentIconCollection.coneVert);
-                    AddIcon(GameManager.instance.currentIconCollection.coneDia);
-                    break;
-                case Action.Shape.Area:
-                    AddIcon(GameManager.instance.currentIconCollection.box);
-                    break;
-                case Action.Shape.Pulse:
-                    AddIcon(GameManager.instance.currentIconCollection.selfBox);
-                    break;
-            } */
-        }
-        if (actionCheck.guessAction.outcomeSet)
-        {
-            /* Rewrite as dictionary
-            if (actionCheck.guessAction.actionType == Action.ActionType.Attack || actionCheck.guessAction.actionType == Action.ActionType.AttackDebuff)
-            {
-                switch (actionCheck.guessAction.damageType)
-                {
-                    case Character.DamageTypes.Cutting:
-                        AddIcon(GameManager.instance.currentIconCollection.cutting);
-                        break;
-                    case Character.DamageTypes.Crushing:
-                        AddIcon(GameManager.instance.currentIconCollection.crushing);
-                        break;
-                    case Character.DamageTypes.Piercing:
-                        AddIcon(GameManager.instance.currentIconCollection.piercing);
-                        break;
-                    case Character.DamageTypes.Acid:
-                        AddIcon(GameManager.instance.currentIconCollection.acid);
-                        break;
-                    case Character.DamageTypes.Fire:
-                        AddIcon(GameManager.instance.currentIconCollection.fire);
-                        break;
-                    case Character.DamageTypes.Poison:
-                        AddIcon(GameManager.instance.currentIconCollection.poison);
-                        break;
-                    case Character.DamageTypes.Cold:
-                        AddIcon(GameManager.instance.currentIconCollection.cold);
-                        break;
-                }
-            }
-            else if (actionCheck.guessAction.actionType == Action.ActionType.Healing || actionCheck.guessAction.actionType == Action.ActionType.HealingBuff)
-            {
-                AddIcon(GameManager.instance.currentIconCollection.healing);
-            }
-            if (actionCheck.guessAction.actionType == Action.ActionType.AttackDebuff || actionCheck.guessAction.actionType == Action.ActionType.Debuff)
-            {
-                switch (actionCheck.guessAction.debuff.debuffType)
-                {
-                    case Debuff.DebuffType.Control:
-                        switch (actionCheck.guessAction.debuff.controlType)
-                        {
-                            case Debuff.ControlType.Blind:
-                                AddIcon(GameManager.instance.currentIconCollection.blind);
-                                break;
-                            case Debuff.ControlType.Root:
-                                AddIcon(GameManager.instance.currentIconCollection.root);
-                                break;
-                            case Debuff.ControlType.Slow:
-                                AddIcon(GameManager.instance.currentIconCollection.slow);
-                                break;
-                        }
-                        break;
-                    case Debuff.DebuffType.DamageOverTime:
-                        switch (actionCheck.guessAction.debuff.damageType)
-                        {
-                            case Character.DamageTypes.Cutting:
-                                AddIcon(GameManager.instance.currentIconCollection.cutting);
-                                break;
-                            case Character.DamageTypes.Crushing:
-                                AddIcon(GameManager.instance.currentIconCollection.crushing);
-                                break;
-                            case Character.DamageTypes.Piercing:
-                                AddIcon(GameManager.instance.currentIconCollection.piercing);
-                                break;
-                            case Character.DamageTypes.Acid:
-                                AddIcon(GameManager.instance.currentIconCollection.acidDebuff);
-                                break;
-                            case Character.DamageTypes.Fire:
-                                AddIcon(GameManager.instance.currentIconCollection.burning);
-                                break;
-                            case Character.DamageTypes.Poison:
-                                AddIcon(GameManager.instance.currentIconCollection.poisonDebuff);
-                                break;
-                            case Character.DamageTypes.Cold:
-                                AddIcon(GameManager.instance.currentIconCollection.cold);
-                                break;
-                        }
-                        break;
-                }
-            }
-            if (actionCheck.guessAction.actionType == Action.ActionType.Buff || actionCheck.guessAction.actionType == Action.ActionType.HealingBuff)
-            {
-                switch (actionCheck.guessAction.buff.buffType)
-                {
-                    case Buff.BuffType.Armor:
-                        AddIcon(GameManager.instance.currentIconCollection.armor);
-                        break;
-                    case Buff.BuffType.Dodge:
-                        AddIcon(GameManager.instance.currentIconCollection.dodge);
-                        break;
-                }
-            }*/
-        }
+        if (actionCheck.informationConfirmed) background.color = confirmedColor;
+        else background.color = Color.white;
     }
 
     public void AddIcon(Sprite sprite)

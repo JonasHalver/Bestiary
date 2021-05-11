@@ -1093,7 +1093,8 @@ public class CombatAction : Action
         card.CreateCard();
         origin.actionCooldowns[action] = action.cooldown;
         origin.lastCombatAction = null;
-        if (origin.entry != null)
+
+        if (origin.entry.CheckByOrigin(action) != null)
         {
             if (origin.entry.CheckByOrigin(action).informationCorrect)
             {
@@ -1102,6 +1103,8 @@ public class CombatAction : Action
                 ActionInformationConfirmed.Invoke(origin.entry.CheckByOrigin(action));
             }
         }
+        
+        
         CombatManager.threat[origin] = threatValue;
     }
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   actionCode: dryadvinewrath
   description: 
   monsterAI: {fileID: 0}
-  actionDescription: ducks down low
+  actionDescription: steps from side to side
   descriptionIndex: 9
   cooldown: 1
   minimumHits: 1
@@ -47,14 +47,16 @@ MonoBehaviour:
     towards: 0
     difficulty: 0
     affectedGroup: 1
+    origin: {fileID: 0}
   - output: 2
     value: 1
-    condition: 17
+    condition: 9
     critical: 0
     damageType: 0
     towards: 0
     difficulty: 0
     affectedGroup: 1
+    origin: {fileID: 0}
   secondaryTargeting: 0
   secondaryShape: 2
   secondaryTargetGroup: 1

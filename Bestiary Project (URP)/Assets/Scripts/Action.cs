@@ -175,7 +175,7 @@ public class Action : ScriptableObject
     public List<ContextInfo> primaryContext = new List<ContextInfo>();
     [Tooltip("What the primary action targets.")]
     public Targeting primaryTargeting = Targeting.Character;
-    public Shape primaryShape = Shape.Melee;
+    public Shape primaryShape = Shape.None;
     public TargetGroup primaryTargetGroup = TargetGroup.Enemies;
     [Tooltip("Output of the primary action.")]
     public List<OutputInfo> primaryOutput = new List<OutputInfo>();
@@ -183,7 +183,7 @@ public class Action : ScriptableObject
     [Header("Secondary effect")]
     [Tooltip("What the secondary action targets.")]
     public Targeting secondaryTargeting = Targeting.Character;
-    public Shape secondaryShape = Shape.Self;
+    public Shape secondaryShape = Shape.None;
     public TargetGroup secondaryTargetGroup = TargetGroup.Allies;
     public enum Output { Damage, Healing, Condition, Movement }
     public List<OutputInfo> secondaryOutput = new List<OutputInfo>();
@@ -1141,6 +1141,9 @@ public class ContextInfo
         }
         return flag;
     }
+
+    // Cloning
+
     public void ResetInformation()
     {
         value = 0;

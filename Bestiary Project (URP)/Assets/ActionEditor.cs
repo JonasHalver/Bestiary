@@ -32,6 +32,8 @@ public class ActionEditor : MonoBehaviour
     public TextMeshProUGUI buttonText;
 
     public HorizontalLayoutGroup hlg1, hlg2;
+    private bool firstTenFrames = false;
+    private int framecount = 0;
 
     private Dictionary<Action.Context, ActionNode> contextNodes = new Dictionary<Action.Context, ActionNode>();
     private void Awake()
@@ -86,7 +88,10 @@ public class ActionEditor : MonoBehaviour
         {
             n[i].AddToLists();
         }
-        foreach(ActionNode an in n)
+        LoadPreviousSetup(n);
+        LogBuilder();
+        #region Old solution
+        /*foreach(ActionNode an in n)
         {            
             switch (Book.currentEntry.activeAction.nodeParents[an])
             {
@@ -158,7 +163,8 @@ public class ActionEditor : MonoBehaviour
             {
                 contextNodes.Add(an.actionContext.context, an);
             }
-        }
+        }*/
+        #endregion
         ActionCheck ac = Book.currentEntry.activeAction;
         if (ac.guessAction != null)
         {
@@ -174,6 +180,7 @@ public class ActionEditor : MonoBehaviour
                 st.activeIndex = (int)ac.guessAction.secondaryTargeting;
             }
         }
+        /*
         for (int i = 0; i < ac.guessAction.primaryOutput.Count; i++)
         {
             switch (ac.guessAction.primaryOutput[i].output)
@@ -193,11 +200,107 @@ public class ActionEditor : MonoBehaviour
                     break;
                 default: break;
             }
-        }
+        }*/
         nameInput.text = Book.currentEntry.activeAction.guessAction.actionName;
         CompareActionInformation();
         StartCoroutine(DelayLayoutDisable());
     }
+
+    private void LoadPreviousSetup(ActionNode[] nodes)
+    {
+        for (int i = 0; i < guessAction.primaryContext.Count; i++)
+        {
+            foreach(ActionNode n in nodes)
+            {
+                if (n.nodeType == ActionNode.NodeType.Context)
+                {
+                    if (n.actionContext.context == guessAction.primaryContext[i].context)
+                    {
+                        n.actionContext = guessAction.primaryContext[i];
+                        n.Relocate(collectionHolder, editHolder, Vector3.zero);
+                        break;
+                    }
+                }
+            }
+        }
+        if (guessAction.primaryShape != Action.Shape.None)
+        {
+            foreach(ActionNode n in nodes)
+            {
+                if (n.nodeType == ActionNode.NodeType.Shape)
+                {
+                    if (n.actionShape == guessAction.primaryShape)
+                    {
+                        n.Relocate(collectionHolder, editHolder, Vector3.zero);
+                        break;
+                    }
+                }
+            }
+        }
+        if (guessAction.primaryOutput.Count > 0)
+        {
+            primaryTargetGroup = guessAction.primaryOutput[0].affectedGroup;
+        }
+        for (int i = 0; i < guessAction.primaryOutput.Count; i++)
+        {
+            foreach(ActionNode n in nodes)
+            {
+                if (n.nodeType == ActionNode.NodeType.Output)
+                {
+                    if (n.actionOutput.output == guessAction.primaryOutput[i].output)
+                    {
+                        n.actionOutput = new OutputInfo(guessAction.primaryOutput[i]);
+                        n.Relocate(collectionHolder, editHolder, Vector3.zero);
+                        break;
+                    }
+                }
+            }
+        }
+        if (guessAction.secondaryShape != Action.Shape.None)
+        {
+            foreach (ActionNode n in nodes)
+            {
+                if (n.nodeType == ActionNode.NodeType.Shape)
+                {
+                    if (n.actionShape == guessAction.secondaryShape)
+                    {
+                        n.Relocate(collectionHolder, secondEditHolder, Vector3.zero);
+                        break;
+                    }
+                }
+            }
+        }
+        if (guessAction.secondaryOutput.Count > 0)
+        {
+            secondaryTargetGroup = guessAction.secondaryOutput[0].affectedGroup;
+        }
+        for (int i = 0; i < guessAction.secondaryOutput.Count; i++)
+        {
+            foreach (ActionNode n in nodes)
+            {
+                if (n.nodeType == ActionNode.NodeType.Output)
+                {
+                    if (n.actionOutput.output == guessAction.secondaryOutput[i].output)
+                    {
+                        n.actionOutput = new OutputInfo(guessAction.secondaryOutput[i]);
+                        n.Relocate(collectionHolder, secondEditHolder, Vector3.zero);
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < nodes.Length; i++)
+        {
+            if (Book.currentEntry.activeAction.nodeParents.ContainsKey(nodes[i]))
+            {
+                if (Book.currentEntry.activeAction.nodeParents[nodes[i]] == ActionNode.WindowType.Discard)
+                {
+                    nodes[i].Relocate(collectionHolder, discardHolder, Book.currentEntry.activeAction.nodePositions[nodes[i]]);
+                }
+            }
+        }
+    }
+
     IEnumerator DelayLayoutDisable()
     {
         yield return null;
@@ -231,6 +334,11 @@ public class ActionEditor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!firstTenFrames)
+        {
+            framecount++;
+            if (framecount >= 10) firstTenFrames = true;
+        }
         if (nameInput.text != null) Book.currentEntry.activeAction.guessAction.actionName = nameInput.text;
         else Book.currentEntry.activeAction.guessAction.actionName = "Unnamed Action";
         if (Book.currentEntry.activeAction.guessAction.descriptionSet)
@@ -241,6 +349,10 @@ public class ActionEditor : MonoBehaviour
         else
         {
             buttonText.text = "Warning Movement";
+        }
+        if (action == null)
+        {
+            if (Book.currentEntry.activeAction.originalAction != null) action = Book.currentEntry.activeAction.originalAction;
         }
     }
     public void EditingName(bool editing)
@@ -282,27 +394,44 @@ public class ActionEditor : MonoBehaviour
 
     public void CompareActionInformation()
     {
+        if (!firstTenFrames) return;
         print("updating information");
         outputGuessesPrimary.Clear();
         contextGuessesPrimary.Clear();
         primaryShapes.Clear();
+
+        // Clear Guessaction information
+        guessAction.primaryContext.Clear();
+        guessAction.primaryShape = Action.Shape.None;
+        guessAction.primaryOutput.Clear();
+        guessAction.secondaryShape = Action.Shape.None;
+        guessAction.secondaryOutput.Clear();
         int outputCorrectCount = 0;
         int contextCorrectCount = 0;
         ActionNode node = null;
+        bool primaryShapeFound = false;
+        bool secondaryShapeFound = false;
         for (int i = 0; i < editHolder.childCount; i++)
         {
             node = editHolder.GetChild(i).GetComponent<ActionNode>();
-            if (node.nodeType == ActionNode.NodeType.Context) contextGuessesPrimary.Add(node.actionContext);
+            if (node.nodeType == ActionNode.NodeType.Context)
+            {
+                contextGuessesPrimary.Add(node.actionContext);
+                guessAction.primaryContext.Add(node.actionContext);
+            }
             else if (node.nodeType == ActionNode.NodeType.Shape)
             {
+                primaryShapeFound = true;
                 primaryShapes.Add(node.actionShape);
+                guessAction.primaryShape = node.actionShape;
                 if (primaryShapes.Count > 1) node.Error("Each effect can only have one shape.");
             }
             else
             {
+                node.actionOutput.affectedGroup = primaryTargetGroup;
                 outputGuessesPrimary.Add(node.actionOutput);
                 bool damage = false, healing = false;
-                for (int j = 0; j < outputGuessesPrimary.Count-1; j++)
+                for (int j = 0; j < outputGuessesPrimary.Count - 1; j++)
                 {
                     if (outputGuessesPrimary[j].output == node.actionOutput.output && outputGuessesPrimary[j].output != Action.Output.Condition)
                     {
@@ -318,11 +447,12 @@ public class ActionEditor : MonoBehaviour
                             node.Error("An effect cannot heal and deal damage. Consider using splitting them into the primary and secondary effect.");
                         }
                     }
-
-                    outputGuessesPrimary[j].affectedGroup = primaryTargetGroup;
+                    
                 }
+                guessAction.primaryOutput.Add(outputGuessesPrimary[outputGuessesPrimary.Count - 1]);
             }
         }
+        if (!primaryShapeFound) guessAction.primaryShape = Action.Shape.None;
         //if (primaryShapes.Count == 1 && primaryShapes[0] == action.primaryShape) print("Primary shape correct");
         CheckIncompatibility(contextGuessesPrimary);
 
@@ -337,7 +467,9 @@ public class ActionEditor : MonoBehaviour
             if (node.nodeType == ActionNode.NodeType.Context) node.Error("The secondary effect uses the context of the primary effect. Only place Shape and Output nodes here.");
             else if (node.nodeType == ActionNode.NodeType.Shape)
             {
+                secondaryShapeFound = true;
                 secondaryShapes.Add(node.actionShape);
+                guessAction.secondaryShape = node.actionShape;
                 if (secondaryShapes.Count > 1)
                 {
                     node.Error("Each effect can only have one shape.");
@@ -346,7 +478,7 @@ public class ActionEditor : MonoBehaviour
             else
             {
                 bool damage = false, healing = false;
-
+                node.actionOutput.affectedGroup = secondaryTargetGroup;
                 outputGuessesSecondary.Add(node.actionOutput);
                 for (int j = 0; j < outputGuessesSecondary.Count - 1; j++)
                 {
@@ -354,7 +486,6 @@ public class ActionEditor : MonoBehaviour
                     {
                         node.Error("Each effect can only have one of each type of output, except for conditions.");
                     }
-                    outputGuessesSecondary[j].affectedGroup = secondaryTargetGroup;
                     damage = outputGuessesSecondary[j].output == Action.Output.Damage;
                     healing = outputGuessesSecondary[j].output == Action.Output.Healing;
 
@@ -366,8 +497,10 @@ public class ActionEditor : MonoBehaviour
                         }
                     }
                 }
+                guessAction.secondaryOutput.Add(outputGuessesSecondary[outputGuessesSecondary.Count - 1]);
             }
         }
+        if (!secondaryShapeFound) guessAction.secondaryShape = Action.Shape.None;
         //}
 
         LogBuilder();
@@ -375,74 +508,65 @@ public class ActionEditor : MonoBehaviour
         // Comparison
         if (action == null) return;
         print("running comparison");
-        for (int i = 0; i < contextGuessesPrimary.Count; i++)
+        for (int i = 0; i < guessAction.primaryContext.Count; i++)
         {
             for (int j = 0; j < action.primaryContext.Count; j++)
             {
-                if (contextGuessesPrimary[i].Match(action.primaryContext[j])) contextCorrectCount++;
+                if (guessAction.primaryContext[i].Match(action.primaryContext[j])) contextCorrectCount++;
             }
         }
-        for (int i = 0; i < outputGuessesPrimary.Count; i++)
+        for (int i = 0; i < guessAction.primaryOutput.Count; i++)
         {
             for (int j = 0; j < action.primaryOutput.Count; j++)
             {
-                if (outputGuessesPrimary[i].Match(action.primaryOutput[j])) outputCorrectCount++;
+                if (guessAction.primaryOutput[i].Match(action.primaryOutput[j])) outputCorrectCount++;
             }
         }
         bool primaryNodesCorrect = false;
-        if (contextCorrectCount == action.primaryContext.Count || outputCorrectCount == action.primaryOutput.Count) primaryNodesCorrect = true;
-        
+        if (contextCorrectCount == action.primaryContext.Count && outputCorrectCount == action.primaryOutput.Count) primaryNodesCorrect = true;
+        print($"{guessAction.primaryContext.Count} contexts on guess, {action.primaryContext.Count} on actual");
+        print($"{guessAction.primaryOutput.Count} outputs on guess, {action.primaryOutput.Count} on actual");
+        print($"{primaryNodesCorrect}, with {contextCorrectCount}/{action.primaryContext.Count} contexts, and {outputCorrectCount}/{action.primaryOutput.Count} outputs.");
 
-        
         outputCorrectCount = 0;
-        //if (guessAction.secondaryTargetGroup == action.secondaryTargetGroup) print("Secondary target group correct");
-        //if (guessAction.secondaryTargeting == action.secondaryTargeting) print("Secondary targeting correct");
-        
-        
-        //if (secondaryShapes.Count == 1 && secondaryShapes[0] == action.secondaryShape) print("Secondary shape correct");
 
-        for (int i = 0; i < outputGuessesSecondary.Count; i++)
+        for (int i = 0; i < guessAction.secondaryOutput.Count; i++)
         {
             for (int j = 0; j < action.secondaryOutput.Count; j++)
             {
-                if (outputGuessesSecondary[i].Match(action.secondaryOutput[j])) outputCorrectCount++;
+                if (guessAction.secondaryOutput[i].Match(action.secondaryOutput[j])) outputCorrectCount++;
             }
         }
         bool secondaryNodesCorrect = false;
         if (outputCorrectCount == action.secondaryOutput.Count) secondaryNodesCorrect = true;
 
-        // Setting guess action info
-        guessAction.primaryOutput.Clear();
-        guessAction.secondaryOutput.Clear();
-        guessAction.primaryContext.Clear();
-        for (int i = 0; i < contextGuessesPrimary.Count; i++)
-        {
-            guessAction.primaryContext.Add(contextGuessesPrimary[i]);
-        }
-        for (int i = 0; i < outputGuessesPrimary.Count; i++)
-        {
-            guessAction.primaryOutput.Add(outputGuessesPrimary[i]);
-        }
-        for (int i = 0; i < outputGuessesSecondary.Count; i++)
-        {
-            guessAction.secondaryOutput.Add(outputGuessesSecondary[i]);
-        }
-
         // Check primary
         if (guessAction.descriptionIndex != action.descriptionIndex) return;
-        if (primaryShapes.Count != 1 || primaryShapes[0] != action.primaryShape) return;
+        print("description index correct");
+        if (primaryShapes.Count != 1 || guessAction.primaryShape != action.primaryShape) return;
+        print("primary shape correct");
         if (!primaryNodesCorrect) return;
+        print("primary nodes correct");
         if (guessAction.primaryOutput.Count > 0)
-            if (guessAction.primaryOutput[0].affectedGroup != action.primaryOutput[0].affectedGroup) return;
-            else return;
+        {
+            if (guessAction.primaryOutput[0].affectedGroup != action.primaryOutput[0].affectedGroup)
+            {
+                return;
+            }
+            print("affected group correct");
+        }
+        else return;
+        print("primary output correct");
         if (guessAction.primaryTargeting != action.primaryTargeting) return;
+        print("primary targeting correct");
         if (guessAction.cooldown != action.cooldown) return;
+        print("cooldown correct");
 
         // Check secondary
         if (action.secondaryOutput.Count > 0)
         {
             if (!secondaryNodesCorrect) return;
-            if (secondaryShapes.Count != 1 || secondaryShapes[0] != action.secondaryShape) return;
+            if (secondaryShapes.Count != 1 || guessAction.secondaryShape != action.secondaryShape) return;
             if (guessAction.secondaryTargeting != action.secondaryTargeting) return;
             if (guessAction.secondaryOutput[0].affectedGroup != action.secondaryOutput[0].affectedGroup) return;
         }
@@ -482,12 +606,12 @@ public class ActionEditor : MonoBehaviour
         bool flag1 = false, flag2 = false;
         Log elements = GameManager.instance.logElementCollection;
 
-        if (outputGuessesPrimary.Count == 0 || contextGuessesPrimary.Count == 0 || primaryShapes.Count == 0 || guessAction.descriptionIndex == -1)
+        if (guessAction.primaryOutput.Count == 0 || guessAction.primaryContext.Count == 0 || guessAction.primaryShape == Action.Shape.None || guessAction.descriptionIndex == -1)
         {
             guessAction.targetingSet = false;
-            log.Append($"Add at least 1 <b><color={(contextGuessesPrimary.Count > 0 ? "#015400" : "red")}>Context</color></b>, 1 " +
-                $"<b><color={(primaryShapes.Count > 0 ? "#015400" : "red")}>Shape</color></b>, " +
-                $"and 1 <b><color={(outputGuessesPrimary.Count > 0 ? "#015400" : "red")}>Output</color></b>, " +
+            log.Append($"Add at least 1 <b><color={(guessAction.primaryContext.Count > 0 ? "#015400" : "red")}>Context</color></b>, 1 " +
+                $"<b><color={(guessAction.primaryShape != Action.Shape.None ? "#015400" : "red")}>Shape</color></b>, " +
+                $"and 1 <b><color={(guessAction.primaryOutput.Count > 0 ? "#015400" : "red")}>Output</color></b>, " +
                 $"and set the <b><color={(guessAction.descriptionIndex > -1 ? "#015400" : "red")}>Warning Movement</color></b> for this action to be valid.");
             logTest.text = log.ToString();
             Book.currentEntry.activeAction.guessAction.description = "This action lacks information. Click here to add it.";
@@ -496,76 +620,76 @@ public class ActionEditor : MonoBehaviour
         else guessAction.targetingSet = true;
 
         log.Append("If the monster ");
-        if (outputGuessesPrimary.Count> 0)
+        if (guessAction.primaryOutput.Count > 0)
         {
-            outputGuessesPrimary.Sort((g1, g2) => g1.output.CompareTo(g2.output));
+            guessAction.primaryOutput.Sort((g1, g2) => g1.output.CompareTo(g2.output));
         }
-        if (outputGuessesSecondary.Count>0)
+        if (guessAction.secondaryOutput.Count>0)
         {
-            outputGuessesSecondary.Sort((g1, g2) => g1.output.CompareTo(g2.output));
+            guessAction.secondaryOutput.Sort((g1, g2) => g1.output.CompareTo(g2.output));
         }
-        if (contextGuessesPrimary.Count > 0)
+        if (guessAction.primaryContext.Count > 0)
         {
-            for (int i = 0; i < contextGuessesPrimary.Count; i++)
+            for (int i = 0; i < guessAction.primaryContext.Count; i++)
             {
-                if (i != 0 && i == contextGuessesPrimary.Count - 1) log.Append("and ");
-                switch (contextGuessesPrimary[i].context)
+                if (i != 0 && i == guessAction.primaryContext.Count - 1) log.Append("and ");
+                switch (guessAction.primaryContext[i].context)
                 {
                     default:
-                        log.Append(elements.GetString(contextGuessesPrimary[i].context));
+                        log.Append(elements.GetString(guessAction.primaryContext[i].context));
                         break;
                     case Action.Context.AllyHasSpecificCondition:
                     case Action.Context.EnemyHasSpecificCondition:
                     case Action.Context.SelfHasSpecificCondition:
-                        log.Append(elements.GetString(contextGuessesPrimary[i].context, contextGuessesPrimary[i].condition));
+                        log.Append(elements.GetString(guessAction.primaryContext[i].context, guessAction.primaryContext[i].condition));
                         break;
                     case Action.Context.TookDamageOfType:
-                        log.Append(elements.GetString(contextGuessesPrimary[i].context, contextGuessesPrimary[i].damageType));
+                        log.Append(elements.GetString(guessAction.primaryContext[i].context, guessAction.primaryContext[i].damageType));
                         break;
                 }
                 log.Append(", ");
             }
         }
         log.Append("the monster ").Append(guessAction.actionDescription).Append(", showing that it will ");
-        if (outputGuessesPrimary.Count > 0)
+        if (guessAction.primaryOutput.Count > 0)
         {
-            if (outputGuessesPrimary.Count == 1 && outputGuessesPrimary[0].output == Action.Output.Movement)
+            if (guessAction.primaryOutput.Count == 1 && guessAction.primaryOutput[0].output == Action.Output.Movement)
             {
                 log.Append("target ");
                 flag1 = true;
             }
-            else if (outputGuessesPrimary.Count > 1 && outputGuessesPrimary[outputGuessesPrimary.Count-1].output == Action.Output.Movement)
+            else if (guessAction.primaryOutput.Count > 1 && guessAction.primaryOutput[guessAction.primaryOutput.Count-1].output == Action.Output.Movement)
             {
                 flag1 = true;
             }
-            for (int i = 0; i < outputGuessesPrimary.Count; i++)
+            for (int i = 0; i < guessAction.primaryOutput.Count; i++)
             {
                 if (!flag1)
                 {
-                    if (i != 0 && i == outputGuessesPrimary.Count - 1) log.Append("and ");
+                    if (i != 0 && i == guessAction.primaryOutput.Count - 1) log.Append("and ");
                 }
                 else
                 {
-                    if (i != 0 && i == outputGuessesPrimary.Count - 2) log.Append("and ");
+                    if (i != 0 && i == guessAction.primaryOutput.Count - 2) log.Append("and ");
                 }
-                switch (outputGuessesPrimary[i].output)
+                switch (guessAction.primaryOutput[i].output)
                 {
                     case Action.Output.Damage:
-                        log.Append(elements.GetString(outputGuessesPrimary[i].output, outputGuessesPrimary[i].damageType, outputGuessesPrimary[i].critical));
+                        log.Append(elements.GetString(guessAction.primaryOutput[i].output, guessAction.primaryOutput[i].damageType, guessAction.primaryOutput[i].critical));
                         break;
                     case Action.Output.Healing:
-                        log.Append(elements.GetString(outputGuessesPrimary[i].output, outputGuessesPrimary[i].value));
+                        log.Append(elements.GetString(guessAction.primaryOutput[i].output, guessAction.primaryOutput[i].value));
                         break;
                     case Action.Output.Condition:
-                        log.Append(elements.GetString(outputGuessesPrimary[i].output, outputGuessesPrimary[i].condition, outputGuessesPrimary[i].value));
+                        log.Append(elements.GetString(guessAction.primaryOutput[i].output, guessAction.primaryOutput[i].condition, guessAction.primaryOutput[i].value));
                         break;
                     case Action.Output.Movement:
-                        primaryMove = outputGuessesPrimary[i];                        
+                        primaryMove = guessAction.primaryOutput[i];                        
                         break;
                 }
                 if (!flag1)
                 {
-                    if (i != outputGuessesPrimary.Count - 1)
+                    if (i != guessAction.primaryOutput.Count - 1)
                     {
                         log.Append(", ");
                     }
@@ -576,20 +700,20 @@ public class ActionEditor : MonoBehaviour
                 }
                 else
                 {
-                    if (i != outputGuessesPrimary.Count - 2 && i != outputGuessesPrimary.Count-1)
+                    if (i != guessAction.primaryOutput.Count - 2 && i != guessAction.primaryOutput.Count-1)
                     {
                         log.Append(", ");
                     }
-                    else if (i != outputGuessesPrimary.Count-1)
+                    else if (i != guessAction.primaryOutput.Count-1)
                     {
                         log.Append(" to ");
                     }
                 }
             }
         }
-        if (primaryShapes.Count == 1)
+        if (guessAction.primaryShape != Action.Shape.None)
         {
-            log.Append(elements.GetString(primaryShapes[0], guessAction.primaryTargetGroup, guessAction.primaryTargeting));
+            log.Append(elements.GetString(guessAction.primaryShape, primaryTargetGroup, guessAction.primaryTargeting));
         }
         if (primaryMove != null)
         {
@@ -598,46 +722,46 @@ public class ActionEditor : MonoBehaviour
             log.Append(elements.GetString(primaryMove.output, primaryMove.value, primaryMove.towards));
         }
         log.Append(".");
-        if (outputGuessesSecondary.Count > 0)
+        if (guessAction.secondaryOutput.Count > 0)
         {
             log.Append(" Then it will ");
-            if (outputGuessesSecondary.Count == 1 && outputGuessesSecondary[0].output == Action.Output.Movement)
+            if (guessAction.secondaryOutput.Count == 1 && guessAction.secondaryOutput[0].output == Action.Output.Movement)
             {
                 log.Append("target ");
                 flag2 = true;
             }
-            else if (outputGuessesSecondary.Count > 1 && outputGuessesSecondary[outputGuessesSecondary.Count - 1].output == Action.Output.Movement)
+            else if (guessAction.secondaryOutput.Count > 1 && guessAction.secondaryOutput[guessAction.secondaryOutput.Count - 1].output == Action.Output.Movement)
             {
                 flag2 = true;
             }
-            for (int i = 0; i < outputGuessesSecondary.Count; i++)
+            for (int i = 0; i < guessAction.secondaryOutput.Count; i++)
             {
                 if (!flag2)
                 {
-                    if (i != 0 && i == outputGuessesSecondary.Count - 1) log.Append("and ");
+                    if (i != 0 && i == guessAction.secondaryOutput.Count - 1) log.Append("and ");
                 }
                 else
                 {
-                    if (i != 0 && i == outputGuessesSecondary.Count - 2) log.Append("and ");
+                    if (i != 0 && i == guessAction.secondaryOutput.Count - 2) log.Append("and ");
                 }
-                switch (outputGuessesSecondary[i].output)
+                switch (guessAction.secondaryOutput[i].output)
                 {
                     case Action.Output.Damage:
-                        log.Append(elements.GetString(outputGuessesSecondary[i].output, outputGuessesSecondary[i].damageType, outputGuessesSecondary[i].critical));
+                        log.Append(elements.GetString(guessAction.secondaryOutput[i].output, guessAction.secondaryOutput[i].damageType, guessAction.secondaryOutput[i].critical));
                         break;
                     case Action.Output.Healing:
-                        log.Append(elements.GetString(outputGuessesSecondary[i].output, outputGuessesSecondary[i].value));
+                        log.Append(elements.GetString(guessAction.secondaryOutput[i].output, guessAction.secondaryOutput[i].value));
                         break;
                     case Action.Output.Condition:
-                        log.Append(elements.GetString(outputGuessesSecondary[i].output, outputGuessesSecondary[i].condition, outputGuessesSecondary[i].value));
+                        log.Append(elements.GetString(guessAction.secondaryOutput[i].output, guessAction.secondaryOutput[i].condition, guessAction.secondaryOutput[i].value));
                         break;
                     case Action.Output.Movement:
-                        secondaryMove = outputGuessesSecondary[i];
+                        secondaryMove = guessAction.secondaryOutput[i];
                         break;
                 }
                 if (!flag2)
                 {
-                    if (i != outputGuessesSecondary.Count - 1)
+                    if (i != guessAction.secondaryOutput.Count - 1)
                     {
                         log.Append(", ");
                     }
@@ -648,19 +772,19 @@ public class ActionEditor : MonoBehaviour
                 }
                 else
                 {
-                    if (i != outputGuessesSecondary.Count - 2 && i != outputGuessesSecondary.Count - 1)
+                    if (i != guessAction.secondaryOutput.Count - 2 && i != guessAction.secondaryOutput.Count - 1)
                     {
                         log.Append(", ");
                     }
-                    else if (i != outputGuessesSecondary.Count - 1)
+                    else if (i != guessAction.secondaryOutput.Count - 1)
                     {
                         log.Append(" to ");
                     }
                 }
             }
-            if (secondaryShapes.Count == 1)
+            if (guessAction.secondaryShape != Action.Shape.None)
             {
-                log.Append(elements.GetString(secondaryShapes[0], guessAction.secondaryTargetGroup, guessAction.secondaryTargeting));
+                log.Append(elements.GetString(guessAction.secondaryShape, secondaryTargetGroup, guessAction.secondaryTargeting));
             }
             if (secondaryMove != null)
             {

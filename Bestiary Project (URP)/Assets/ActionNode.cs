@@ -51,7 +51,9 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public static event System.Action NodeChanged;
 
     public Color bgShape, bgContext, bgOutput;
-    [HideInInspector] public ActionNode cloneOriginal;
+    public ActionNode cloneOriginal;
+    public List<ActionNode> clones = new List<ActionNode>();
+    public bool isTheOriginal = true;
 
     public Animator Animator
     {
@@ -155,7 +157,16 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         else
         {
             if (transform.parent.name != "Content") transform.parent = originalWindow;
-            if (!InEditor) blend = 0;
+            if (!InEditor)
+            {
+                blend = 0;
+                //LineManager.Instance.SeverConnections(this);
+                actionContext.ResetInformation();
+                actionOutput.ResetInformation();
+                hasBeenEdited = false;
+                isBig = false;
+                ResetIcons();
+            }
         }
         Animator.SetFloat("Blend", blend);
         if (InEditor && !error)
@@ -164,14 +175,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         else if (InEditor && error) attn.SetActive(true);
         else attn.SetActive(false);
-        if (!InEditor)
-        {
-            //LineManager.Instance.SeverConnections(this);
-            actionContext.ResetInformation();
-            actionOutput.ResetInformation();
-            hasBeenEdited = false;
-            ResetIcons();
-        }
+        
     }
 
     private void Selected()
@@ -234,7 +238,10 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     private void OnDeselect()
     {
         selected = false;
+        Relocate(originalWindow, window, transform.position);
+        return;
 
+        #region bad solution
         if (nodeType == NodeType.Output || nodeType == NodeType.Shape)
         {
             if (window != null)
@@ -430,22 +437,566 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             ResetIcons();
         }
         NodeChanged.Invoke();
+        #endregion
     }
-    public void Clone(Vector3 position, Transform parent, OutputInfo oi)
+    public void Relocate(Transform startWindow, Transform endWindow, Vector3 position)
+    {
+        if (endWindow == null)
+        {
+            transform.parent = startWindow;
+            transform.position = originalLocation != null ? originalLocation : Vector2.zero;
+            GetComponent<Image>().raycastTarget = true;
+            if (!InEditor)
+            {
+                //LineManager.Instance.SeverConnections(this);
+                actionContext.ResetInformation();
+                actionOutput.ResetInformation();
+                hasBeenEdited = false;
+                ResetIcons();
+            }
+            NodeChanged.Invoke();
+            return;
+        }
+        WindowType start = WindowType.Collection, end = WindowType.Collection;
+        if (startWindow.parent.parent.parent.name.Contains("Edit1")) start = WindowType.Edit1;
+        else if (startWindow.parent.parent.parent.name.Contains("Edit2")) start = WindowType.Edit2;
+        else if (startWindow.parent.parent.parent.name.Contains("Collection")) start = WindowType.Collection;
+        else start = WindowType.Discard;
+        if (endWindow.parent.parent.parent.name.Contains("Edit1")) end = WindowType.Edit1;
+        else if (endWindow.parent.parent.parent.name.Contains("Edit2")) end = WindowType.Edit2;
+        else if (endWindow.parent.parent.parent.name.Contains("Collection")) end = WindowType.Collection;
+        else end = WindowType.Discard;
+
+        switch (start)
+        {
+            case WindowType.Collection:
+                switch (end)
+                {
+                    case WindowType.Collection:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit1:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                ResetIcons();
+                                StartCoroutine(Expand(true));
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, actionOutput).Relocate(startWindow, endWindow, position);
+                                    ResetIcons();
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, null).Relocate(startWindow, endWindow, position);
+                                    ResetIcons();
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit2:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                ResetIcons();
+                                StartCoroutine(Expand(true));
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, actionOutput).Relocate(startWindow, endWindow, position);
+                                    ResetIcons();
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, actionOutput).Relocate(startWindow, endWindow, position);
+                                    ResetIcons();
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                        }
+                        break;
+                    case WindowType.Discard:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                        }
+                        break;                    
+                }
+                break;
+            case WindowType.Edit1:
+                switch (end)
+                {
+                    case WindowType.Collection:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                cloneOriginal.clones.Remove(this);
+                                cloneOriginal.actionContext.ResetInformation();
+                                cloneOriginal.actionOutput.ResetInformation();
+                                cloneOriginal.hasBeenEdited = false;
+                                cloneOriginal.ResetIcons();
+                                Destroy(gameObject);
+                                break;
+                            case NodeType.Shape:
+                                cloneOriginal.clones.Remove(this);
+                                cloneOriginal.actionContext.ResetInformation();
+                                cloneOriginal.actionOutput.ResetInformation();
+                                cloneOriginal.hasBeenEdited = false;
+                                cloneOriginal.ResetIcons();
+                                Destroy(gameObject);
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit1:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit2:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Discard:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                        }
+                        break;
+                }
+                break;
+            case WindowType.Edit2:
+                switch (end)
+                {
+                    case WindowType.Collection:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                cloneOriginal.clones.Remove(this);
+                                cloneOriginal.actionContext.ResetInformation();
+                                cloneOriginal.actionOutput.ResetInformation();
+                                cloneOriginal.hasBeenEdited = false;
+                                cloneOriginal.ResetIcons();
+                                Destroy(gameObject);
+                                break;
+                            case NodeType.Shape:
+                                cloneOriginal.clones.Remove(this);
+                                cloneOriginal.actionContext.ResetInformation();
+                                cloneOriginal.actionOutput.ResetInformation();
+                                cloneOriginal.hasBeenEdited = false;
+                                cloneOriginal.ResetIcons();
+                                Destroy(gameObject);
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit1:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit2:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Discard:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                    for (int i = 0; i < clones.Count; i++)
+                                    {
+                                        Destroy(clones[i].gameObject);
+                                        clones.RemoveAt(i);
+                                        i--;
+                                    }
+                                }
+                                else
+                                {
+                                    cloneOriginal.Relocate(startWindow, endWindow, transform.position);
+                                }
+                                break;
+                        }
+                        break;
+                }
+                break;
+            case WindowType.Discard:
+                switch (end)
+                {
+                    case WindowType.Collection:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit1:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, actionOutput).Relocate(startWindow, endWindow, position);
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, null).Relocate(startWindow, endWindow, position);
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                        }
+                        break;
+                    case WindowType.Edit2:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, actionOutput).Relocate(startWindow, endWindow, position);
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                            case NodeType.Shape:
+                                if (isTheOriginal)
+                                {
+                                    transform.parent = ActionEditor.instance.collectionHolder;
+                                    Clone(position, endWindow, null).Relocate(startWindow, endWindow, position);
+                                }
+                                else
+                                {
+                                    transform.parent = endWindow;
+                                    Book.currentEntry.activeAction.nodeParents[this] = end;
+                                    Book.currentEntry.activeAction.nodePositions[this] = position;
+                                }
+                                break;
+                        }
+                        break;
+                    case WindowType.Discard:
+                        switch (nodeType)
+                        {
+                            case NodeType.Context:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Output:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                            case NodeType.Shape:
+                                transform.parent = endWindow;
+                                Book.currentEntry.activeAction.nodeParents[this] = end;
+                                Book.currentEntry.activeAction.nodePositions[this] = position;
+                                break;
+                        }
+                        break;
+                }
+                break;
+        }
+        GetComponent<Image>().raycastTarget = true;
+
+        window = null;
+
+        NodeChanged.Invoke();
+    }
+    public ActionNode Clone(Vector3 position, Transform parent, OutputInfo oi)
     {
         GameObject clone = Instantiate(gameObject, position, Quaternion.identity, parent);
         clone.GetComponent<Image>().raycastTarget = true;
-        clone.GetComponent<ActionNode>().blend = 1;
-        clone.GetComponent<ActionNode>().isBig = true;
-        clone.GetComponent<ActionNode>().cloneOriginal = this;
+        ActionNode an = clone.GetComponent<ActionNode>();
+        an.blend = 1;
+        an.isBig = true;
+        an.isTheOriginal = false;
+        an.cloneOriginal = this;
+        clones.Add(an);
         if (oi != null)
         {
-            clone.GetComponent<ActionNode>().actionOutput = new OutputInfo(oi);
-            clone.GetComponent<ActionNode>().DelaySetIcons();
+            an.actionOutput = new OutputInfo(oi);
+            an.DelaySetIcons();
         }
         NodeChanged.Invoke();
         //Book.currentEntry.activeAction.nodeParents.Add(clone.GetComponent<ActionNode>(), parent.parent.parent.parent.name.Contains("Edit1") ? WindowType.Edit1 : WindowType.Edit2);
         //Book.currentEntry.activeAction.nodePositions.Add(clone.GetComponent<ActionNode>(), position);
+        return an;
     }
     public void DelaySetIcons()
     {
@@ -498,6 +1049,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         secondaryIcon.SetActive(requiresEditing && expand);
         float goal = expand ? 1 : 0;
         float t = 0;
+        isBig = expand;
         while (t < 1)
         {
             blend = Mathf.Lerp(blend, goal, t);
