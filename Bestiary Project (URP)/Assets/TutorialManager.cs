@@ -33,6 +33,7 @@ public class TutorialManager : MonoBehaviour
     public static bool allowBestiary = false;
     public static bool allowCombat = false;
     public static bool showedCharacterDeath = false;
+    public static bool showedBestiary = false;
 
     public static event System.Action ShowGrid;
     public static event System.Action ShowAlly;
@@ -106,6 +107,7 @@ public class TutorialManager : MonoBehaviour
         GameManager.Defeat += Defeat;
         CombatManager.WanderingMonster += WanderingMonster;
         Character.CharacterDeath += CharacterDeath;
+        Book.EntryShown += ShowEntry;
     }
     private void OnDisable()
     {
@@ -118,6 +120,7 @@ public class TutorialManager : MonoBehaviour
         GameManager.Defeat -= Defeat;
         CombatManager.WanderingMonster -= WanderingMonster;
         Character.CharacterDeath -= CharacterDeath;
+        Book.EntryShown -= ShowEntry;
     }
     private void Update()
     {
@@ -244,6 +247,12 @@ public class TutorialManager : MonoBehaviour
         currentSequence = TutorialSequence.BestiaryMonster;
         activeSequence = TutorialSequence.BestiaryMonster;
         TutorialStateMachine();
+    }
+    public void ShowEntry()
+    {
+        if (showedBestiary) return;
+        showedBestiary = true;
+        ForceContinue(true);
     }
     public void ClosedBestiary()
     {
@@ -618,7 +627,7 @@ public class TutorialManager : MonoBehaviour
         switch (index)
         {
             case 0:
-                NextTutorial(tutorialBestiary[index], false, true);
+                NextTutorial(tutorialBestiary[index], false, false);
                 break;
             case 1:
                 NextTutorial(tutorialBestiary[index], false, true);

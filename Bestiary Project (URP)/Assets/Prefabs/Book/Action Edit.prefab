@@ -5633,6 +5633,7 @@ MonoBehaviour:
   collectionHolder: {fileID: 7822652727677165586}
   discardHolder: {fileID: 7822652726990534294}
   nameInput: {fileID: 4038154170682406576}
+  actionDescription: {fileID: 4291128813359008197}
   logTest: {fileID: 7822652728281771373}
   ptg: {fileID: 7822652729090585058}
   pt: {fileID: 7822652729103079330}
@@ -8931,9 +8932,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4291128813359008197}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 7822652727728524942}
+        m_MethodName: WarningMovement
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

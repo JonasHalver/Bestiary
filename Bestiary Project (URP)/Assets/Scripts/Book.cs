@@ -33,6 +33,7 @@ public class Book : MonoBehaviour
 
     public static event System.Action StatsUpdated;
     public static bool openOnMerc = false;
+    public static event System.Action EntryShown;
 
     public enum Chapter { TableOfContents, Current, Monsters, Mercenaries, Glossary, Settings }
     public Chapter currentChapter = Chapter.TableOfContents;
@@ -236,9 +237,11 @@ public class Book : MonoBehaviour
     {
         GameManager.textInput = editing;
     }
+
     public void ChapterChange(int chapter)
     {
         currentChapter = (Chapter)chapter;
+        if (GameManager.tutorial && !TutorialManager.showedBestiary && (currentChapter == Chapter.Current || currentChapter == Chapter.Monsters)) EntryShown.Invoke();
         switch (currentChapter)
         {
             case Chapter.TableOfContents:
@@ -301,12 +304,13 @@ public class Book : MonoBehaviour
     public void PageChange()
     {
         Page openPage = null;
-        print($"changing page to {ActivePageNumber} in {currentChapter}");
+
         switch (currentChapter)
         {
             case Chapter.TableOfContents:
                 if (ActivePageNumber > 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Current;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -314,6 +318,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Settings;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -323,6 +328,7 @@ public class Book : MonoBehaviour
             case Chapter.Current:
                 if (ActivePageNumber >= current.transform.childCount)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Monsters;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -330,6 +336,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.TableOfContents;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -344,6 +351,7 @@ public class Book : MonoBehaviour
             case Chapter.Monsters:
                 if (ActivePageNumber >= monsters.transform.childCount)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Mercenaries;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -351,6 +359,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Current;
                     ActivePageNumber = current.transform.childCount-1;
                     ChapterChange((int)currentChapter);
@@ -365,6 +374,7 @@ public class Book : MonoBehaviour
             case Chapter.Mercenaries:
                 if (ActivePageNumber >= mercenaries.transform.childCount)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Glossary;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -372,6 +382,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Monsters;
                     ActivePageNumber = monsters.transform.childCount - 1;
                     ChapterChange((int)currentChapter);
@@ -386,6 +397,7 @@ public class Book : MonoBehaviour
             case Chapter.Glossary:
                 if (ActivePageNumber >= glossary.transform.childCount)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Settings;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -393,6 +405,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Mercenaries;
                     ActivePageNumber = mercenaries.transform.childCount - 1;
                     ChapterChange((int)currentChapter);
@@ -407,6 +420,7 @@ public class Book : MonoBehaviour
             case Chapter.Settings:
                 if (ActivePageNumber > 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.TableOfContents;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
@@ -414,6 +428,7 @@ public class Book : MonoBehaviour
                 }
                 else if (ActivePageNumber < 0)
                 {
+                    ActivePageNumber = 0;
                     currentChapter = Chapter.Glossary;
                     ActivePageNumber = glossary.transform.childCount - 1;
                     ChapterChange((int)currentChapter);

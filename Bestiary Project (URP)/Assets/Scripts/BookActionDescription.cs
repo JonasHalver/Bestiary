@@ -80,10 +80,11 @@ public class BookActionDescription : MonoBehaviour
         currentEntry.activeAction.guessAction.descriptionIndex = index;
         currentEntry.activeAction.guessAction.actionDescription = Book.instance.descriptionsList.GetList(Book.currentEntry.character.stats.bodyType)[index];
         //BookActionCard.CardUpdate();
-        gameObject.SetActive(false);
         Book.currentEntry.activeAction.SetComparison();
         ActionEditor.instance.CompareActionInformation();
+        gameObject.SetActive(false);
+
         //Book.currentEntry.activeAction.CalculateValidity();
     }
-    
+
 }

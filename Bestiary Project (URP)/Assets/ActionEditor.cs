@@ -15,7 +15,7 @@ public class ActionEditor : MonoBehaviour
     public Transform editHolder, secondEditHolder, collectionHolder, discardHolder;
 
     [SerializeField] private TMP_InputField nameInput;
-
+    public GameObject actionDescription;
     private List<OutputInfo> outputGuessesPrimary = new List<OutputInfo>();
     private List<ContextInfo> contextGuessesPrimary = new List<ContextInfo>();
     private List<OutputInfo> outputGuessesSecondary = new List<OutputInfo>();
@@ -204,6 +204,11 @@ public class ActionEditor : MonoBehaviour
         nameInput.text = Book.currentEntry.activeAction.guessAction.actionName;
         CompareActionInformation();
         StartCoroutine(DelayLayoutDisable());
+    }
+    
+    public void WarningMovement()
+    {
+        actionDescription.SetActive(!actionDescription.activeSelf);
     }
 
     private void LoadPreviousSetup(ActionNode[] nodes)

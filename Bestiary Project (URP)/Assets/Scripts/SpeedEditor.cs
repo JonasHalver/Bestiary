@@ -9,10 +9,11 @@ public class SpeedEditor : MonoBehaviour
     public int value = 5;
     public float baseSize = 75, largeSize = 100;
     public Transform grid;
-    public List<GameObject> tiles = new List<GameObject>();
-    public GameObject selectedTile;
+    public List<Image> tiles = new List<Image>();
+    public Image selectedTile;
     public TextMeshProUGUI speedText;
     private string line;
+    public Color selectionColor;
 
     private void OnEnable()
     {
@@ -23,10 +24,10 @@ public class SpeedEditor : MonoBehaviour
     {
         for (int i = 0; i < grid.childCount; i++)
         {
-            tiles.Add(grid.GetChild(i).gameObject);
+            tiles.Add(grid.GetChild(i).GetComponent<Image>());
         }
-        selectedTile = tiles[value - 1];
-        selectedTile.GetComponent<RectTransform>().sizeDelta = new Vector2(largeSize, largeSize);
+        selectedTile = tiles[10 - value];
+        selectedTile.color = selectionColor;
     }
 
     // Update is called once per frame
@@ -59,13 +60,18 @@ public class SpeedEditor : MonoBehaviour
     public void TileClicked(int index)
     {
         value = index;
-        selectedTile = tiles[value - 1];
-
+        selectedTile = tiles[10 -value];
         for (int i = 0; i < tiles.Count; i++)
         {
-            tiles[i].GetComponent<RectTransform>().sizeDelta = new Vector2(baseSize, baseSize);
+            tiles[i].color = Color.white;
         }
-        selectedTile.GetComponent<RectTransform>().sizeDelta = new Vector2(largeSize, largeSize);
+        selectedTile.color = selectionColor;
+
+        //for (int i = 0; i < tiles.Count; i++)
+        //{
+        //    tiles[i].GetComponent<RectTransform>().sizeDelta = new Vector2(baseSize, baseSize);
+        //}
+        //selectedTile.GetComponent<RectTransform>().sizeDelta = new Vector2(largeSize, largeSize);
         UpdateStats();
     }
     public void UpdateStats()
