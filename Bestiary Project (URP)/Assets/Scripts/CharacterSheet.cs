@@ -74,19 +74,18 @@ public class CharacterSheet : MonoBehaviour
 
     public void ShowEntry(Character character)
     {
-        Book.openOnMerc = character.stats.characterType == CharacterStats.CharacterTypes.Adventurer;
-
-        Book.instance.pageNumber = character == null ? currentCharacter.stats.pageNumber : character.stats.pageNumber;
+        Book.instance.currentChapter = currentEntry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Current;
+        Book.instance.ActivePageNumber = currentEntry.isMerc ? currentEntry.origin.pageNumber : currentEntry.origin.pageNumberCurrent;
         GameManager.ChangeState(GameManager.GameState.Bestiary);
-        HideSheet();
+        //HideSheet();
     }
     public void ShowEntry(Entry entry)
     {
-        Book.openOnMerc = entry.isMerc;
+        Book.instance.currentChapter = entry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Current;
+        Book.instance.ActivePageNumber = entry.isMerc ? entry.origin.pageNumber : entry.origin.pageNumberCurrent;
 
-        Book.instance.pageNumber = entry == null ? currentCharacter.stats.pageNumber : entry.origin.pageNumber;
         GameManager.ChangeState(GameManager.GameState.Bestiary);
-        HideSheet();
+        //HideSheet();
     }
 
     public void HideSheet()

@@ -256,7 +256,7 @@ public class HitPointDisplay : MonoBehaviour
             }
             if (hearts.Count > value)
             {
-                print($"{hearts.Count} hearts and {value} value");
+
                 ClearHearts();
                 StartCoroutine(Delay());
                 yield break;

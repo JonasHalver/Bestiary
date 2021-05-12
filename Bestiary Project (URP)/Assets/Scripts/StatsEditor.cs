@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text;
 
 public class StatsEditor : MonoBehaviour
 {
@@ -11,42 +12,43 @@ public class StatsEditor : MonoBehaviour
     public Image moveCharacterIcon;
 
     [Header("Hit Points")]
-    public HitPointDisplay hitPointDisplay;
+    public GameObject hitPointPrefab;
+    public List<GameObject> hearts = new List<GameObject>();
     public float hitPointValue = 0;
-    public float displayedValue = 0;
+    public Transform hitPointHolder;
     [Header("Speed")]
     public TextMeshProUGUI speedText;
+    public TextMeshProUGUI speedDescription;
 
     [Header("Movement")]
-    public Transform movementGrid;
-    public List<Image> tiles = new List<Image>();
-    public Color tileValid, tileInvalid;
+    public Image move1;
+    public Image move2;
+    public Image move3;
+    public Image move4;
 
     [Header("Resistances")]
     public Transform resistancesGrid;
+    public TextMeshProUGUI resDisplay;
     public List<GameObject> resistanceIcons = new List<GameObject>();
 
     [Header("Weaknesses")]
     public Transform weaknessesGrid;
+    public TextMeshProUGUI weakDisplay;
     public List<GameObject> weaknessIcons = new List<GameObject>();
 
     private bool editable;
      
     // Start is called before the first frame update
     void Start()
-    {        
-        for (int i = 1; i < movementGrid.childCount; i++)
-        {
-            tiles.Add(movementGrid.GetChild(i).GetComponent<Image>());
-        }
+    {       
         UpdateDisplays();
     }
     private void Update()
     {
         editable = !Book.currentEntry.isMerc;
         hitPointValue = Book.currentEntry.guess.hitPoints;
-        moveCharacterIcon.sprite = Book.currentEntry.origin.characterIcon;
-        moveCharacterIcon.color = Book.currentEntry.origin.characterColor;
+       // moveCharacterIcon.sprite = Book.currentEntry.origin.characterIcon;
+       // moveCharacterIcon.color = Book.currentEntry.origin.characterColor;
     }
 
     private void OnEnable()
@@ -70,52 +72,89 @@ public class StatsEditor : MonoBehaviour
     
     public void DisplayHitPoints()
     {
-        hitPointDisplay.value = 1;
+        hitPointValue = 1;
         //hitPointDisplay.ClearHearts();
 
         if (!Book.currentEntry.isMerc)
-            hitPointDisplay.value = (int)Book.currentEntry.guess.hitPoints;
+            hitPointValue = (int)Book.currentEntry.guess.hitPoints;
         else
-            hitPointDisplay.value = (int)Book.currentEntry.origin.hitPoints;
-        displayedValue = hitPointDisplay.value;
+            hitPointValue = (int)Book.currentEntry.origin.hitPoints;
+
+        AddRemoveHearts();
+    }
+    public void AddRemoveHearts()
+    {
+        if (hearts.Count == hitPointValue) return;
+        for (int i = 0; i < hearts.Count; i++)
+        {
+            Destroy(hearts[i]);
+            hearts.RemoveAt(i);
+            i--;
+        }
+        for (int i = 0; i < hitPointValue; i++)
+        {
+            GameObject newHeart = Instantiate(hitPointPrefab, hitPointHolder);
+            hearts.Add(newHeart);
+        }
     }
     public void DisplaySpeed()
     {
         int speed = Book.currentEntry.isMerc ? Book.currentEntry.origin.speed : Book.currentEntry.guess.speed;
-        string line = speed.ToString();
+        speedText.text = speed.ToString();
         switch (speed)
         {
             case 1:
             case 2:
             case 3:
-                line += " (Low speed)";
+                speedDescription.text = "(Low speed)";
                 break;
             case 4:
             case 5:
             case 6:
             case 7:
-                line += " (Average speed)";
+                speedDescription.text = "(Average speed)";
                 break;
             case 8:
             case 9:
             case 10:
-                line += " (High speed)";
+                speedDescription.text = "(High speed)";
                 break;
         }
-        speedText.text = line;
     }
     public void DisplayMovement()
     {
-        for (int i = 0; i < tiles.Count; i++)
+        switch(Book.currentEntry.isMerc ? Book.currentEntry.origin.movement : Book.currentEntry.guess.movement)
         {
-            if (i < (Book.currentEntry.isMerc ? Book.currentEntry.origin.movement : Book.currentEntry.guess.movement))
-                tiles[i].color = tileValid;
-            else
-                tiles[i].color = tileInvalid;
+            case 1:
+                move1.enabled = true;
+                move2.enabled = false;
+                move3.enabled = false;
+                move4.enabled = false;
+                break;
+            case 2:
+                move1.enabled = false;
+                move2.enabled = true;
+                move3.enabled = false;
+                move4.enabled = false;
+                break;
+            case 3:
+                move1.enabled = false;
+                move2.enabled = false;
+                move3.enabled = true;
+                move4.enabled = false;
+                break;
+            case 4:
+                move1.enabled = false;
+                move2.enabled = false;
+                move3.enabled = false;
+                move4.enabled = true;
+                break;
         }
     }
     public void DisplayResistances()
     {
+        StringBuilder sb = new StringBuilder();
+        int count = Book.currentEntry.isMerc ? Book.currentEntry.origin.resistances.Count : Book.currentEntry.guess.resistances.Count;
         for (int i = 0; i < resistanceIcons.Count; i++)
         {
             RemoveDamageTypeIcon(resistanceIcons[i], true);
@@ -125,24 +164,30 @@ public class StatsEditor : MonoBehaviour
         {
             for (int i = 0; i < Book.currentEntry.guess.resistances.Count; i++)
             {
-                AddDamageTypeIcon(Book.currentEntry.guess.resistances[i], true);
+                //AddDamageTypeIcon(Book.currentEntry.guess.resistances[i], true);
+                sb.Append($"- {Book.currentEntry.guess.resistances[i]}").AppendLine();
             }
         }
         else
         {
             for (int i = 0; i < Book.currentEntry.origin.resistances.Count; i++)
             {
-                AddDamageTypeIcon(Book.currentEntry.origin.resistances[i], true);
+                //AddDamageTypeIcon(Book.currentEntry.origin.resistances[i], true);
+                sb.Append($"- {Book.currentEntry.origin.resistances[i]}").AppendLine();
             }
         }
-        if (resistanceIcons.Count == 0)
+        if (count == 0)
         {
-            CreateNone(true);
+            sb.Append("None");
+            //CreateNone(true);
         }
-
+        resDisplay.text = sb.ToString();
     }
     public void DisplayWeaknesses()
     {
+        StringBuilder sb = new StringBuilder();
+        int count = Book.currentEntry.isMerc ? Book.currentEntry.origin.weaknesses.Count : Book.currentEntry.guess.weaknesses.Count;
+
         for (int i = 0; i < weaknessIcons.Count; i++)
         {
             RemoveDamageTypeIcon(weaknessIcons[i], false);
@@ -152,20 +197,24 @@ public class StatsEditor : MonoBehaviour
         {
             for (int i = 0; i < Book.currentEntry.guess.weaknesses.Count; i++)
             {
-                AddDamageTypeIcon(Book.currentEntry.guess.weaknesses[i], false);
+                //AddDamageTypeIcon(Book.currentEntry.guess.weaknesses[i], false);
+                sb.Append($"- {Book.currentEntry.guess.weaknesses[i]}").AppendLine();
             }
         }
         else
         {
             for (int i = 0; i < Book.currentEntry.origin.weaknesses.Count; i++)
             {
-                AddDamageTypeIcon(Book.currentEntry.origin.weaknesses[i], false);
+                //AddDamageTypeIcon(Book.currentEntry.origin.weaknesses[i], false);
+                sb.Append($"- {Book.currentEntry.origin.weaknesses[i]}").AppendLine();
             }
         }
-        if (weaknessIcons.Count == 0)
+        if (count == 0)
         {
-            CreateNone(false);
+            sb.Append("None");
+            //CreateNone(false);
         }
+        weakDisplay.text = sb.ToString();
     }
     public void CreateNone(bool isResistance)
     {

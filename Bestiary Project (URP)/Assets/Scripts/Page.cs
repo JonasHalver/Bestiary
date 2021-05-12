@@ -17,13 +17,18 @@ public class Page : MonoBehaviour
     public PageUI pageUI;
     public GameObject warningPrefab;
     public bool deletionConfirmed = false, cancelConfirmed = false;
+    public Book.Chapter chapter;
+    public int pageNumber;
 
     private void Start()
     {
         //if (entry.page == null) entry.page = this;
         //entry.CreateChecks();
     }
-
+    private void OnEnable()
+    {
+        Book.currentEntry = entry;
+    }
 
     public void UpdateName()
     {
@@ -58,8 +63,6 @@ public class Page : MonoBehaviour
 
     public void MonsterNameChanged()
     {
-        print(entry.guess.characterName);
-        print(nameInput.text);
         entry.guess.characterName = nameInput.text;
     }
     public void ActionPriorityUpdate()
@@ -127,7 +130,7 @@ public class Page : MonoBehaviour
 
     public void ChangePage(bool forward)
     {
-        Book.instance.pageNumber += forward ? 1 : -1;
+        Book.instance.ActivePageNumber += forward ? 1 : -1;
         Book.instance.PageChange();
     }
 }

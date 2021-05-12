@@ -14,7 +14,12 @@ public class Book : MonoBehaviour
     public static List<Entry> monsterEntries;
     public static List<Entry> mercEntries;
     public static Entry currentEntry;
-    public int pageNumber = 0;
+    public int pageNumberTOC = 0;
+    public int pageNumberMonsters = 0;
+    public int pageNumberMercs = 0;
+    public int pageNumberGlossary = 0;
+    public int pageNumberCurrent = 0;
+    public int pageNumberSettings = 0;
     public ActionDescription descriptionsList;
     public static GraphicRaycaster GR;
     public GameObject pagePrefab;
@@ -24,8 +29,61 @@ public class Book : MonoBehaviour
     public GameObject statCanvas;
     public GameObject editWindowPrefab;
 
+    public GameObject toc, current, monsters, mercenaries, glossary, settings;
+
     public static event System.Action StatsUpdated;
     public static bool openOnMerc = false;
+
+    public enum Chapter { TableOfContents, Current, Monsters, Mercenaries, Glossary, Settings }
+    public Chapter currentChapter = Chapter.TableOfContents;
+    public static event System.Action ChapterChanged;
+
+    public int ActivePageNumber
+    {
+        get
+        {
+            switch (currentChapter)
+            {
+                default: return 0;
+                case Chapter.TableOfContents:
+                    return pageNumberTOC;
+                case Chapter.Current:
+                    return pageNumberCurrent;
+                case Chapter.Monsters:
+                    return pageNumberMonsters;
+                case Chapter.Mercenaries:
+                    return pageNumberMercs;
+                case Chapter.Glossary:
+                    return pageNumberGlossary;
+                case Chapter.Settings:
+                    return pageNumberSettings;
+            }
+        }
+        set
+        {
+            switch (currentChapter)
+            {
+                case Chapter.TableOfContents:
+                    pageNumberTOC = value;
+                    break;
+                case Chapter.Current:
+                    pageNumberCurrent=value;
+                    break;
+                case Chapter.Monsters:
+                    pageNumberMonsters = value;
+                    break;
+                case Chapter.Mercenaries:
+                    pageNumberMercs = value;
+                    break;
+                case Chapter.Glossary:
+                    pageNumberGlossary = value;
+                    break;
+                case Chapter.Settings:
+                    pageNumberSettings = value;
+                    break;
+            }
+        }
+    }
 
     private void Awake()
     {
@@ -54,13 +112,27 @@ public class Book : MonoBehaviour
         {
             if (monsterEntries[i].page == null)
             {
+                // For Monsters chapter
                 GameObject newPage = Instantiate(pagePrefab, monsterBinding);
                 Page p = newPage.GetComponent<Page>();
                 monsterPages.Add(p);
                 p.entry = monsterEntries[i];
+                p.chapter = Chapter.Monsters;
+                p.pageNumber = i;
                 monsterEntries[i].page = p;
                 monsterEntries[i].origin.pageNumber = i;
                 newPage.SetActive(false);
+
+                // For Current chapter
+                GameObject newPage1 = Instantiate(pagePrefab, current.transform);
+                Page p1 = newPage1.GetComponent<Page>();
+                monsterPages.Add(p1);
+                p1.entry = monsterEntries[i];
+                p1.chapter = Chapter.Current;
+                p1.entry.origin.pageNumberCurrent = current.transform.childCount - 1;
+                newPage1.SetActive(false);
+                p1.pageNumber = current.transform.childCount-1;
+                
                 p.entry.CreateChecks();
             }
         }
@@ -100,20 +172,27 @@ public class Book : MonoBehaviour
         StatsUpdated.Invoke();
     }
 
+    public void OpenBook()
+    {        
+        binding.gameObject.SetActive(true);
+        ChapterChange((int)currentChapter);
+        PageChange();
+    }
+
     public void OpenPages(bool open, int page)
     {
         binding.gameObject.SetActive(open);
         mercBinding.SetActive(openOnMerc);
         monsterBinding.gameObject.SetActive(!openOnMerc);
-        pageNumber = page;
+        //pageNumber = page;
         PageChange();
     }
 
     private void Update()
     {
         if (!GameManager.bookFilled) return;
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) { pageNumber--; PageChange(); }
-        if (Input.GetKeyDown(KeyCode.RightArrow)) { pageNumber++; PageChange(); }
+        if (Input.GetKeyDown(KeyCode.LeftArrow)) { ActivePageNumber--; PageChange(); }
+        if (Input.GetKeyDown(KeyCode.RightArrow)) { ActivePageNumber++; PageChange(); }
     }
 
     public static void OpenActionEditing()
@@ -157,10 +236,193 @@ public class Book : MonoBehaviour
     {
         GameManager.textInput = editing;
     }
+    public void ChapterChange(int chapter)
+    {
+        currentChapter = (Chapter)chapter;
+        switch (currentChapter)
+        {
+            case Chapter.TableOfContents:
+                toc.SetActive(true);
+                current.SetActive(false);
+                monsters.SetActive(false);
+                mercenaries.SetActive(false);
+                glossary.SetActive(false);
+                settings.SetActive(false);
+                break;
+            case Chapter.Current:
+                toc.SetActive(false);
+                current.SetActive(true);
+                monsters.SetActive(false);
+                mercenaries.SetActive(false);
+                glossary.SetActive(false);
+                settings.SetActive(false);
+                break;
+            case Chapter.Monsters:
+                toc.SetActive(false);
+                current.SetActive(false);
+                monsters.SetActive(true);
+                mercenaries.SetActive(false);
+                glossary.SetActive(false);
+                settings.SetActive(false);
+                break;
+            case Chapter.Mercenaries:
+                toc.SetActive(false);
+                current.SetActive(false);
+                monsters.SetActive(false);
+                mercenaries.SetActive(true);
+                glossary.SetActive(false);
+                settings.SetActive(false);
+                break;
+            case Chapter.Glossary:
+                toc.SetActive(false);
+                current.SetActive(false);
+                monsters.SetActive(false);
+                mercenaries.SetActive(false);
+                glossary.SetActive(true);
+                settings.SetActive(false);
+                break;
+            case Chapter.Settings:
+                toc.SetActive(false);
+                current.SetActive(false);
+                monsters.SetActive(false);
+                mercenaries.SetActive(false);
+                glossary.SetActive(false);
+                settings.SetActive(true);
+                break;
+        }
+        PageChange();
+        ChapterChanged.Invoke();
+    }
+    public void FlipPage(bool forward)
+    {
+        ActivePageNumber += forward ? 1 : -1;
+        PageChange();
+    }
     public void PageChange()
     {
         Page openPage = null;
-        if (pageNumber < 0) pageNumber = (openOnMerc ? mercPages.Count : monsterPages.Count) - 1;
+        print($"changing page to {ActivePageNumber} in {currentChapter}");
+        switch (currentChapter)
+        {
+            case Chapter.TableOfContents:
+                if (ActivePageNumber > 0)
+                {
+                    currentChapter = Chapter.Current;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.Settings;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                break;
+            case Chapter.Current:
+                if (ActivePageNumber >= current.transform.childCount)
+                {
+                    currentChapter = Chapter.Monsters;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.TableOfContents;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                foreach (Transform child in current.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                current.transform.GetChild(ActivePageNumber).gameObject.SetActive(true);
+                break;
+            case Chapter.Monsters:
+                if (ActivePageNumber >= monsters.transform.childCount)
+                {
+                    currentChapter = Chapter.Mercenaries;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.Current;
+                    ActivePageNumber = current.transform.childCount-1;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                foreach (Transform child in monsters.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                monsters.transform.GetChild(ActivePageNumber).gameObject.SetActive(true);
+                break;
+            case Chapter.Mercenaries:
+                if (ActivePageNumber >= mercenaries.transform.childCount)
+                {
+                    currentChapter = Chapter.Glossary;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.Monsters;
+                    ActivePageNumber = monsters.transform.childCount - 1;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                foreach (Transform child in mercenaries.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                mercenaries.transform.GetChild(ActivePageNumber).gameObject.SetActive(true);
+                break;
+            case Chapter.Glossary:
+                if (ActivePageNumber >= glossary.transform.childCount)
+                {
+                    currentChapter = Chapter.Settings;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.Mercenaries;
+                    ActivePageNumber = mercenaries.transform.childCount - 1;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                foreach (Transform child in glossary.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                glossary.transform.GetChild(ActivePageNumber).gameObject.SetActive(true);
+                break;
+            case Chapter.Settings:
+                if (ActivePageNumber > 0)
+                {
+                    currentChapter = Chapter.TableOfContents;
+                    ActivePageNumber = 0;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                else if (ActivePageNumber < 0)
+                {
+                    currentChapter = Chapter.Glossary;
+                    ActivePageNumber = glossary.transform.childCount - 1;
+                    ChapterChange((int)currentChapter);
+                    return;
+                }
+                break;
+        }
+
+        /*if (pageNumber < 0) pageNumber = (openOnMerc ? mercPages.Count : monsterPages.Count) - 1;
         else if (pageNumber >= (openOnMerc ? mercPages.Count : monsterPages.Count)) pageNumber = 0;
         if (!openOnMerc)
         {
@@ -186,7 +448,7 @@ public class Book : MonoBehaviour
                 }
             }
         }
-        if (openPage != null) openPage.UpdateName();
+        if (openPage != null) openPage.UpdateName();*/
     }
     public void OpenMercs(bool check)
     {
@@ -194,5 +456,11 @@ public class Book : MonoBehaviour
         mercBinding.SetActive(openOnMerc);
         monsterBinding.gameObject.SetActive(!openOnMerc);
         PageChange();
+    }
+    public void CloseBook()
+    {
+        binding.gameObject.SetActive(false);
+        if (GameManager.gameState == GameManager.GameState.Bestiary)
+            GameManager.ChangeState(GameManager.GameState.Normal);
     }
 }

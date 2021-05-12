@@ -136,10 +136,10 @@ RectTransform:
   m_Father: {fileID: 4946799869564014102}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 160.1, y: -25.869999}
-  m_SizeDelta: {x: 300.2, y: 31.74}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 160.1, y: 0}
+  m_SizeDelta: {x: 300.2, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4946799869097981198
 CanvasRenderer:
@@ -170,8 +170,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Poisoned: Takes poison damage at the start of their turn.'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 0908a54bfeb71b04ba455093b7ae079c, type: 2}
+  m_sharedMaterial: {fileID: -1149027387965960578, guid: 0908a54bfeb71b04ba455093b7ae079c,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -195,8 +196,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -290,7 +291,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4946799869564014102
 RectTransform:
   m_ObjectHideFlags: 0
@@ -310,7 +311,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 960, y: 540}
-  m_SizeDelta: {x: 320.2, y: 51.739998}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4946799869564014098
 CanvasRenderer:

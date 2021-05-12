@@ -395,7 +395,6 @@ public class ActionEditor : MonoBehaviour
     public void CompareActionInformation()
     {
         if (!firstTenFrames) return;
-        print("updating information");
         outputGuessesPrimary.Clear();
         contextGuessesPrimary.Clear();
         primaryShapes.Clear();

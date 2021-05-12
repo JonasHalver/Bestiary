@@ -257,27 +257,22 @@ public class GameManager : MonoBehaviour
             case GameState.Normal:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, Book.instance.pageNumber);
-                    MenuUI.PauseMenu.SetActive(false);
-                    MenuUI.Glossary.SetActive(false);
+                    Book.instance.CloseBook();
                     flag = true;
                 }
                 break;
             case GameState.PauseMenu:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, Book.instance.pageNumber);
-                    MenuUI.PauseMenu.SetActive(true);
-                    MenuUI.Glossary.SetActive(false);
+                    Book.instance.currentChapter = Book.Chapter.TableOfContents;
+                    Book.instance.OpenBook();
                     flag = true;
                 }
                 break;
             case GameState.PauseCombat:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, Book.instance.pageNumber);
-                    MenuUI.PauseMenu.SetActive(false);
-                    MenuUI.Glossary.SetActive(false);
+                    Book.instance.CloseBook();
                     flag = true;
                 }
                 break;
@@ -285,18 +280,15 @@ public class GameManager : MonoBehaviour
                 if (!flag)
                 {
                     OpenedBestiary.Invoke();
-                    Book.instance.OpenPages(true, Book.instance.pageNumber);
-                    MenuUI.PauseMenu.SetActive(false);
-                    MenuUI.Glossary.SetActive(false);
+                    Book.instance.OpenBook();
                     flag = true;
                 }
                 break;
             case GameState.Glossary:
                 if (!flag)
                 {
-                    Book.instance.OpenPages(false, Book.instance.pageNumber);
-                    MenuUI.PauseMenu.SetActive(false);
-                    MenuUI.Glossary.SetActive(true);
+                    Book.instance.currentChapter = Book.Chapter.Glossary;
+                    Book.instance.OpenBook();
                     flag = true;
                 }
                 break;
