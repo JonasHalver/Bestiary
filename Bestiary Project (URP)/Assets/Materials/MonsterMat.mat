@@ -89,9 +89,9 @@ Material:
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _FlameFlickerSpeed: 0.2
-    - _Float3: 0
-    - _Float4: -0.19
+    - _FlameFlickerSpeed: 0.1
+    - _Float3: 0.1
+    - _Float4: 0
     - _Float6: 0.002
     - _FrameRate: 4
     - _GlossMapScale: 0
@@ -107,7 +107,7 @@ Material:
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _Surface: 0
-    - _TextureIntensity: 19.9
+    - _TextureIntensity: 5.78
     - _TextureIntensity1: 19.9
     - _WobbleAmount: 1
     - _WorkflowMode: 1
