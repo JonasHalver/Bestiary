@@ -16,7 +16,8 @@ MonoBehaviour:
   characterCode: dryad
   characterType: 0
   personality: 4
-  characterModel: {fileID: 3921077594347169764, guid: a85db1cd819449e4180523d15c458b8c,
+  bodyType: 0
+  characterModel: {fileID: 8105647853703622602, guid: 6ea1505e85a929047bdd97c9bc5ecb4e,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
   characterColor: {r: 0.20594516, g: 0.49056602, b: 0.22917482, a: 1}

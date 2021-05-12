@@ -17,7 +17,7 @@ MonoBehaviour:
   characterType: 0
   personality: 5
   bodyType: 2
-  characterModel: {fileID: 3921077594347169764, guid: a85db1cd819449e4180523d15c458b8c,
+  characterModel: {fileID: 2769403416395395214, guid: e3fcdd6aeca758a46b277508ab77e3bf,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
   characterColor: {r: 0.745283, g: 0.14413491, b: 0.14413491, a: 0}
