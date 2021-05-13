@@ -31,7 +31,7 @@ public class ActionEditor : MonoBehaviour
     public CustomToggle ptg, pt, c, stg, st;
     public TextMeshProUGUI buttonText;
 
-    public HorizontalLayoutGroup hlg1, hlg2;
+    public HorizontalLayoutGroup hlg1, hlg2, hlg3;
     private bool firstTenFrames = false;
     private int framecount = 0;
 
@@ -87,6 +87,10 @@ public class ActionEditor : MonoBehaviour
         for (int i = 0; i < n.Length; i++)
         {
             n[i].AddToLists();
+            if (n[i].nodeType == ActionNode.NodeType.Context)
+            {
+                contextNodes.Add(n[i].actionContext.context, n[i]);
+            }
         }
         LoadPreviousSetup(n);
         LogBuilder();
@@ -159,10 +163,7 @@ public class ActionEditor : MonoBehaviour
                     StartCoroutine(OneFrameDelay(an.gameObject, "SetIcons"));
                     break;
             }
-            if (an.nodeType == ActionNode.NodeType.Context)
-            {
-                contextNodes.Add(an.actionContext.context, an);
-            }
+            
         }*/
         #endregion
         ActionCheck ac = Book.currentEntry.activeAction;
@@ -311,6 +312,7 @@ public class ActionEditor : MonoBehaviour
         yield return null;
         hlg1.enabled = false;
         hlg2.enabled = false;
+        hlg3.enabled = false;
     }
 
     private bool SameNode(ActionNode originalNode, ActionNode newNode)
@@ -600,7 +602,12 @@ public class ActionEditor : MonoBehaviour
                     }
                 }
             }
-            if (temp.Count > 0) contextNodes[list[i].context].Incompatible(temp);
+            if (temp.Count > 0)
+            {
+                contextNodes[list[i].context].Incompatible(temp);
+                print("Display error");
+            }
+
         }
     }
     private void LogBuilder()

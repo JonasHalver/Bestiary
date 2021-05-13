@@ -125,16 +125,20 @@ public class Book : MonoBehaviour
                 newPage.SetActive(false);
 
                 // For Current chapter
-                GameObject newPage1 = Instantiate(pagePrefab, current.transform);
+               /* GameObject newPage1 = Instantiate(pagePrefab, current.transform);
                 Page p1 = newPage1.GetComponent<Page>();
                 monsterPages.Add(p1);
                 p1.entry = monsterEntries[i];
                 p1.chapter = Chapter.Current;
                 p1.entry.origin.pageNumberCurrent = current.transform.childCount - 1;
                 newPage1.SetActive(false);
-                p1.pageNumber = current.transform.childCount-1;
+                p1.pageNumber = current.transform.childCount-1;*/
                 
                 p.entry.CreateChecks();
+            }
+            else
+            {
+                monsterEntries[i].page.entry = monsterEntries[i];
             }
         }
         for (int i = 0; i < mercEntries.Count; i++)
@@ -311,7 +315,7 @@ public class Book : MonoBehaviour
                 if (ActivePageNumber > 0)
                 {
                     ActivePageNumber = 0;
-                    currentChapter = Chapter.Current;
+                    currentChapter = Chapter.Monsters;
                     ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
                     return;
@@ -360,8 +364,8 @@ public class Book : MonoBehaviour
                 else if (ActivePageNumber < 0)
                 {
                     ActivePageNumber = 0;
-                    currentChapter = Chapter.Current;
-                    ActivePageNumber = current.transform.childCount-1;
+                    currentChapter = Chapter.TableOfContents;
+                    ActivePageNumber = 0;
                     ChapterChange((int)currentChapter);
                     return;
                 }
@@ -471,6 +475,14 @@ public class Book : MonoBehaviour
         mercBinding.SetActive(openOnMerc);
         monsterBinding.gameObject.SetActive(!openOnMerc);
         PageChange();
+    }
+    public void Restart()
+    {
+        GameManager.instance.Restart();
+    }
+    public void Exit()
+    {
+        GameManager.instance.Exit();
     }
     public void CloseBook()
     {

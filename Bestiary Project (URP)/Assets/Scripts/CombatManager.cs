@@ -1173,6 +1173,7 @@ public class BattlefieldPositionInfo
             Character c = character.Key;
             if (actor == c || c == null || c.stats == null || actor == null || actor.stats == null)
             {
+                continue;
             }
             else
             {

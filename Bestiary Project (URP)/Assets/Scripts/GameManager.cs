@@ -264,6 +264,8 @@ public class GameManager : MonoBehaviour
             case GameState.PauseMenu:
                 if (!flag)
                 {
+                    ChangeState(GameState.Bestiary);
+                    return;
                     Book.instance.currentChapter = Book.Chapter.TableOfContents;
                     Book.instance.OpenBook();
                     flag = true;
@@ -272,6 +274,7 @@ public class GameManager : MonoBehaviour
             case GameState.PauseCombat:
                 if (!flag)
                 {
+                    
                     Book.instance.CloseBook();
                     flag = true;
                 }
@@ -287,6 +290,8 @@ public class GameManager : MonoBehaviour
             case GameState.Glossary:
                 if (!flag)
                 {
+                    ChangeState(GameState.Bestiary);
+                    return;
                     Book.instance.currentChapter = Book.Chapter.Glossary;
                     Book.instance.OpenBook();
                     flag = true;
@@ -304,8 +309,8 @@ public class GameManager : MonoBehaviour
             {
                 ChangeState(GameState.Normal);
             }
-            else
-                OpenPauseMenu();
+            //else
+                //OpenPauseMenu();
         }
         else
         {
@@ -422,6 +427,7 @@ public class GameManager : MonoBehaviour
 
     public void Restart()
     {
+        ChangeState(GameState.Normal);
         CombatManager.instance.StopAllCoroutines();
         SceneManager.LoadScene(0);
     }

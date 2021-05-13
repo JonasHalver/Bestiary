@@ -24,6 +24,7 @@ public class Page : MonoBehaviour
     {
         //if (entry.page == null) entry.page = this;
         //entry.CreateChecks();
+        UpdateName();
     }
     private void OnEnable()
     {

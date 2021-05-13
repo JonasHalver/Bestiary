@@ -1242,7 +1242,7 @@ public class ContextInfo
             case Action.Context.EnemyHurt:
                 for (int i = 0; i < CombatManager.actors.Count; i++)
                 {
-                    if(!Character.AllyOrEnemy(actor, CombatManager.actors[i]))
+                    if(!Character.AllyOrEnemy(actor, CombatManager.actors[i]) && CombatManager.actors[i].alive)
                     {
                         if (CombatManager.actors[i].damageTaken > (CombatManager.actors[i].stats.hitPoints / 2))
                         {
@@ -1255,7 +1255,7 @@ public class ContextInfo
             case Action.Context.AllyHurt:
                 for (int i = 0; i < CombatManager.actors.Count; i++)
                 {
-                    if (actor != CombatManager.actors[i])
+                    if (actor != CombatManager.actors[i] && CombatManager.actors[i].alive)
                     {
                         if (Character.AllyOrEnemy(actor, CombatManager.actors[i]))
                         {

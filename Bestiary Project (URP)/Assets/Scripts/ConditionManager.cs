@@ -14,6 +14,7 @@ public class ConditionManager : MonoBehaviour
     private Dictionary<Action.Condition, CombatManager.CombatTiming> expirationTimings = new Dictionary<Action.Condition, CombatManager.CombatTiming>()
     {
         { Action.Condition.Acid, CombatManager.CombatTiming.StartOfCharacterTurn },
+        { Action.Condition.Armor, CombatManager.CombatTiming.StartOfCharacterTurn },
         { Action.Condition.Bleeding, CombatManager.CombatTiming.StartOfCharacterTurn },
         { Action.Condition.Burning, CombatManager.CombatTiming.StartOfCharacterTurn },
         { Action.Condition.DisorientMerc, CombatManager.CombatTiming.EndOfCharacterTurn },
@@ -33,11 +34,13 @@ public class ConditionManager : MonoBehaviour
         { Action.Condition.Stun, CombatManager.CombatTiming.EndOfCharacterTurn },
         { Action.Condition.TauntMerc, CombatManager.CombatTiming.StartOfCharacterTurn },
         { Action.Condition.TauntMonster, CombatManager.CombatTiming.EndOfRound },
+        { Action.Condition.Vulnerable, CombatManager.CombatTiming.EndOfCharacterTurn },
         { Action.Condition.Weaken, CombatManager.CombatTiming.EndOfCharacterTurn }
     };
     private Dictionary<Action.Condition, bool> ignoreExpirationOnRoundApplied = new Dictionary<Action.Condition, bool>()
     {
         { Action.Condition.Acid, false },
+        { Action.Condition.Armor, false },
         { Action.Condition.Bleeding, false },
         { Action.Condition.Burning, false },
         { Action.Condition.DisorientMerc, true },
@@ -57,11 +60,13 @@ public class ConditionManager : MonoBehaviour
         { Action.Condition.Stun, false },
         { Action.Condition.TauntMerc, true },
         { Action.Condition.TauntMonster, false },
+        { Action.Condition.Vulnerable, false },
         { Action.Condition.Weaken, true }
     };
     private Dictionary<Action.Condition, bool> appliedThisRound = new Dictionary<Action.Condition, bool>()
     {
         { Action.Condition.Acid, false },
+        { Action.Condition.Armor, false },
         { Action.Condition.Bleeding, false },
         { Action.Condition.Burning, false },
         { Action.Condition.DisorientMerc, false },
@@ -81,6 +86,7 @@ public class ConditionManager : MonoBehaviour
         { Action.Condition.Stun, false },
         { Action.Condition.TauntMerc, false },
         { Action.Condition.TauntMonster, false },
+        { Action.Condition.Vulnerable, false },
         { Action.Condition.Weaken, false }
     };
 

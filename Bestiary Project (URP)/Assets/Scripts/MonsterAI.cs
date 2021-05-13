@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
-
+using System;
 public class MonsterAI : MonoBehaviour
 {
     [HideInInspector] public Character character;
@@ -17,7 +17,7 @@ public class MonsterAI : MonoBehaviour
         {
             if (relentlessTarget == null)
             {
-                relentlessTarget = evaluations[Random.Range(0, evaluations.Count)].Enemy;
+                relentlessTarget = evaluations[UnityEngine.Random.Range(0, evaluations.Count)].Enemy;
             }
             return relentlessTarget;
         }
@@ -630,17 +630,18 @@ public class GridSpaceAssessment
     }
 }
 
+[Serializable]
 public class LastRoundMemory
 {
-    private float damageDealt = 0;
-    private float damageTaken = 0;
-    private float maxDamageTaken = 0;
-    private float healingReceived = 0;
-    private List<Action.Condition> conditionsGained = new List<Action.Condition>();
-    private List<Character.DamageTypes> damageTypesTaken = new List<Character.DamageTypes>();
-    private List<Character> healers = new List<Character>();
-    private List<Character> hurtMe = new List<Character>();
-    private Character biggestThreat;
+    [SerializeField] private float damageDealt = 0;
+    [SerializeField] private float damageTaken = 0;
+    [SerializeField] private float maxDamageTaken = 0;
+    [SerializeField] private float healingReceived = 0;
+    [SerializeField] private List<Action.Condition> conditionsGained = new List<Action.Condition>();
+    [SerializeField] private List<Character.DamageTypes> damageTypesTaken = new List<Character.DamageTypes>();
+    [SerializeField] private List<Character> healers = new List<Character>();
+    [SerializeField] private List<Character> hurtMe = new List<Character>();
+    [SerializeField] private Character biggestThreat;
     
     public bool ReceivedBuff
     {

@@ -44,7 +44,7 @@ public class TutorialManager : MonoBehaviour
     public enum TutorialSequence { Main1, Main2, Main3, Main4, BestiaryMonster, ActionEditing, Standalone, Done }
     public TutorialSequence currentSequence = TutorialSequence.Main1;
     private TutorialSequence activeSequence = TutorialSequence.Main1;
-    private List<string> openedStandalones = new List<string>();
+    private static List<string> openedStandalones = new List<string>();
 
     public GameObject clickBlocker;
 
@@ -237,6 +237,7 @@ public class TutorialManager : MonoBehaviour
     public void EndStandalone()
     { 
         currentSequence = activeSequence;
+        HideTutorial();
         ForceContinue(true);
         
     }

@@ -291,6 +291,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     private void RoundChange(CombatManager.CombatTiming timing)
     {
         conditionManager.UpdateDurations(timing);
+        if (timing == CombatManager.CombatTiming.StartOfCombatStage) memory.ClearMemory();
     }
 
     private void OnMyTurn(CombatManager.CombatTiming timing, Character currentActor)
@@ -563,6 +564,10 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
+        origin.memory.DamageDealt += damage;
+        memory.AddHurter(origin);
+        memory.DamageTaken += damage;
+        memory.DamageTypesTaken.Add(info.damageType);
         TookDamage.Invoke();
         characterEffectDisplay.DisplayEffect(new Effect(damage, info.damageType));
     }
@@ -575,6 +580,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (damage < 0.5f) damage = 0;
         currentHitpoints -= damage;
         damageTaken += damage;
+        memory.DamageTaken += damage;
+        memory.DamageTypesTaken.Add(conditionDamageType);
         TookDamage.Invoke();
         if (conditionDamageType == DamageTypes.Crushing)
         {
@@ -590,6 +597,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         currentHitpoints += healing;
         damageTaken -= healing;
+        memory.HealingReceived += healing;
+        memory.AddHealer(info.origin);
         Healed.Invoke();
         characterEffectDisplay.DisplayEffect(new Effect(healing, DamageTypes.Healing));
     }
@@ -606,6 +615,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     {
         conditionManager.ApplyCondition(info.condition, info.value);
         characterEffectDisplay.DisplayEffect(new Effect(info.condition));
+        memory.GainedCondition(info.condition);
     }
 
     public void MoveByAction(Interaction interaction)

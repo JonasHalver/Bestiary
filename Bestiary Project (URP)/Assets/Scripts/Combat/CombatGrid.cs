@@ -699,7 +699,11 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                 }
                 break;
         }
-        if (output == null && targets.Count > 0) output = targets[0];
+        if (output == null && targets.Count > 0)
+        {
+            output = targets[0];
+            Debug.Log($"{actor.stats.characterName} tried to target {tg}, but failed to find a good target");
+        }
         return output;
     }
 

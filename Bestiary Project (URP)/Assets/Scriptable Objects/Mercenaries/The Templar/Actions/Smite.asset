@@ -53,7 +53,7 @@ MonoBehaviour:
   secondaryTargetGroup: 1
   secondaryOutput:
   - output: 2
-    value: 2
+    value: 1
     condition: 11
     critical: 0
     damageType: 0
