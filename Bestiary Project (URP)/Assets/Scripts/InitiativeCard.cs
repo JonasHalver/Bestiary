@@ -18,10 +18,20 @@ public class InitiativeCard : MonoBehaviour, IPointerEnterHandler, IPointerClick
     private void OnEnable()
     {
         CombatManager.CurrentTurn += HighlightCard;
+        CombatManager.RoundPhases += RemoveDead;
     }
     private void OnDisable()
     {
         CombatManager.CurrentTurn -= HighlightCard;
+        CombatManager.RoundPhases -= RemoveDead;
+    }
+    private void RemoveDead(CombatManager.CombatTiming timing)
+    {
+        if (!actor.alive && timing == CombatManager.CombatTiming.EndOfRound)
+        {
+            CombatManager.instance.initiativeCards.Remove(gameObject);
+            Destroy(gameObject);
+        }
     }
     public void OnPointerClick(PointerEventData eventData)
     {

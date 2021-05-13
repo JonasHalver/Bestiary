@@ -215,6 +215,10 @@ public class CombatManager : MonoBehaviour
             Book.monsterEntries.Add(n);
             stats.entry = n;
         }
+        GameObject newICard = Instantiate(initiativeCardPrefab, initiativeCardContainer);
+        InitiativeCard card = newICard.GetComponent<InitiativeCard>();
+        card.actor = c;
+        initiativeCards.Add(newICard);
         WanderingMonster.Invoke();
     }
     public void SetInitiative()

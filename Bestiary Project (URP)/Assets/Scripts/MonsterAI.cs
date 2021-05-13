@@ -17,6 +17,7 @@ public class MonsterAI : MonoBehaviour
         {
             if (relentlessTarget == null)
             {
+                
                 relentlessTarget = evaluations[UnityEngine.Random.Range(0, evaluations.Count)].Enemy;
             }
             return relentlessTarget;
@@ -402,6 +403,17 @@ public class MonsterAI : MonoBehaviour
                 assessments.Add(new GridSpaceAssessment(character, node, this));
             }
         }
+        evaluations.Clear();
+        foreach(Character actor in CombatManager.actors)
+        {
+            if (actor.alive)
+            {
+                if (!Character.AllyOrEnemy(character, actor))
+                {
+                    evaluations.Add(new EnemyEvaluation(actor));
+                }
+            }
+        }
     }
 
     public void Interaction(Interaction interaction)
@@ -517,7 +529,7 @@ public class MonsterAI : MonoBehaviour
     }
     private void Relentless()
     {
-        Destination = SafestMeleeWithSpecificCharacterNode(relentlessTarget);
+        Destination = SafestMeleeWithSpecificCharacterNode(RelentlessTarget);
     }
     #endregion
 
@@ -693,7 +705,8 @@ public class LastRoundMemory
             if (value > maxDamageTaken)
             {
                 maxDamageTaken = value;
-                biggestThreat = hurtMe[hurtMe.Count - 1];
+                if (hurtMe.Count > 0)
+                    biggestThreat = hurtMe[hurtMe.Count - 1];
             }
             damageTaken += value;
         }

@@ -21,6 +21,15 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     public HitPointDisplay hpd;
     private Color bgColor;
     public Color b, d;
+
+    private void DeadRemoval(CombatManager.CombatTiming timing)
+    {
+        if (!character.alive && timing == CombatManager.CombatTiming.StartOfCombatStage)
+        {
+            Destroy(gameObject);
+        }
+    }
+    
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (CombatManager.instance.currentStage == CombatManager.CombatStage.Setup)
@@ -45,6 +54,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         character.conditionManager.LostCondition += RemoveEffect;
         character.Healed += Healed;
         character.TookDamage += TookDamage;
+        CombatManager.RoundPhases += DeadRemoval;
     }
     private void OnDisable()
     {
@@ -52,6 +62,7 @@ public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         character.conditionManager.LostCondition -= RemoveEffect;
         character.Healed -= Healed;
         character.TookDamage -= TookDamage;
+        CombatManager.RoundPhases -= DeadRemoval;
     }
 
     void Update()

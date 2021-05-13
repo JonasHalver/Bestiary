@@ -74,15 +74,15 @@ public class CharacterSheet : MonoBehaviour
 
     public void ShowEntry(Character character)
     {
-        Book.instance.currentChapter = currentEntry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Current;
-        Book.instance.ActivePageNumber = currentEntry.isMerc ? currentEntry.origin.pageNumber : currentEntry.origin.pageNumberCurrent;
+        Book.instance.currentChapter = currentEntry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Monsters;
+        Book.instance.ActivePageNumber = currentEntry.origin.pageNumber;
         GameManager.ChangeState(GameManager.GameState.Bestiary);
         //HideSheet();
     }
     public void ShowEntry(Entry entry)
     {
-        Book.instance.currentChapter = entry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Current;
-        Book.instance.ActivePageNumber = entry.isMerc ? entry.origin.pageNumber : entry.origin.pageNumberCurrent;
+        Book.instance.currentChapter = entry.isMerc ? Book.Chapter.Mercenaries : Book.Chapter.Monsters;
+        Book.instance.ActivePageNumber = entry.origin.pageNumber;
 
         GameManager.ChangeState(GameManager.GameState.Bestiary);
         //HideSheet();

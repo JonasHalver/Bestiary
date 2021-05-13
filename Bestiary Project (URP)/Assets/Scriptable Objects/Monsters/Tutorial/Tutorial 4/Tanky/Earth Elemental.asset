@@ -20,7 +20,7 @@ MonoBehaviour:
   characterModel: {fileID: 6772640650549544294, guid: f750303c63354154a9b785b0f1d9ef9b,
     type: 3}
   characterIcon: {fileID: 21300000, guid: 76ee9338fa7899a46a2fd9865d1cc283, type: 3}
-  characterColor: {r: 0.3584906, g: 0.22490044, b: 0.12344251, a: 1}
+  characterColor: {r: 0.8962264, g: 0, b: 0.5631928, a: 1}
   hitPoints: 10
   armored: 0
   resistances: 00000000010000000200000006000000
@@ -28,9 +28,10 @@ MonoBehaviour:
   speed: 3
   movement: 1
   actions:
-  - {fileID: 11400000, guid: dd1f4ef887b4cff418e58b3a8f87b3d6, type: 2}
-  - {fileID: 11400000, guid: 707c647cb4e8c9a4e9ebc20e5c693aa1, type: 2}
   - {fileID: 11400000, guid: cac86f17c5782f64684fb7517c82cbe4, type: 2}
+  - {fileID: 11400000, guid: dd1f4ef887b4cff418e58b3a8f87b3d6, type: 2}
   - {fileID: 11400000, guid: f7b1224a5b0bc7041a1b6de7fddf3a76, type: 2}
+  - {fileID: 11400000, guid: 707c647cb4e8c9a4e9ebc20e5c693aa1, type: 2}
   pageNumber: 0
+  pageNumberCurrent: 0
   entry: {fileID: 0}

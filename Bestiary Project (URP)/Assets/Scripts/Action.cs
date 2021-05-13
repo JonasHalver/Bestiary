@@ -341,17 +341,20 @@ public class Action : ScriptableObject
             case TargetGroup.Enemies:
                 foreach(Character c in CombatManager.actors)
                 {
-                    if (!Character.AllyOrEnemy(bpi.origin, c)) possibleTargets.Add(c);
+                    if (!Character.AllyOrEnemy(bpi.origin, c) && c.alive) possibleTargets.Add(c);
                 }
                 break;
             case TargetGroup.Allies:
                 foreach (Character c in CombatManager.actors)
                 {
-                    if (Character.AllyOrEnemy(bpi.origin, c)) possibleTargets.Add(c);
+                    if (Character.AllyOrEnemy(bpi.origin, c) && c.alive) possibleTargets.Add(c);
                 }
                 break;
             case TargetGroup.All:
-                possibleTargets = CombatManager.actors;
+                foreach (Character c in CombatManager.actors)
+                {
+                    if (c.alive) possibleTargets.Add(c);
+                }
                 break;
         }
         switch (primary ? primaryShape : secondaryShape)

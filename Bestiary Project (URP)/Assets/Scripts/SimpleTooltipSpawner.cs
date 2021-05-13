@@ -50,7 +50,7 @@ public class SimpleTooltipSpawner : MonoBehaviour, IPointerEnterHandler, IPointe
         stt.tooltipString = tooltipString;
         stt.spawn = this;
     }
-
+    
     private void OnDisable()
     {
         if (tooltip != null)

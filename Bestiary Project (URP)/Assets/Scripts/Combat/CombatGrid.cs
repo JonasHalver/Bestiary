@@ -642,7 +642,8 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         }
         switch (action.targetPriority)
         {
-            case Action.TargetPriority.MostHits:                
+            case Action.TargetPriority.MostHits:
+                output = targets[0];
                 break;
             case Action.TargetPriority.MostHurt:
                 for (int i = 0; i < targets.Count; i++)
@@ -702,7 +703,7 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         if (output == null && targets.Count > 0)
         {
             output = targets[0];
-            Debug.Log($"{actor.stats.characterName} tried to target {tg}, but failed to find a good target");
+            //Debug.Log($"{actor.stats.characterName} tried to target {action.targetPriority}, but failed to find a good target amongst {targets.Count} targets");
         }
         return output;
     }
@@ -1168,6 +1169,10 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
                             {
                                 output = true;
                                 break;
+                            }
+                            else
+                            {
+                                //print($"{monstersHit[i].stats.characterName} doesn't have {condition}");
                             }
                         }
                     }

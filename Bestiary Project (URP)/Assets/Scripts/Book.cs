@@ -139,6 +139,7 @@ public class Book : MonoBehaviour
             else
             {
                 monsterEntries[i].page.entry = monsterEntries[i];
+                monsterEntries[i].origin.pageNumber = i;
             }
         }
         for (int i = 0; i < mercEntries.Count; i++)

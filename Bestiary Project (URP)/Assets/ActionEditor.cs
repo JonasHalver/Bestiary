@@ -548,11 +548,9 @@ public class ActionEditor : MonoBehaviour
 
         // Check primary
         if (guessAction.descriptionIndex != action.descriptionIndex) return;
-        print("description index correct");
         if (primaryShapes.Count != 1 || guessAction.primaryShape != action.primaryShape) return;
-        print("primary shape correct");
         if (!primaryNodesCorrect) return;
-        print("primary nodes correct");
+        /*
         if (guessAction.primaryOutput.Count > 0)
         {
             if (guessAction.primaryOutput[0].affectedGroup != action.primaryOutput[0].affectedGroup)
@@ -562,22 +560,18 @@ public class ActionEditor : MonoBehaviour
             print("affected group correct");
         }
         else return;
-        print("primary output correct");
         if (guessAction.primaryTargeting != action.primaryTargeting) return;
-        print("primary targeting correct");
-        if (guessAction.cooldown != action.cooldown) return;
-        print("cooldown correct");
+        if (guessAction.cooldown != action.cooldown) return;*/
 
         // Check secondary
         if (action.secondaryOutput.Count > 0)
         {
             if (!secondaryNodesCorrect) return;
             if (secondaryShapes.Count != 1 || guessAction.secondaryShape != action.secondaryShape) return;
-            if (guessAction.secondaryTargeting != action.secondaryTargeting) return;
-            if (guessAction.secondaryOutput[0].affectedGroup != action.secondaryOutput[0].affectedGroup) return;
+            /*if (guessAction.secondaryTargeting != action.secondaryTargeting) return;
+            if (guessAction.secondaryOutput[0].affectedGroup != action.secondaryOutput[0].affectedGroup) return;*/
         }
         Book.currentEntry.activeAction.informationCorrect = true;
-        Debug.Log("information correct");
     }
     private void CheckIncompatibility(List<ContextInfo> list)
     {
