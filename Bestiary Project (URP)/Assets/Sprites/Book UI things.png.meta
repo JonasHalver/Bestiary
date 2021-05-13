@@ -68,6 +68,9 @@ TextureImporter:
   - first:
       213: 6085482626203042510
     second: Book grid
+  - first:
+      213: 8312184592773499243
+    second: Kryds
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -575,7 +578,7 @@ TextureImporter:
         width: 64
         height: 96
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -596,7 +599,7 @@ TextureImporter:
         width: 65
         height: 97
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -617,7 +620,7 @@ TextureImporter:
         width: 653
         height: 180
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -638,7 +641,7 @@ TextureImporter:
         width: 708
         height: 765
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -646,6 +649,27 @@ TextureImporter:
       bones: []
       spriteID: ec2c4adc43af37450800000000000000
       internalID: 6085482626203042510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Kryds
+      rect:
+        serializedVersion: 2
+        x: 514
+        y: 1575
+        width: 61
+        height: 54
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b694db7e8dfca5370800000000000000
+      internalID: 8312184592773499243
       vertices: []
       indices: 
       edges: []
