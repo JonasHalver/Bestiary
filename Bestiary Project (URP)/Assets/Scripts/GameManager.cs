@@ -102,7 +102,6 @@ public class GameManager : MonoBehaviour
     }
     public void CombatStartSequence()
     {
-
         if (!bookFilled)
         {
               
@@ -189,6 +188,7 @@ public class GameManager : MonoBehaviour
                 if (enemiesWon || alliesWon) GameOver();
             GameStateMachine();
         }
+        else if (!actorsSpawned && !tutorial) combatStartSequence = true;
         gamestateDisplay = gameState;
         UpdateWindowsList();
     }

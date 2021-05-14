@@ -457,6 +457,19 @@ public class Book : MonoBehaviour
     {
         GameManager.instance.Exit();
     }
+    public void RestartTutorial()
+    {
+        GameManager.instance.startInTutorial = true;
+        GameManager.instance.tutorialProgress = -1;
+        GameManager.instance.Restart();
+    }
+    public void ExitTutorial()
+    {
+        GameManager.instance.startInTutorial = false;
+        GameManager.tutorial = false;
+        GameManager.bookFilled = true;
+        GameManager.instance.Restart();
+    }
     public void CloseBook()
     {
         binding.gameObject.SetActive(false);

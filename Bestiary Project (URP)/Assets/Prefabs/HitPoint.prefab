@@ -95,7 +95,7 @@ MonoBehaviour:
   empty: {fileID: -1371985802067175810, guid: 77986ea7d596b714faf2371581f28403, type: 3}
   current: {fileID: -7260586905702397626, guid: 77986ea7d596b714faf2371581f28403,
     type: 3}
-  healthyColor: {r: 0.9960785, g: 0, b: 0, a: 1}
+  healthyColor: {r: 1, g: 1, b: 1, a: 1}
   poisonedColor: {r: 0.2153039, g: 1, b: 0, a: 1}
   armoredColor: {r: 1, g: 0.5835624, b: 0, a: 1}
   isFull: 1
