@@ -110,7 +110,7 @@ MonoBehaviour:
     context: 0
     output: 2
     shape: 0
-  - text: restore * hit points
+  - text: <sprite=63> restore * hit points
     context: 0
     output: 1
     shape: 0

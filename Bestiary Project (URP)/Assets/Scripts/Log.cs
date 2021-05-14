@@ -27,7 +27,7 @@ public class Log : ScriptableObject
         {
             if (contextEntries[i].context == context) s += contextEntries[i].text;
         }
-        s = s.Replace("*", dt.ToString());
+        s = s.Replace("*", $"<sprite name=\"{GameManager.instance.currentIconCollection.GetIcon(dt).icon.name}\"> {dt}");
         return s;
     }
     // Context with specific condition
@@ -56,6 +56,10 @@ public class Log : ScriptableObject
             case Action.Condition.SlowMerc:
                 cs = "Slow";
                 break;
+            case Action.Condition.StrengthenOther:
+            case Action.Condition.StrengthenSelf:
+                cs = "Strengthen";
+                break;
             case Action.Condition.TauntMerc:
             case Action.Condition.TauntMonster:
                 cs = "Taunt";
@@ -65,7 +69,7 @@ public class Log : ScriptableObject
         {
             if (contextEntries[i].context == context) s+= contextEntries[i].text;
         }
-        s = s.Replace("*", cs);
+        s = s.Replace("*", $"<sprite name=\"{GameManager.instance.currentIconCollection.GetIcon(c).icon.name}\"> {cs}");
         return s;
     }
     // Output - Damage
@@ -78,7 +82,7 @@ public class Log : ScriptableObject
             if (outputEntries[i].output == output) s += outputEntries[i].text;
         }
         s = s.Replace("^", c);
-        s = s.Replace("*", dt.ToString());
+        s = s.Replace("*", $"<sprite name=\"{GameManager.instance.currentIconCollection.GetIcon(dt).icon.name}\"> {dt}");
         return s;
     }
     // Output - Condition
@@ -108,6 +112,10 @@ public class Log : ScriptableObject
             case Action.Condition.SlowMerc:
                 cs = "Slow";
                 break;
+            case Action.Condition.StrengthenSelf:
+            case Action.Condition.StrengthenOther:
+                cs = "Strengthen";
+                break;
             case Action.Condition.TauntMerc:
             case Action.Condition.TauntMonster:
                 cs = "Taunt";
@@ -119,7 +127,7 @@ public class Log : ScriptableObject
             if (outputEntries[i].output == output) s += outputEntries[i].text;
         }
         s = s.Replace("^", v);
-        s = s.Replace("*", cs);
+        s = s.Replace("*", $"<sprite name=\"{GameManager.instance.currentIconCollection.GetIcon(c).icon.name}\"> {cs}");
         return s;
     }
     // Output - Healing
@@ -146,7 +154,7 @@ public class Log : ScriptableObject
             if (outputEntries[i].output == output) s += outputEntries[i].text;
         }
         s = s.Replace("^", t);
-        s = s.Replace("*", v);
+        s = s.Replace("*", $"<sprite name=\"{GameManager.instance.currentIconCollection.GetIcon(Action.Output.Movement).icon.name}\"> {v}");
         s = s.Replace("%", p);
         return s;
     }

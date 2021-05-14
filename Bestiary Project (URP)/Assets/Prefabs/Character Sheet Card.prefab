@@ -60,13 +60,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 286cfcf29c2a21c4a9bab4c30e3cc165, type: 3}
+  m_Sprite: {fileID: 8048493134689374929, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -378,7 +379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 8aaab79fcf2af4b41bc83d6661413224, type: 2}
   m_Color: {r: 0.87058824, g: 0.87058824, b: 0.87058824, a: 1}
   m_RaycastTarget: 1
   m_Maskable: 1
@@ -409,11 +410,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ttp: {fileID: 5672441365435214}
   iconGridBackground: {fileID: 7276567166856872482}
-  targetGround: {fileID: 21300000, guid: fa3369935e092fb479ab8e9350a384ee, type: 3}
-  targetCharacter: {fileID: 21300000, guid: ebbdf532b5473c64f98801487c75f6ba, type: 3}
-  targetAll: {fileID: 21300000, guid: b2ac935c0ea9e20428a3e47b4e8aa19d, type: 3}
-  targetAllies: {fileID: 21300000, guid: 4e77e6e7bcdcafc4385080238ff82e1d, type: 3}
-  targetEnemies: {fileID: 21300000, guid: 93c548257bb323d409df3dea1f247d6b, type: 3}
+  targetGround: {fileID: 1644989310790574446, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  targetCharacter: {fileID: -4398002872861096285, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  targetAll: {fileID: 1447525290911393079, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  targetAllies: {fileID: -449595716166720896, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  targetEnemies: {fileID: -4085829236851285238, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
   description: {fileID: 524844554960178716}
   actionName: {fileID: 1326635966621993097}
   target: {fileID: 393117940902758635}

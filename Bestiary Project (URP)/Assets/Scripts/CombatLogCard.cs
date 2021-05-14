@@ -46,7 +46,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
         if (info.action.isPass)
         {           
-            string failedText = wasStunned ? "was stunned" : "passed";
+            string failedText = wasStunned ? "was <sprite=21> stunned" : "passed";
             if (ca.origin.entry.isMerc) text.text = $"<b>{ca.origin.stats.characterName}</b> {failedText}.";
             else text.text = $"<b>{(ca.origin.entry.guess.characterName != null ? ca.origin.entry.guess.characterName : "The Unknown Monster")}</b> {failedText}.";
             UpdateCanvas();

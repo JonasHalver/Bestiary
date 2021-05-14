@@ -309,7 +309,6 @@ public class Book : MonoBehaviour
     public void PageChange()
     {
         Page openPage = null;
-
         switch (currentChapter)
         {
             case Chapter.TableOfContents:
@@ -441,34 +440,7 @@ public class Book : MonoBehaviour
                 }
                 break;
         }
-
-        /*if (pageNumber < 0) pageNumber = (openOnMerc ? mercPages.Count : monsterPages.Count) - 1;
-        else if (pageNumber >= (openOnMerc ? mercPages.Count : monsterPages.Count)) pageNumber = 0;
-        if (!openOnMerc)
-        {
-            if (monsterEntries.Count > 0)
-            {
-                currentEntry = monsterEntries[pageNumber];
-                for (int i = 0; i < monsterPages.Count; i++)
-                {
-                    if (i != pageNumber) monsterPages[i].gameObject.SetActive(false);
-                    else { monsterPages[i].gameObject.SetActive(true); openPage = monsterPages[i]; }
-                }
-            }
-        }
-        else
-        {
-            if (mercEntries.Count > 0)
-            {
-                currentEntry = mercEntries[pageNumber];
-                for (int i = 0; i < mercPages.Count; i++)
-                {
-                    if (i != pageNumber) mercPages[i].gameObject.SetActive(false);
-                    else { mercPages[i].gameObject.SetActive(true); openPage = mercPages[i]; }
-                }
-            }
-        }
-        if (openPage != null) openPage.UpdateName();*/
+        
     }
     public void OpenMercs(bool check)
     {
