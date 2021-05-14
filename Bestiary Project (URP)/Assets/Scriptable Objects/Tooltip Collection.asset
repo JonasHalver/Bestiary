@@ -22,15 +22,15 @@ MonoBehaviour:
   - Poison damage.
   - Healing.
   shapes:
-  - <b>Melee:</b>
-  - <b>Ranged:</b>
-  - <b>Self:</b>
-  - <b>Arc:</b>
-  - <b>Cone:</b>
-  - <b>Line:</b>
-  - <b>Area:</b>
-  - <b>Pulse:</b>
-  - <b>All:</b>
+  - <b>Melee:</b> Affects one space adjacent to the character.
+  - <b>Ranged:</b> Affects any space not adjacent to the character.
+  - <b>Self:</b> Affects the character's own space.
+  - <b>Arc:</b> Affects three connected spaces adjacent to the character.
+  - <b>Cone:</b> Affects an area expanding from the character.
+  - <b>Line:</b> Affects spaces in a straight line from the character.
+  - <b>Area:</b> Affects an area anywhere.
+  - <b>Pulse:</b> Affects all spaces adjacent to the character.
+  - <b>All:</b> Affects any number of spaces anywhere.
   conditions:
   - <b>Acid:</b> Deals acid damage at the start of the victim's turn.
   - <b>Armor:</b> Damage taken from damaging actions is halved.
