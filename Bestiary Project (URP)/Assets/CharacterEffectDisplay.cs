@@ -68,7 +68,7 @@ public class CharacterEffectDisplay : MonoBehaviour
                 newIcon = Instantiate(iconPrefab, t);
                 img = newIcon.GetComponent<Image>();
                 img.sprite = emptyHeart;
-                img.color = Color.red;
+                img.color = Color.white;
                 effect.icons.Add(img);
                 StartCoroutine(IconFade(img, true, effect));
             }
@@ -77,7 +77,7 @@ public class CharacterEffectDisplay : MonoBehaviour
                 newIcon = Instantiate(iconPrefab, t);
                 img = newIcon.GetComponent<Image>();
                 img.sprite = fullHeart;
-                img.color = Color.red;
+                img.color = Color.white;
                 effect.icons.Add(img);
                 StartCoroutine(IconFade(img, true, effect));
                 displayed++;
@@ -88,7 +88,7 @@ public class CharacterEffectDisplay : MonoBehaviour
                 newIcon = Instantiate(iconPrefab, t);
                 img = newIcon.GetComponent<Image>();
                 img.sprite = halfHeart;
-                img.color = Color.red;
+                img.color = Color.white;
                 effect.icons.Add(img);
                 StartCoroutine(IconFade(img, true, effect));
                 displayed += 0.5f;

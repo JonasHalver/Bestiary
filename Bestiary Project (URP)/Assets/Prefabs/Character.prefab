@@ -319,6 +319,16 @@ MonoBehaviour:
     m_RotationOrder: 4
   debuffCount: 0
   buffCount: 0
+  memory:
+    damageDealt: 0
+    damageTaken: 0
+    maxDamageTaken: 0
+    healingReceived: 0
+    conditionsGained: 
+    damageTypesTaken: 
+    healers: []
+    hurtMe: []
+    biggestThreat: {fileID: 0}
   entry: {fileID: 0}
   highlightMyNode: 0
   pass: {fileID: 11400000, guid: 9e3ea51c354c00a4c96c9b067bba201b, type: 2}
@@ -454,10 +464,14 @@ MonoBehaviour:
     type: 3}
   iconPrefab: {fileID: 5795248656794766811, guid: ece247f79ba92ba40b7fd7569ac7255e,
     type: 3}
-  collisionIcon: {fileID: 21300000, guid: 668cc8d7ee324dc43850fb376babca8b, type: 3}
-  halfHeart: {fileID: 21300000, guid: 208a4234daefc3141942700466ac0bbc, type: 3}
-  fullHeart: {fileID: 21300000, guid: b0a823cdfabe4cf4e83b061fdfe903f1, type: 3}
-  emptyHeart: {fileID: 21300000, guid: ebf2bd35a14783f43950b25b982ca35e, type: 3}
+  collisionIcon: {fileID: 1831432741906035450, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  halfHeart: {fileID: 5968650744170622891, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  fullHeart: {fileID: -7260586905702397626, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
+  emptyHeart: {fileID: -1371985802067175810, guid: 77986ea7d596b714faf2371581f28403,
+    type: 3}
   displayDuration: 2
 --- !u!114 &7950829904119922734
 MonoBehaviour:

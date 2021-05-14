@@ -77,7 +77,7 @@ MonoBehaviour:
     context: 0
     output: 0
     priority: 0
-  - icon: {fileID: 21300000, guid: 9845783b5ab8bce4e97a458876016017, type: 3}
+  - icon: {fileID: -7425199322336809999, guid: 77986ea7d596b714faf2371581f28403, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
     damageType: 8
@@ -278,7 +278,7 @@ MonoBehaviour:
     context: 0
     output: 0
     priority: 0
-  - icon: {fileID: 21300000, guid: 9845783b5ab8bce4e97a458876016017, type: 3}
+  - icon: {fileID: -7425199322336809999, guid: 77986ea7d596b714faf2371581f28403, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 23
     damageType: 0
@@ -359,7 +359,7 @@ MonoBehaviour:
     context: 0
     output: 0
     priority: 0
-  - icon: {fileID: 21300000, guid: 9845783b5ab8bce4e97a458876016017, type: 3}
+  - icon: {fileID: -7425199322336809999, guid: 77986ea7d596b714faf2371581f28403, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
     damageType: 0
@@ -440,7 +440,7 @@ MonoBehaviour:
     context: 8
     output: 0
     priority: 0
-  - icon: {fileID: -2458848620916336182, guid: 77986ea7d596b714faf2371581f28403, type: 3}
+  - icon: {fileID: -5972805334628985643, guid: 77986ea7d596b714faf2371581f28403, type: 3}
     iconColor: {r: 1, g: 1, b: 1, a: 1}
     condition: 0
     damageType: 0
@@ -578,7 +578,7 @@ MonoBehaviour:
     output: 1
     priority: 0
   priorities: []
-  meleeAlternate: {fileID: -1451305789052789996, guid: 77986ea7d596b714faf2371581f28403,
+  meleeAlternate: {fileID: 687917121120983092, guid: 77986ea7d596b714faf2371581f28403,
     type: 3}
   coneAlternate: {fileID: 3653658837025562710, guid: 77986ea7d596b714faf2371581f28403,
     type: 3}
