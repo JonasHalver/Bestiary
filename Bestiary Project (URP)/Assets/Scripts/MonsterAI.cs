@@ -16,8 +16,7 @@ public class MonsterAI : MonoBehaviour
         get
         {
             if (relentlessTarget == null)
-            {
-                
+            {                
                 relentlessTarget = evaluations[UnityEngine.Random.Range(0, evaluations.Count)].Enemy;
             }
             return relentlessTarget;
@@ -40,6 +39,10 @@ public class MonsterAI : MonoBehaviour
         { 
             if (assessments.Count > 0)
             {
+                for (int i = 0; i < assessments.Count; i++)
+                {
+                    assessments[i].SetDangerValue();
+                }
                 assessments.Sort((a1, a2) => a1.DangerValue.CompareTo(a2.DangerValue));
                 Node v = FirstValidNode(assessments);
                 if (v != null)
@@ -58,6 +61,10 @@ public class MonsterAI : MonoBehaviour
         {
             if (assessments.Count > 0)
             {
+                for (int i = 0; i < assessments.Count; i++)
+                {
+                    assessments[i].SetDangerValue();
+                }
                 assessments.Sort((a2, a1) => a1.DangerValue.CompareTo(a2.DangerValue));
                 Node v = FirstValidNode(assessments);
                 if (v != null)
@@ -76,6 +83,10 @@ public class MonsterAI : MonoBehaviour
         {
             if (assessments.Count > 0)
             {
+                for (int i = 0; i < assessments.Count; i++)
+                {
+                    assessments[i].SetDangerValue();
+                }
                 assessments.Sort((a1, a2) => a1.DangerValue.CompareTo(a2.DangerValue));
                 for (int i = 0; i < assessments.Count; i++)
                 {
@@ -120,6 +131,10 @@ public class MonsterAI : MonoBehaviour
                     }
                     if (temp.Count > 0)
                     {
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            temp[i].SetDangerValue();
+                        }
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                         Node v = FirstValidNode(temp);
                         if (v != null)
@@ -153,6 +168,10 @@ public class MonsterAI : MonoBehaviour
                     }
                     if (temp.Count > 0)
                     {
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            temp[i].SetDangerValue();
+                        }
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                         Node v = FirstValidNode(temp);
                         if (v != null)
@@ -212,6 +231,10 @@ public class MonsterAI : MonoBehaviour
                     }
                     if (temp.Count > 0)
                     {
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            temp[i].SetDangerValue();
+                        }
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                         Node v = FirstValidNode(temp);
                         if (v != null)
@@ -271,6 +294,10 @@ public class MonsterAI : MonoBehaviour
                     }
                     if (temp.Count > 0)
                     {
+                        for (int i = 0; i < temp.Count; i++)
+                        {
+                            temp[i].SetDangerValue();
+                        }
                         temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                         Node v = FirstValidNode(temp);
                         if (v != null)
@@ -316,6 +343,10 @@ public class MonsterAI : MonoBehaviour
                 }
                 if (temp.Count > 0)
                 {
+                    for (int i = 0; i < temp.Count; i++)
+                    {
+                        temp[i].SetDangerValue();
+                    }
                     temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                     Node v = FirstValidNode(temp);
                     if (v != null)
@@ -347,6 +378,10 @@ public class MonsterAI : MonoBehaviour
                 }
                 if (temp.Count > 0)
                 {
+                    for (int i = 0; i < temp.Count; i++)
+                    {
+                        temp[i].SetDangerValue();
+                    }
                     temp.Sort((t1, t2) => t1.DangerValue.CompareTo(t2.DangerValue));
                     Node v = FirstValidNode(temp);
                     if (v != null)
@@ -366,14 +401,14 @@ public class MonsterAI : MonoBehaviour
         {
             if (gsa[i].Available)
             {
-                if (taunt)
-                {
-                    if (CombatGrid.NodeToDistance(gsa[i].Space, character.Taunter.movement.currentNode) < CombatGrid.Vector2ToDistance(character.position, character.Taunter.position))
-                    {
-                        return gsa[i].Space;
-                    }
-                }
-                else if (fear)
+                //if (taunt)
+                //{
+                //    if (CombatGrid.NodeToDistance(gsa[i].Space, character.Taunter.movement.currentNode) < CombatGrid.Vector2ToDistance(character.position, character.Taunter.position))
+                //    {
+                //        return gsa[i].Space;
+                //    }
+                //}
+                if (fear)
                 {
                     bool flag = false;
                     for (int j = 0; j < character.AfraidOf.Count; j++)
@@ -428,10 +463,21 @@ public class MonsterAI : MonoBehaviour
         // Update the AI's knowledge before picking a destination
         UpdateEvaluationAndAssessment();
 
-        // Is the monster afraid?
+        // Is the monster afraid? Or taunted?
         CharacterStats.Personality personality;
+        Character target = null;
         if (character.AfraidOf.Count > 0) personality = CharacterStats.Personality.Fearful;
         else personality = character.stats.personality;
+        if (character.Conditions.ContainsKey(Action.Condition.TauntMonster))
+        {
+            personality = CharacterStats.Personality.Relentless;
+            target = character.Taunter;
+        }
+        else
+        {
+            personality = character.stats.personality;
+        }
+        if (target == null) target = RelentlessTarget;
 
         // Then use that knowledge based on the AI's personality
         switch (personality)
@@ -458,7 +504,7 @@ public class MonsterAI : MonoBehaviour
                 Reckless();
                 break;
             case CharacterStats.Personality.Relentless:
-                Relentless();
+                Relentless(target);
                 break;
         }
         if (GameManager.instance.debugMode) DeclareDestinationValue();
@@ -527,9 +573,9 @@ public class MonsterAI : MonoBehaviour
     {
         Destination = SafestHighThreatEfficientNode;
     }
-    private void Relentless()
+    private void Relentless(Character target)
     {
-        Destination = SafestMeleeWithSpecificCharacterNode(RelentlessTarget);
+        Destination = SafestMeleeWithSpecificCharacterNode(target);
     }
     #endregion
 
@@ -597,19 +643,23 @@ public class GridSpaceAssessment
     {
         get { return adjacentCharacters; }
     }
+    public void SetDangerValue()
+    {
+        dangerValue = 0;
+        for (int i = 0; i < CombatManager.actors.Count; i++)
+        {
+            Character actor = CombatManager.actors[i];
+            if (actor.alive && actor != origin)
+            {
+                dangerValue += DangerModifier(actor);
+            }
+        }
+    }
     public float DangerValue
     {
         get
         {
-            dangerValue = 0;
-            for (int i = 0; i < CombatManager.actors.Count; i++)
-            {
-                Character actor = CombatManager.actors[i];
-                if (actor.alive && actor != origin)
-                {
-                    dangerValue += DangerModifier(actor);
-                }
-            }
+            
             return dangerValue;
         }
     }

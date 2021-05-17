@@ -242,9 +242,12 @@ public class CombatGrid : MonoBehaviour, IPointerDownHandler
         //StopHighlight();
         if (ca != null && ca.action.actionName != "Pass") 
         {
-            for (int i = 0; i < ca.primaryTarget.AffectedNodes.Count; i++)
+            if (ca.primaryTarget != null)
             {
-                ca.primaryTarget.AffectedNodes[i].ActionHighlight();
+                for (int i = 0; i < ca.primaryTarget.AffectedNodes.Count; i++)
+                {
+                    ca.primaryTarget.AffectedNodes[i].ActionHighlight();
+                }
             }
             if (ca.secondaryTarget != null)
             {

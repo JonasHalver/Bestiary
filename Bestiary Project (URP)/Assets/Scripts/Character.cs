@@ -555,10 +555,11 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public void ReceiveHit(OutputInfo info, Character origin)
     {
         float damage = 1;
-        if (info.critical || stats.weaknesses.Contains(info.damageType)) damage++;
+        if (info.critical) damage++;
+        if (stats.weaknesses.Contains(info.damageType)) damage++;
         if (Conditions.ContainsKey(Action.Condition.Vulnerable)) damage++;
         if (origin.Conditions.ContainsKey(Action.Condition.StrengthenOther) || origin.Conditions.ContainsKey(Action.Condition.StrengthenSelf)) damage++;
-        if (stats.armored || currentBuffs.Contains(Buff.BuffType.Armor)) damage /= 2;
+        if (Conditions.ContainsKey(Action.Condition.Armor)) damage /= 2;
         if (stats.resistances.Contains(info.damageType)) damage /= 2;
         if (origin.Conditions.ContainsKey(Action.Condition.Weaken)) damage /= 2;
         if (damage < 0.5f) damage = 0;

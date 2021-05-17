@@ -380,7 +380,9 @@ public class GameManager : MonoBehaviour
     public void GameStateCheck()
     {
         int alliesAlive = 0;
+        int allies = 0;
         int enemiesAlive = 0;
+        int enemies = 0;
         foreach(Character actor in CombatManager.actors)
         {
             if (actor.alive)
@@ -389,15 +391,17 @@ public class GameManager : MonoBehaviour
                 {
                     case CharacterStats.CharacterTypes.NPC:
                         enemiesAlive++;
+                        enemies++;
                         break;
                     case CharacterStats.CharacterTypes.Adventurer:
                         alliesAlive++;
+                        allies++;
                         break;
                 }
             }
         }
-        if (alliesAlive > 0 && enemiesAlive == 0) alliesWon = true;
-        else if (enemiesAlive > 0 && alliesAlive == 0) enemiesWon = true;
+        alliesWon = alliesAlive > 0 && enemiesAlive == 0;
+        enemiesWon = enemiesAlive > 0 && alliesAlive == 0;        
     }
 
     private void Pause()
