@@ -6,6 +6,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class CombatManager : MonoBehaviour
 {
@@ -130,7 +131,8 @@ public class CombatManager : MonoBehaviour
         switch (currentStage)
         {
             case CombatStage.Setup:
-                CombatUI.instance.stageDisplay.text = "Setup";
+                if (!CombatLogCard.displayingPast)
+                    CombatUI.instance.stageDisplay.text = "";
                 CombatUI.instance.stageInfo.text = "Move your mercenaries by selecting them and placing them. " +
                     "All characters' actions will update based on their positions. " +
                     "Once you are happy with the setup, press Commit.";
@@ -362,9 +364,12 @@ public class CombatManager : MonoBehaviour
     }
     public void Commit()
     {
+        EventSystem.current.SetSelectedGameObject(null);
+        if (GameManager.tutorial && !TutorialManager.allowCombat) return;
         if (currentStage != CombatStage.Setup)
         {
             GameManager.instance.PauseCombat();
+            SoundManager.PlaceCharacter();
             return;
         }
         if (GameManager.tutorial) TutorialManager.instance.ForceContinue(true);
@@ -377,6 +382,7 @@ public class CombatManager : MonoBehaviour
     public void StartOfRound()
     {
         RoundPhases.Invoke(CombatTiming.StartOfCombatStage);
+        SoundManager.StartCombat();
         StartCoroutine(CombatRound());
     }
 
@@ -583,6 +589,7 @@ public class CombatManager : MonoBehaviour
     }
     public void ShowPreviousPositions(CombatAction ca)
     {
+        CombatUI.instance.stageDisplay.text = "Showing previous round";
         CombatGrid.ShowPreviousPositions(ca.bpi, ca.origin, ca.affectedCharacters);
     }
     public void ShowCurrentPositions()
@@ -604,6 +611,8 @@ public class CombatManager : MonoBehaviour
         if (!CombatLogCard.displayingPast)
         {
             CombatGrid.ShowCurrentPositions();
+            CombatUI.instance.stageDisplay.text = "";
+
         }
     }
 
@@ -682,6 +691,8 @@ public class CombatAction : Action
             CombatManager.threat[origin] = -1;
             card.info = new CombatLogCard.CombatLogInformation(null, null, action);
             card.CreateCard();
+            origin.characterEffectDisplay.DisplayEffect(new Effect());
+            SoundManager.PassEffect();
             return;
         }
         #region Old Code

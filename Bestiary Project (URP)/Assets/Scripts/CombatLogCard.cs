@@ -229,6 +229,7 @@ public class CombatLogCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         else
         {
             sb.Append("missed entirely.");
+            text.text = sb.ToString();
             UpdateCanvas();
             return;
         }

@@ -13,6 +13,7 @@ public class CombatUI : MonoBehaviour
 
     public Button commitButton;
     public GameObject dropdownArrow;
+    private static bool forcedContinue = false;
 
     private void Awake()
     {
@@ -39,13 +40,16 @@ public class CombatUI : MonoBehaviour
         {
             //TutorialManager.instance.Continue();
         }
+        SoundManager.PageChange(true);
     }
     public void OpenCombatLog()
     {
-        if (GameManager.tutorial)
+        if (GameManager.tutorial && !forcedContinue)
         {
             TutorialManager.instance.ForceContinue(true);
+            forcedContinue = true;
         }
+        SoundManager.PageChange(false);
     }
 
     public void Commit()

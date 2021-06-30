@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a4264ed3fbb02f4f80a44676c4450fe, type: 3}
+  m_Name: Sound Library
+  m_EditorClassIdentifier: 
+  pickUpCharacter: {fileID: 8300000, guid: 92eb7531fba8c7e4386f7b645110f5e2, type: 3}
+  placeCharacter: {fileID: 8300000, guid: 65be5996f2d516a43bfba11d6f732744, type: 3}
+  invalidPlacement: {fileID: 8300000, guid: 2bbfdecb344853f4194f10b12867fd03, type: 3}
+  moveCharacter: {fileID: 8300000, guid: 85240ea8a33cd724f97e438e9e860d58, type: 3}
+  startCombat: {fileID: 8300000, guid: 56f42f3fd01203e4c981de2237a64b34, type: 3}
+  characterDeath: {fileID: 8300000, guid: 1c0d9441bb07ab54c8a4ca2dfc5d8c43, type: 3}
+  openBook: {fileID: 8300000, guid: 0679f0aae8558594594f412ce34d3925, type: 3}
+  closeBook: {fileID: 8300000, guid: db9fda22a482d6346b58e31c97540caf, type: 3}
+  flipRight: {fileID: 8300000, guid: 64f50d8ba37b68147a62b7233153a9b6, type: 3}
+  flipLeft: {fileID: 8300000, guid: 1e9d0c7d015f4ed4a9cb4d2e3f01227b, type: 3}
+  openEditing: {fileID: 8300000, guid: e0e37da954f9aa64ca14d72691d9f117, type: 3}
+  drag: {fileID: 8300000, guid: ec7ffaa8a9ef1f94bb4bae50ac400f0d, type: 3}
+  deletionWarning: {fileID: 8300000, guid: 4f0b105452208f1419c0649dd7fe4247, type: 3}
+  toggles: {fileID: 8300000, guid: 06fbb3291d89a214c98417424d3d2589, type: 3}
+  scribble: {fileID: 8300000, guid: e5a193c966757d940a9fbc0feb90e69f, type: 3}
+  cutting: {fileID: 8300000, guid: c55250e0eda6bf848b7b2a7d7a7844ed, type: 3}
+  crushing: {fileID: 8300000, guid: b189fea1c059b6146a8d80f46a252e38, type: 3}
+  piercing: {fileID: 8300000, guid: 95c0b15f6831bcd4490d805354cfa734, type: 3}
+  acid: {fileID: 8300000, guid: 6b8e5394c5cdd26408a6ff1d04b4680c, type: 3}
+  fire: {fileID: 8300000, guid: c83de93c7a757f74eafc86c55de7adb5, type: 3}
+  cold: {fileID: 8300000, guid: cea881582e4cdb1498a338f15b6a7d5d, type: 3}
+  poison: {fileID: 8300000, guid: d10cfb46f825ec0408ecc5d63b439cfe, type: 3}
+  healing: {fileID: 8300000, guid: ab49082bf676df740a3c532292f031b1, type: 3}
+  applyBuff: {fileID: 8300000, guid: f82c34647b2f10b4ea6c72142f89761e, type: 3}
+  applyDebuff: {fileID: 8300000, guid: 052f8b5989544d04e8ef9b265e9f8419, type: 3}
+  pass: {fileID: 8300000, guid: 025bb78c4430a664faa6283f064860f9, type: 3}

@@ -190,6 +190,8 @@ public class TutorialManager : MonoBehaviour
                 HideTutorial();
                 return;
         }
+        SoundManager.PageChange(true);
+
         TutorialStateMachine();
     }
     public void ForceContinue(bool interrupt)

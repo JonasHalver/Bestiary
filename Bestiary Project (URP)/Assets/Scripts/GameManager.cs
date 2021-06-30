@@ -246,8 +246,7 @@ public class GameManager : MonoBehaviour
         {
             //TutorialManager.instance.ForceContinue(true);
             instance.GameStateMachine();
-        }
-        
+        }        
     }
 
     public void GameStateMachine()
@@ -257,7 +256,8 @@ public class GameManager : MonoBehaviour
             case GameState.Normal:
                 if (!flag)
                 {
-                    Book.instance.CloseBook();
+                    if (Book.isOpen)
+                        Book.instance.CloseBook();
                     flag = true;
                 }
                 break;
@@ -274,8 +274,8 @@ public class GameManager : MonoBehaviour
             case GameState.PauseCombat:
                 if (!flag)
                 {
-                    
-                    Book.instance.CloseBook();
+                    if(Book.isOpen)
+                        Book.instance.CloseBook();
                     flag = true;
                 }
                 break;
@@ -356,6 +356,7 @@ public class GameManager : MonoBehaviour
     }
     private void OpenBestiary()
     {
+        if (tutorial && !TutorialManager.allowBestiary) return;
         if (gameState != GameState.Bestiary)
         {
             ChangeState(GameState.Bestiary);

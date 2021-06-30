@@ -90,6 +90,7 @@ public class Page : MonoBehaviour
     }
     public void RemoveCard(CardRearrangement card)
     {
+        SoundManager.DeletionWarning();
         GameObject newWarning = Instantiate(warningPrefab, transform);
         newWarning.GetComponent<WarningPopup>().page = this;
         entry.actionCardCount--;
@@ -132,6 +133,7 @@ public class Page : MonoBehaviour
     public void ChangePage(bool forward)
     {
         Book.instance.ActivePageNumber += forward ? 1 : -1;
+        SoundManager.PageChange(forward);
         Book.instance.PageChange();
     }
 }

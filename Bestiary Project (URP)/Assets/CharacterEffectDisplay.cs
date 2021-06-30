@@ -18,14 +18,25 @@ public class CharacterEffectDisplay : MonoBehaviour
         GameObject newEffect = Instantiate(effectPrefab, transform);
         effects.Add(effect);
         effect.go = newEffect;
-        SpawnIcons(effect, newEffect.transform.GetChild(0));
+        if (!effect.isPass)
+            SpawnIcons(effect, newEffect.transform.GetChild(0));
+        else
+            newEffect.transform.GetChild(0).GetChild(0).gameObject.SetActive(true);
+
         StartCoroutine(Delay(displayDuration, effect));
     }
     public void RemoveEffects(Effect effect)
     {
-        for (int i = 0; i < effect.icons.Count; i++)
+        if (!effect.isPass)
         {
-            StartCoroutine(IconFade(effect.icons[i], false, effect));
+            for (int i = 0; i < effect.icons.Count; i++)
+            {
+                StartCoroutine(IconFade(effect.icons[i], false, effect));
+            }
+        }
+        else
+        {
+            RemoveEffect(effect);
         }
     }
     public void SpawnIcons(Effect effect, Transform t)
@@ -137,6 +148,7 @@ public class Effect
     public Type type;
     public List<Image> icons = new List<Image>();
     public GameObject go;
+    public bool isPass = false;
     // For damage
     public Effect(float _v, Character.DamageTypes _dt)
     {
@@ -163,5 +175,10 @@ public class Effect
         condition = _c;
         value = _v;
         type = Type.DamageOverTime;
+    }
+    // For passing
+    public Effect()
+    {
+        isPass = true;
     }
 }

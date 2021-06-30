@@ -34,6 +34,7 @@ public class CharacterSheet : MonoBehaviour
 
     public static void ShowSheet(Character character)
     {
+        if (GameManager.tutorial && !TutorialManager.allowBestiary) return;
         instance.currentCharacter = character;
         instance.currentEntry = character.entry;
 

@@ -39,6 +39,8 @@ public class Book : MonoBehaviour
     public Chapter currentChapter = Chapter.TableOfContents;
     public static event System.Action ChapterChanged;
 
+    public static bool isOpen = false;
+
     public int ActivePageNumber
     {
         get
@@ -179,7 +181,9 @@ public class Book : MonoBehaviour
     }
 
     public void OpenBook()
-    {        
+    {
+        isOpen = true;
+        SoundManager.OpenBook();
         binding.gameObject.SetActive(true);
         ChapterChange((int)currentChapter);
         PageChange();
@@ -197,8 +201,8 @@ public class Book : MonoBehaviour
     private void Update()
     {
         if (!GameManager.bookFilled) return;
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) { ActivePageNumber--; PageChange(); }
-        if (Input.GetKeyDown(KeyCode.RightArrow)) { ActivePageNumber++; PageChange(); }
+        //if (Input.GetKeyDown(KeyCode.LeftArrow)) { ActivePageNumber--; PageChange(); }
+        //if (Input.GetKeyDown(KeyCode.RightArrow)) { ActivePageNumber++; PageChange(); }
     }
 
     public static void OpenActionEditing()
@@ -215,7 +219,7 @@ public class Book : MonoBehaviour
         ActionEditor ae = newEditWindow.GetComponent<ActionEditor>();
         ae.action = currentEntry.activeAction.originalAction;
         ae.guessAction = currentEntry.activeAction.guessAction;
-
+        SoundManager.OpenEditing();
         GameManager.openWindows.Add(newEditWindow);
         GameManager.focusedWindow = newEditWindow;
     }
@@ -299,11 +303,13 @@ public class Book : MonoBehaviour
                 break;
         }
         PageChange();
+        SoundManager.ChapterChange();
         ChapterChanged.Invoke();
     }
     public void FlipPage(bool forward)
     {
         ActivePageNumber += forward ? 1 : -1;
+        SoundManager.PageChange(forward);
         PageChange();
     }
     public void PageChange()
@@ -472,6 +478,8 @@ public class Book : MonoBehaviour
     }
     public void CloseBook()
     {
+        isOpen = false;
+        SoundManager.CloseBook();
         binding.gameObject.SetActive(false);
         if (GameManager.gameState == GameManager.GameState.Bestiary)
             GameManager.ChangeState(GameManager.GameState.Normal);

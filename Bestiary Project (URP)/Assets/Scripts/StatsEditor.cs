@@ -280,7 +280,7 @@ public class StatsEditor : MonoBehaviour
     public void OpenStatEditor(int stat)
     {
         if (!editable) return;
-
+        SoundManager.OpenEditing();
         Book.OpenStatEditing((Entry.StatEntries)stat);
         TutorialManager.instance.StandaloneTutorial(((Entry.StatEntries)stat).ToString());
     }

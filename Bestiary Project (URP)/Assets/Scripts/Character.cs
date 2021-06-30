@@ -24,7 +24,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     public Image characterIcon;
     public Color characterIconColor = Color.white;
     public Image deadImage;
-    [SerializeField]private CharacterEffectDisplay characterEffectDisplay;
+    public CharacterEffectDisplay characterEffectDisplay;
     public event System.Action<Debuff> AcquiredDebuff;
     public event System.Action<Debuff> LostDebuff;
 
@@ -543,7 +543,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
             if (t >= 0.1f) CombatManager.combatFlag = true;
             if (t < 0.1f)
             {
-                animationState = 1 + currentAction.action.animationIndex;
+                if (!currentAction.action.isPass)
+                    animationState = 1 + currentAction.action.animationIndex;
             }
             anim.SetFloat("X", attackAnimation.Evaluate(t) * dir.x);
             anim.SetFloat("Y", attackAnimation.Evaluate(t) * dir.y);
@@ -563,6 +564,7 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (stats.resistances.Contains(info.damageType)) damage /= 2;
         if (origin.Conditions.ContainsKey(Action.Condition.Weaken)) damage /= 2;
         if (damage < 0.5f) damage = 0;
+        SoundManager.DamageSoundEffect(info.damageType);
         currentHitpoints -= damage;
         damageTaken += damage;
         origin.memory.DamageDealt += damage;
@@ -579,6 +581,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         if (stats.resistances.Contains(conditionDamageType)) damage /= 2;
         if (stats.weaknesses.Contains(conditionDamageType)) damage *= 2;
         if (damage < 0.5f) damage = 0;
+        SoundManager.DamageSoundEffect(conditionDamageType);
+
         currentHitpoints -= damage;
         damageTaken += damage;
         memory.DamageTaken += damage;
@@ -600,6 +604,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
         damageTaken -= healing;
         memory.HealingReceived += healing;
         memory.AddHealer(info.origin);
+        SoundManager.DamageSoundEffect(Character.DamageTypes.Healing);
+
         Healed.Invoke();
         characterEffectDisplay.DisplayEffect(new Effect(healing, DamageTypes.Healing));
     }
@@ -609,6 +615,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
 
         currentHitpoints += healing;
         damageTaken -= healing;
+        SoundManager.DamageSoundEffect(Character.DamageTypes.Healing);
+
         Healed.Invoke();
         characterEffectDisplay.DisplayEffect(new Effect(healing, DamageTypes.Healing));
     }
@@ -616,6 +624,8 @@ public class Character : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, 
     {
         conditionManager.ApplyCondition(info.condition, info.value);
         characterEffectDisplay.DisplayEffect(new Effect(info.condition));
+        if (Action.ConditionIsBuff[info.condition]) SoundManager.BuffSoundEffect();
+        else SoundManager.DebuffSoundEffect();
         memory.GainedCondition(info.condition);
     }
 

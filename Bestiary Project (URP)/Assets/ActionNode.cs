@@ -55,6 +55,9 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     public List<ActionNode> clones = new List<ActionNode>();
     public bool isTheOriginal = true;
 
+    private Vector3 currentPos, prevPos;
+    public float velocity;
+
     public Animator Animator
     {
         get
@@ -96,7 +99,9 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
         }
         transform.Find("Background").GetComponent<Image>().color = c;
         attnTooltip = attn.GetComponent<SimpleTooltipSpawner>();
-        Animator.SetBool("Normal", !requiresEditing);        
+        Animator.SetBool("Normal", !requiresEditing);
+        currentPos = transform.position;
+        prevPos = currentPos;
     }
     public void AddToLists()
     {
@@ -200,6 +205,10 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
             }
         }
         wt = windowType;
+        currentPos = transform.position;
+        velocity = (((currentPos - prevPos).sqrMagnitude)+velocity)/2;
+        SoundManager.Drag(velocity);
+        prevPos = currentPos;
     }
 
     private Transform HoverWindow()
@@ -237,6 +246,7 @@ public class ActionNode : MonoBehaviour, IPointerDownHandler, IDragHandler, IEnd
     }
     private void OnDeselect()
     {
+        SoundManager.StopDrag();
         selected = false;
         Relocate(originalWindow, window, transform.position);
         return;

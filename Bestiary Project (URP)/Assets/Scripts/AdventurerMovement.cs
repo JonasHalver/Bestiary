@@ -330,13 +330,14 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         {
             character.AI.Behavior();
             targetNode = character.AI.Destination;
-            if (targetNode != null || targetNode.occupant == null) break;
+            if (targetNode != null || (targetNode != null && targetNode.occupant == null)) break;
             yield return null;
         }
         
         destinations.Clear();
         if (!character.Conditions.ContainsKey(Action.Condition.RootMonster)) destinations = GenerateDestinationList(currentMovement);
         destinationNodes = destinations;
+        SoundManager.MoveCharacter();
         StartCoroutine(MoveToNewLocation(true, character.Conditions.ContainsKey(Action.Condition.SlowMonster)));
     }
 
@@ -366,6 +367,10 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
                 OnDeselect(false);
             else
                 OnDeselect(true);
+        if (character.stats.characterType == CharacterStats.CharacterTypes.NPC)
+        {
+            CharacterSheet.instance.ShowEntry(character);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -390,6 +395,7 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         pickupOffset = transform.position - Input.mousePosition;
         selected = true;
         unitSelected = true;
+        SoundManager.PickupCharacter();
     }
 
     private void OnDeselect(bool canceled)
@@ -400,17 +406,21 @@ public class AdventurerMovement : MonoBehaviour, IPointerDownHandler, IDragHandl
         {
             StartCoroutine(MoveToNewLocation(false, character.Conditions.ContainsKey(Action.Condition.SlowMerc)));
             previousNode = currentNode;
+            SoundManager.PlaceCharacter();
         }
         else if (!canceled && illegalMove)
         {
+            SoundManager.InvalidPlacement();
             targetNode = currentNode;
             StartCoroutine(MoveToNewLocation(false, false));
         }
         else  if (canceled)
         {
+            SoundManager.PlaceCharacter();
             targetNode = currentNode;
             StartCoroutine(MoveToNewLocation(false, false));
         }
+        
     }
 
     public void ReportNewNode(Node n)

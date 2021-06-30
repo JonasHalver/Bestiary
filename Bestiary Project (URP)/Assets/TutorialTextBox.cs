@@ -117,6 +117,7 @@ public class TutorialTextBox : MonoBehaviour
             if (interrupt) break;
 
             textBox.text = output;
+            if (!SoundManager.instance.writing.isPlaying) SoundManager.Scribble();
         }
         if (!interrupt && allowContinue) clickToContinue.enabled = true;
     }

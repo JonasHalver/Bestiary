@@ -805,6 +805,7 @@ public class ActionEditor : MonoBehaviour
     }
     public void CloseWindow()
     {
+        SoundManager.OpenEditing();
         GameManager.focusedWindow = null;
         GameManager.openWindows.Remove(gameObject);
         Destroy(gameObject);

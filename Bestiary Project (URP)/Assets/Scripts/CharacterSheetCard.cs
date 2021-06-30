@@ -39,15 +39,15 @@ public class CharacterSheetCard : MonoBehaviour, IPointerClickHandler
         {
             case Action.TargetGroup.All:
                 targetGroup.sprite = targetAll;
-                stsTargetgroup.tooltipString = "This action will affect all characters.";
+                stsTargetgroup.tooltipString = "This action can affect all characters.";
                 break;
             case Action.TargetGroup.Allies:
                 targetGroup.sprite = targetAllies;
-                stsTargetgroup.tooltipString = "This action will affect allies.";
+                stsTargetgroup.tooltipString = "This action can affect allies.";
                 break;
             case Action.TargetGroup.Enemies:
                 targetGroup.sprite = targetEnemies;
-                stsTargetgroup.tooltipString = "This action will affect enemies.";
+                stsTargetgroup.tooltipString = "This action can affect enemies.";
                 break;
         }
         switch (action.primaryTargeting)
